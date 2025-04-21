@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'path'
+import dayjs from 'dayjs'
 import { ArrayEquipment } from "../../../WEB/src/utils/arrayEquipment.js"
 import { ArraySector } from "../../../WEB/src/utils/arraySector.js"
 
@@ -30,7 +31,7 @@ function registerLog({ body, value }){
     body === 'error' ? "./src/logs/error.txt" : 
     (body === 'equipment' ? './src/logs/log_array_equipment.txt' : "./src/logs/log_array_sector.txt") 
   )
-    const date = new Date().toISOString()
+    const date = `${dayjs().format("DD-MM-YYYY")}T${dayjs().format("HH:mm:ss")}`
     const message = `[${date}] - ${value}\n`
 
     fs.appendFile(logPath, message, (error) => {
