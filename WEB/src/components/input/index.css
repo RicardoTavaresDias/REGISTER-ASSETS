@@ -1,0 +1,28 @@
+.inputText {
+  width: 375px;
+  margin: 0 auto;
+}
+
+.inputText input {
+  width: 375px;
+  margin: 5px auto;
+  height: 30px;
+  border-radius: 5px;
+  border: solid 2px #dfdfdf;
+  display: block;
+  padding: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+}
+
+.inputText input:focus {
+  outline: none;
+}
+
+.inputText label {
+  margin-left: 5px;
+  font-family: 'Poppins', sans-serif;
+  color: rgba(0, 0, 0, 0.567);
+  font-size: 14px;
+  font-weight: 500;
+}

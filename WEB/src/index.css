@@ -1,0 +1,126 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-family: 'Poppins', sans-serif;
+  --text: 400 1rem/1.5 var(--font-family);
+  --text-sm: 400 0.875rem/1.4 var(--font-family);
+
+  --text-primary: #292524;
+  --text-secondary: #57534E;
+  --text-tertiary: #8F8881;
+  --text-highlight: #E43A12;
+
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #FEE7D6;
+  --surface-disabled: #E7E5E4;
+
+  --stroke-default: #D6D3D1;
+  --stroke-gightlight: #F3541C;
+  --semantic-error: #DC2626;
+}
+
+body {
+  width: 500px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+h1, h2 {
+  color: var(--text-primary);
+}
+
+/* A imagem vai ajustar 100% na tela conforme a resolução ealtura automatico para garantir */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-2 {
+  flex: 2;
+}
+
+.btn-primary {
+  font-family: 'Poppins', sans-serif;
+}
+
+.text {
+  border-radius: 8px;
+  background-color: #dfdfdf3b;
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  width: 375px;
+  margin: 0 auto;
+  margin-top: 50px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.482);
+}
+
+.imagejpg {
+ width: 375px;
+ margin: 0 auto;
+ display: block;
+ margin-bottom: 5px;
+}
+
+.suggestions {
+  background-color: #dfdfdf3b;
+  border-radius: 8px;
+  width: 375px;
+  margin: 0 auto;
+  padding-inline: 5px;
+  flex-wrap: wrap;
+  padding-block: 3px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  margin-block: 5px;
+}
+
+.suggestions span{
+  background-color: #dfdfdf62;
+  display: inline-block;
+  margin: 4px;
+  padding: 3px 10px 2px 10px;
+  border-radius: 5px;
+  width: 98%;
+  padding-inline: 10px;
+  margin-bottom: 1px;
+}
+
+.suggestions span:hover{
+  background-color: #dfdfdf9f;
+  font-weight: 600;
+}
+
+#closeLink {
+  text-decoration: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #4b4a4ad1;
+  margin: 20px auto;
+  margin-left: 5px;
+}
+
+#closeLink:hover {
+  color: #282727b5;
+  font-weight: 500;
+}
+
+main {
+  padding: 45px;
+}
