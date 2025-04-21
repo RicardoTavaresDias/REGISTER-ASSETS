@@ -11,13 +11,16 @@ export class RegisterAssetsController {
     try {
       upload.single("file")(request, response, async (error) => {
         if (error instanceof multer.MulterError) {
-          return response.status(422).json({ message: error.message });
+          LogArrayEquipment({ error: error.message })
+          return response.status(422).json({ message: error.message });      
         } else if (error) {
+          LogArrayEquipment({ error: error.message })
           return response.status(500).json({ message: error.message });
         }
 
         if (request.errorMessage) {
-          return response.status(422).json({ message: request.errorMessage });
+          LogArrayEquipment({ error: request.errorMessage })
+          return response.status(422).json({ message: request.errorMessage }); 
         }
 
         const result = await Tesseract.recognize(
@@ -35,6 +38,7 @@ export class RegisterAssetsController {
       });
     } catch (error) {
       console.log(error);
+      LogArrayEquipment({ error: error })
     }
   }
 
@@ -79,3 +83,4 @@ export class RegisterAssetsController {
     }
   }
 }
+

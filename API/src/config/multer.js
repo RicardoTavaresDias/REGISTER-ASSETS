@@ -25,7 +25,7 @@ export const upload = multer({
     if(filter.includes(file.mimetype)){
       callback(null, true)
     }else {
-      request.errorMessage = "Invalid file type .pdf"
+      request.errorMessage = "Invalid file type only jpg, jpeg and png"
       callback(null, false)
     }
   }, 

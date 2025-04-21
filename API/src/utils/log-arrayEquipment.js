@@ -39,3 +39,13 @@ function registerLog({ body, value }){
     })
 }
 
+/*
+  Leitura de arquivo .txt
+
+  fs.readFile("caminho", 'utf8', (error, data) => {
+    if(error){
+      throw new Error(error)
+    }
+    console.log(data)  
+  })
+*/
