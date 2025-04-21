@@ -6,19 +6,22 @@ import { ArraySector } from "../../../WEB/src/utils/arraySector.js"
 
 export function LogArrayEquipment({ error, message }){
 
+  // Comparação ignorando acentos - exemplos: "Coração", "coracao" = true - são iguais
+  const notAccents = word => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+
   if(error){
     return registerLog({ body: 'error', value: error })
   }
 
   if(message.EQUIPAMENTO) {
-    const filter = ArrayEquipment.filter(value => value.toLowerCase().includes(message.EQUIPAMENTO.toLowerCase())) 
+    const filter = ArrayEquipment.filter(value => notAccents(value).includes(notAccents(message.EQUIPAMENTO))) 
     if(!filter.length){
       registerLog({ body: "equipment", value: message.EQUIPAMENTO })
     }
   }
   
   if(message.SETOR){
-    const filter = ArraySector.filter(value => value.toLowerCase().includes(message.SETOR.toLowerCase())) 
+    const filter = ArraySector.filter(value => notAccents(value).includes(notAccents(message.SETOR))) 
     if(!filter.length){
       registerLog({ body: "sector", value: message.SETOR })
     }
