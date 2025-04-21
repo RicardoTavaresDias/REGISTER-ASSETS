@@ -124,6 +124,6 @@ export function useAssets() {
     equipment,
     setEquipment,
     suggestionsEquipment,
-    setSuggestionsEquipment
+    setSuggestionsEquipment,
   };
 }

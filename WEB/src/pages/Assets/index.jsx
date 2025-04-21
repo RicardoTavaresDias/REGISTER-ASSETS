@@ -1,15 +1,17 @@
-import { InputUpload } from "../components/input-upload/index.jsx";
-import { UploadLoading } from "../components/upload-loading/index.jsx";
-import { Button } from "../components/button/index.jsx";
-import { Info } from "../components/info/index.jsx";
-import { Input } from "../components/input/index.jsx";
+import "./index.css"
 
-import svgClose from "../assets/close.svg";
-import svgCheck from "../assets/check.svg";
-import svgCloseError from "../assets/closeError.svg";
-import img from "../../../API/tmp/img.jpg";
+import { InputUpload } from "../../components/input-upload/index.jsx";
+import { UploadLoading } from "../../components/upload-loading/index.jsx";
+import { Button } from "../../components/button/index.jsx";
+import { Info } from "../../components/info/index.jsx";
+import { Input } from "../../components/input/index.jsx";
 
-import { useAssets } from "../hooks/useAssets.js";
+import svgClose from "../../assets/close.svg";
+import svgCheck from "../../assets/check.svg";
+import svgCloseError from "../../assets/closeError.svg";
+import img from "../../../../API/tmp/img.jpg";
+
+import { useAssets } from "../../hooks/useAssets.js";
 
 export function Assets() {
   const {
@@ -33,7 +35,7 @@ export function Assets() {
     equipment,
     setEquipment,
     suggestionsEquipment,
-    setSuggestionsEquipment
+    setSuggestionsEquipment,
   } = useAssets();
 
   return (
@@ -61,7 +63,7 @@ export function Assets() {
               progress < 1 ? (progress === 100 ? "check" : "close") : "clean"
             }
             href="#"
-            onClick={progress === 100 ? "" : () => setFile({})}
+            onClick={progress === 100 ? null : () => setFile({})}
           >
             {!(progress > 0 && progress < 100) ? (
               <img
@@ -83,7 +85,7 @@ export function Assets() {
         file.type.startsWith("image/") &&
         (progress === 100 ? (
           <img
-            className="imagejpg"
+            className="imgPreview"
             src={URL.createObjectURL(file)}
             alt="preview"
           />
@@ -123,23 +125,22 @@ export function Assets() {
           Equipamento:
         </Input>
 
-        {suggestionsEquipment.length > 0 && (
+        {search && suggestionsEquipment.length > 0 && (
           <div className="suggestions">
             {suggestionsEquipment.map((value, index) => (
-              <>
+              <div key={index}>
                 <span
-                  key={index}
                   onClick={() => {
                     setSuggestionsEquipment([]);
                     setEquipment(value);
                     setSearch(!search);
-                    
+                    setSuggestions([])
                   }}
                 >
                   {value}
                 </span>
                 <br />
-              </>
+              </div>
             ))}
           </div>
         )}
@@ -153,12 +154,11 @@ export function Assets() {
           Setor:
         </Input>
 
-        {suggestions.length > 0 && (
+        {!search && suggestions.length > 0 && (
           <div className="suggestions">
             {suggestions.map((value, index) => (
-              <>
+              <div key={index}>
                 <span
-                  key={index}
                   onClick={() => {
                     setSuggestionsEquipment([])
                     setSector(value);
@@ -169,7 +169,7 @@ export function Assets() {
                   {value}
                 </span>
                 <br />
-              </>
+              </div>
             ))}
           </div>
         )}

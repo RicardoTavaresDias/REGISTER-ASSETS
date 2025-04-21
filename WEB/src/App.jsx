@@ -1,4 +1,4 @@
-import { Assets } from "./pages/Assets.jsx"
+import { Assets } from "./pages/Assets/index.jsx"
 
 function App() {
   return (

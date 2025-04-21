@@ -4,7 +4,7 @@ import svg from "../../assets/file.svg";
 export function UploadLoading({ file, progress, children }) {
   return (
     <div className="containerUploadLoading">
-      <div className="arquivo">
+      <div className="file">
         <img src={svg} />
         <a className="link" target="_parent">
           {file?.name}
