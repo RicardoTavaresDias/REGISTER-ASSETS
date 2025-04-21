@@ -46,6 +46,13 @@ function registerLog({ body, value }){
     if(error){
       throw new Error(error)
     }
-    console.log(data)  
+      
+    // Extraindo as palavras dos logs sector ou equipment
+    for(const i of data.split("\n")){
+      const register = i.slice(i.indexOf("]"))
+      console.log(register.split("-")[1])
+    }
   })
 */
+
+
