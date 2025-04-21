@@ -71,7 +71,7 @@ export function useAssets() {
   async function SubmitForm(e) {
     e.preventDefault();
     try {
-      const response = await app.post("/", [{ SN: sn, SETOR: sector, EQUIPAMENTO: equipment }]);
+      const response = await app.post("/", { SN: sn, SETOR: sector, EQUIPAMENTO: equipment });
       CloseForm();
       toast.success(response.data.message);
     } catch (error) {

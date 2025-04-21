@@ -4,6 +4,7 @@ import ExcelJS from "exceljs";
 import multer from "multer";
 
 import { upload } from "../config/multer.js";
+import { LogArrayEquipment } from "../utils/log-arrayEquipment.js";
 
 export class RegisterAssetsController {
   postFile(request, response) {
@@ -47,10 +48,10 @@ export class RegisterAssetsController {
       const xlsxSheetName = xlsxFile.SheetNames[0];
       const xlsxSheet = xlsxFile.Sheets[xlsxSheetName];
       const data = XLSX.utils.sheet_to_json(xlsxSheet, { header: 2 });
-
+      
       let rowIndex = data.length + 2;
 
-      for (const item of request.body) {
+      for (const item of [request.body]) {
         const row = sheet.getRow(rowIndex);
 
         row.getCell(1).value = item.EQUIPAMENTO
@@ -58,8 +59,9 @@ export class RegisterAssetsController {
         row.getCell(3).value = item.SETOR,
         rowIndex++;
       }
-
+      
       await workbook.xlsx.writeFile("teste.xlsx");
+      LogArrayEquipment({ message: request.body })
       response
         .status(200)
         .json({
@@ -67,6 +69,7 @@ export class RegisterAssetsController {
         });
     } catch (error) {
       console.log(error)
+      LogArrayEquipment({ error: error })
       response
         .status(422)
         .json({

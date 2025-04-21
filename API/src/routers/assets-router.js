@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { RegisterAssetsController } from "../controller/register-Assets-Controller.js";
+import { RegisterAssetsController } from "../controller/register-assets-controller.js";
 
 export const assetsRouter = Router()
 const registerAssetsController = new RegisterAssetsController()
