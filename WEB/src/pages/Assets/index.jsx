@@ -1,4 +1,4 @@
-import "./index.css"
+import "./styles.css";
 
 import { InputUpload } from "../../components/input-upload/index.jsx";
 import { UploadLoading } from "../../components/upload-loading/index.jsx";
@@ -15,7 +15,7 @@ import { useAssets } from "../../hooks/useAssets.js";
 
 export function Assets() {
   const {
-    file, 
+    file,
     progress,
     error,
     FileSubmit,
@@ -44,7 +44,7 @@ export function Assets() {
         Voltar
       </span>
 
-      {progress < 100 &&
+      {progress < 100 && (
         <InputUpload>
           <input
             type="file"
@@ -54,9 +54,9 @@ export function Assets() {
             disabled={file?.name ? true : progress ? true : false}
           />
         </InputUpload>
-      }
+      )}
 
-      {file?.name &&
+      {file?.name && (
         <UploadLoading file={file} progress={progress}>
           <a
             className={
@@ -66,19 +66,11 @@ export function Assets() {
             onClick={progress === 100 ? null : () => setFile({})}
           >
             {!(progress > 0 && progress < 100) ? (
-              <img
-                src={
-                  progress === 100
-                    ? error
-                      ? svgCloseError
-                      : svgCheck
-                    : svgClose
-                }
-              />
+              <img src={progress === 100 ? error && svgCheck : svgClose} />
             ) : null}
           </a>
         </UploadLoading>
-      }
+      )}
 
       {!loading ? (
         file?.name &&
@@ -134,7 +126,7 @@ export function Assets() {
                     setSuggestionsEquipment([]);
                     setEquipment(value);
                     setSearch(!search);
-                    setSuggestions([])
+                    setSuggestions([]);
                   }}
                 >
                   {value}
@@ -160,7 +152,7 @@ export function Assets() {
               <div key={index}>
                 <span
                   onClick={() => {
-                    setSuggestionsEquipment([])
+                    setSuggestionsEquipment([]);
                     setSector(value);
                     setSearch(!search);
                     setSuggestions([]);
@@ -178,8 +170,8 @@ export function Assets() {
           value={sn}
           onChange={(e) => {
             setSN(e.target.value);
-            setSuggestions([])
-            setSuggestionsEquipment([])
+            setSuggestions([]);
+            setSuggestionsEquipment([]);
           }}
         >
           SN:

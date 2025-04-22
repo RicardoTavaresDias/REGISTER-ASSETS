@@ -1,4 +1,4 @@
-import "./index.css";
+import "./styles.css";
 import svg from "../../assets/file.svg";
 
 export function UploadLoading({ file, progress, children }) {

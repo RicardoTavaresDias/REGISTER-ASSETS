@@ -13,6 +13,7 @@
   padding: 8px;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
+  color: #000000d6;
 }
 
 .inputText input:focus {
@@ -21,8 +22,6 @@
 
 .inputText label {
   margin-left: 5px;
-  font-family: 'Poppins', sans-serif;
   color: rgba(0, 0, 0, 0.567);
-  font-size: 14px;
   font-weight: 500;
 }

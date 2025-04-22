@@ -17,9 +17,8 @@
 
 .file .link {
   text-decoration: none;
+  width: 260px;
   color: rgba(0, 0, 0, 0.567);
-  font-family: 'Poppins', sans-serif;
-  font-size: 12px;
   word-break: break-word;
   overflow-wrap: break-word;
 }
@@ -41,6 +40,9 @@
   color: black;
   position: relative;
   padding: 5.5px;
+  display: flex;
+  justify-content:  center;
+  align-items: center;
 }
 
 .file .close::after {
@@ -78,14 +80,10 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
 }
 
 .containerProgress .kb {
   margin-left: 20px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
 }
 
 .containerProgress span{

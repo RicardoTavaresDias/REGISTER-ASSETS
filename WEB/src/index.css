@@ -28,6 +28,12 @@ body {
   width: 500px;
   margin: 0 auto;
   padding: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+}
+
+main {
+  padding: 45px;
 }
 
 h1, h2 {

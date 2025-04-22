@@ -33,7 +33,3 @@ button {
     outline: 0.25rem solid var(--surface-secondary);
   }
 }
-
-.btn-primary {
-  font-family: 'Poppins', sans-serif;
-}

@@ -32,6 +32,7 @@ export class RegisterAssetsController {
           message: "Upload completed successfully!",
           file: request.file,
           SN:
+            // Extrai no texto somente palavra que começa BR
             result.data.text.match(/\bBR\w*/i) &&
             result.data.text.match(/\bBR\w*/i)[0],
         });

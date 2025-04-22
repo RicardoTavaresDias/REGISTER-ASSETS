@@ -14,7 +14,6 @@
    flex-wrap: wrap;
    padding-block: 3px;
    cursor: pointer;
-   font-family: 'Poppins', sans-serif;
    font-size: 12px;
    margin-block: 5px;
  }
@@ -38,8 +37,6 @@
  #closeLink {
    text-decoration: none;
    cursor: pointer;
-   font-family: 'Poppins', sans-serif;
-   font-size: 14px;
    color: #4b4a4ad1;
    margin: 20px auto;
    margin-left: 5px;
@@ -50,6 +47,3 @@
    font-weight: 500;
  }
  
- main {
-   padding: 45px;
- }
