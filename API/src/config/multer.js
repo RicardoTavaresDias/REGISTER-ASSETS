@@ -16,7 +16,7 @@ export const upload = multer({
     },
 
     filename: (request, file, callback) => {
-      callback(null, `img.${file.originalname.split('.')[1]}`)
+      callback(null, `assets.${file.originalname.split('.')[1]}`)
     }
   }),
 
