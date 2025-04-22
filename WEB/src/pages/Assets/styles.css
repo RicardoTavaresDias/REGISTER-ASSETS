@@ -2,6 +2,7 @@
   margin: 0 auto;
   display: block;
   margin-bottom: 5px;
+  border-radius: 8px;
  }
  
  .suggestions {
