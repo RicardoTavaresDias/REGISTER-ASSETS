@@ -46,10 +46,10 @@ export class RegisterAssetsController {
   async postAssets(request, response) {
     try {
       const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.readFile("./register_assets.xlsx");
+      await workbook.xlsx.readFile("./src/files/register_assets.xlsx");
       const sheet = workbook.getWorksheet("Ativos");
 
-      const xlsxFile = XLSX.readFile("./register_assets.xlsx");
+      const xlsxFile = XLSX.readFile("./src/files/register_assets.xlsx");
       const xlsxSheetName = xlsxFile.SheetNames[0];
       const xlsxSheet = xlsxFile.Sheets[xlsxSheetName];
       const data = XLSX.utils.sheet_to_json(xlsxSheet, { header: 2 });
@@ -65,7 +65,7 @@ export class RegisterAssetsController {
         rowIndex++;
       }
       
-      await workbook.xlsx.writeFile("register_assets.xlsx");
+      await workbook.xlsx.writeFile("./src/files/register_assets.xlsx");
       LogArrayEquipment({ message: request.body })
       response
         .status(200)

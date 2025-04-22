@@ -9,7 +9,6 @@ import { Input } from "../../components/input/index.jsx";
 import svgClose from "../../assets/close.svg";
 import svgCheck from "../../assets/check.svg";
 import svgCloseError from "../../assets/closeError.svg";
-import img from "../../../../API/tmp/img.jpg";
 
 import { useAssets } from "../../hooks/useAssets.js";
 
