@@ -1,5 +1,4 @@
 .imgPreview {
-  width: 375px;
   margin: 0 auto;
   display: block;
   margin-bottom: 5px;
@@ -8,7 +7,7 @@
  .suggestions {
    background-color: #dfdfdf3b;
    border-radius: 8px;
-   width: 375px;
+   
    margin: 0 auto;
    padding-inline: 5px;
    flex-wrap: wrap;

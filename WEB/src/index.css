@@ -33,7 +33,16 @@ body {
 }
 
 main {
-  padding: 45px;
+  margin: 0 auto;
+  width: 375px;
+  padding: 15px;
+}
+
+form {
+  border: solid #dfdfdf9d;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
 }
 
 h1, h2 {
