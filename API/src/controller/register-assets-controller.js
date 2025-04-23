@@ -70,7 +70,7 @@ export class RegisterAssetsController {
       response
         .status(200)
         .json({
-          message: `S/N e Setor cadastrado com sucesso, na planilha Excel!`,
+          message: `SN: e Setor cadastrado com sucesso, na planilha Excel!`,
         });
     } catch (error) {
       console.log(error)
@@ -78,7 +78,7 @@ export class RegisterAssetsController {
       response
         .status(422)
         .json({
-          message: "Error ao inserir S/N e Setor na planilha Excel!",
+          message: "Error ao inserir SN: e Setor na planilha Excel!",
           error: error.message,
         });
     }

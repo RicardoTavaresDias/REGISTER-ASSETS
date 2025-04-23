@@ -1,9 +1,9 @@
 import { app } from "../server/app.js";
 import { useState } from "react";
-import toast from "react-hot-toast";
 
 import { useUpload } from './useUpload.js'
 import { useSuggestions } from './useSuggestions.js'
+import { useAlert } from '../context/AlertContext.jsx'
 
 export function useAsset(){
   const [sn, setSN] = useState("");
@@ -12,16 +12,18 @@ export function useAsset(){
 
   const upload = useUpload(setSN)
   const suggestions = useSuggestions(sector, equipment)
+  const{ openAlert } = useAlert()
 
   async function submitForm(e) {
     e.preventDefault();
     try {
       const response = await app.post("/", { SN: sn, SETOR: sector, EQUIPAMENTO: equipment });
       closeForm();
-      toast.success(response.data.message);
+      console.log(response)
+      openAlert({ message: response.data.message, type: 'success' })
     } catch (error) {
       console.log(error)
-      toast.error(error.response.data.message);
+      openAlert({ message: error.response.data.message, type:'danger' })
     }
   }
 

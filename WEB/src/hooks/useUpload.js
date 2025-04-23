@@ -1,13 +1,15 @@
 import { AxiosError } from "axios";
 import { app } from "../server/app.js";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { useAlert } from '../context/AlertContext.jsx'
 
 export function useUpload(setSN){
   const [file, setFile] = useState({});
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const{ openAlert } = useAlert()
 
   async function fileSubmit() {
     const formData = new FormData();
@@ -24,20 +26,21 @@ export function useUpload(setSN){
 
       setSN(response.data.SN);
       setError(false);
-      toast.success(response.data.message);
+      openAlert({ message: response.data.message, type: 'success' })
     } catch (error) {
       console.log(error);
 
       if (error instanceof AxiosError) {
-        toast.error(
-          error.response
-            ? error.response.data.message 
-            : error.message
-        );
+        return openAlert({ 
+          message: error.response
+          ? error.response.data.message 
+          : error.message,
+          type:'danger' 
+        })
       }
       resetForm();
       setError(true);
-      toast.error(error.response ? error.response.data.message : error.message);
+      openAlert({ message: error.response ? error.response.data.message : error.message, type:'danger' })
     } finally {
       setLoading(false);
     }
