@@ -16,6 +16,13 @@ import { useAsset } from "../../hooks/useAsset.js";
 export function Assets() {
   const asset = useAsset();
 
+  const uploadComplet = asset.upload.progress === 100
+  const uploadInProgress = asset.upload.progress > 0 && asset.upload.progress < 99
+
+  const buttonDisabledOnLoading = asset.upload.file?.name ? true : (asset.upload.progress ? true : false)
+  const checkStatusImg = uploadComplet ? (asset.upload.error ? svgCloseError : svgCheck) : svgClose
+  const checkStatusClassName = asset.upload.progress < 1 ? (uploadComplet ? "check" : "close") : "clean"
+
   return (
     <main>
       <span id="closeLink" onClick={() => asset.closeForm()}>
@@ -30,7 +37,7 @@ export function Assets() {
             id='birth-file'
             name="birth-file"
             onChange={(e) => asset.upload.addUPload(e.target.files[0])}
-            disabled={asset.upload.file?.name ? true : asset.upload.progress ? true : false}
+            disabled={buttonDisabledOnLoading}
           />
         </InputUpload>
       }
@@ -38,16 +45,18 @@ export function Assets() {
 
       {/* <UPLOAD> */}
       {asset.upload.file?.name && (
-        <UploadLoading file={asset.upload.file} progress={asset.upload.progress} id={asset.upload.progress === 100 ? "invisible" : "visible"}>
+        <UploadLoading 
+          file={asset.upload.file} 
+          progress={asset.upload.progress} 
+          id={uploadComplet ? "invisible" : "visible"}
+        >
           <a
-            className={
-              asset.upload.progress < 1 ? (asset.upload.progress === 100 ? "check" : "close") : "clean"
-            }
-            href="#"
-            onClick={asset.upload.progress === 100 ? null : () => asset.upload.setFile({})}
+            className={checkStatusClassName}
+            href=""
+            onClick={uploadComplet ? null : () => asset.upload.setFile({})}
           >
-            {!(asset.upload.progress > 0 && asset.upload.progress < 100) ? (
-              <img src={asset.upload.progress === 100 ? (asset.upload.error ? svgCloseError : svgCheck) : svgClose} />
+            {!(uploadInProgress) ? (
+              <img src={checkStatusImg} />
             ) : null}
           </a>
         </UploadLoading>
@@ -58,7 +67,7 @@ export function Assets() {
       {!asset.upload.loading ? (
         asset.upload.file?.name && 
         asset.upload.file.type.startsWith("image/") &&
-        (asset.upload.progress === 100 ? (
+        (uploadComplet ? (
           <img
             className="imgPreview"
             src={URL.createObjectURL(asset.upload.file)}
@@ -83,7 +92,7 @@ export function Assets() {
                 className="btn-primary"
                 type="submit"
                 onClick={asset.upload.fileSubmit}
-                disabled={asset.upload.progress > 0 && asset.upload.progress < 99}
+                disabled={uploadInProgress}  //asset.upload.progress > 0 && asset.upload.progress < 99
               >
                 Upload
               </button>
