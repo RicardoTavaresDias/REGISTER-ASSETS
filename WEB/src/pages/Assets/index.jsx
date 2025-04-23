@@ -10,10 +10,10 @@ import svgClose from "../../assets/close.svg";
 import svgCheck from "../../assets/check.svg";
 import svgCloseError from "../../assets/closeError.svg";
 
-import { useAssetForm } from "../../hooks/useAssetForm.js";
+import { useAsset } from "../../hooks/useAsset.js";
 
 export function Assets() {
-  const asset = useAssetForm();
+  const asset = useAsset();
 
   return (
     <main>
@@ -43,11 +43,12 @@ export function Assets() {
             onClick={asset.upload.progress === 100 ? null : () => asset.upload.setFile({})}
           >
             {!(asset.upload.progress > 0 && asset.upload.progress < 100) ? (
-              <img src={asset.upload.progress === 100 ? (asset.upload.error && svgCheck) : svgClose} />
+              <img src={asset.upload.progress === 100 ? (asset.upload.error ? svgCloseError : svgCheck) : svgClose} />
             ) : null}
           </a>
         </UploadLoading>
       )}
+
 
       {!asset.upload.loading ? (
         asset.upload.file?.name &&
@@ -103,10 +104,8 @@ export function Assets() {
               <div key={index}>
                 <span
                   onClick={() => {
-                    asset.suggestions.setSuggestionsEquipment([]);
                     asset.setEquipment(value);
                     asset.suggestions.setSearchEquipment(!asset.suggestions.searchEquipment);
-                    asset.suggestions.setSuggestions([]);
                   }}
                 >
                   {value}
@@ -135,10 +134,8 @@ export function Assets() {
               <div key={index}>
                 <span
                   onClick={() => {
-                    asset.suggestions.setSuggestionsEquipment([]);
                     asset.setSector(value);
                     asset.suggestions.setSearchSector(!asset.suggestions.searchSector);
-                    asset.suggestions.setSuggestions([]);
                   }}
                 >
                   {value}

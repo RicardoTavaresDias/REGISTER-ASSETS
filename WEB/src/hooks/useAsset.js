@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useUpload } from './useUpload.js'
 import { useSuggestions } from './useSuggestions.js'
 
-export function useAssetForm(){
+export function useAsset(){
   const [sn, setSN] = useState("");
   const [sector, setSector] = useState("");
   const [equipment, setEquipment] = useState("")
