@@ -111,6 +111,7 @@ export function Assets() {
           onChange={(e) => {
             asset.setEquipment(e.target.value);
           }}
+          placeholder="Informe tipo de quipamento"
         >
           Equipamento:
         </Input>
@@ -135,6 +136,7 @@ export function Assets() {
           onChange={(e) => {
             asset.setSector(e.target.value);
           }}
+          placeholder="Informe o setor"
         >
           Setor:
         </Input>
@@ -157,6 +159,7 @@ export function Assets() {
             asset.suggestions.setSuggestionsSector([]);
             asset.suggestions.setSuggestionsEquipment([]);
           }}
+          placeholder="Número de série do equipamento"
         >
           SN:
         </Input>
