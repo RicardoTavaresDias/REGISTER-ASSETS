@@ -5,6 +5,7 @@ import { UploadLoading } from "../../components/upload-loading/index.jsx";
 import { Button } from "../../components/button/index.jsx";
 import { Info } from "../../components/info/index.jsx";
 import { Input } from "../../components/input/index.jsx";
+import { Suggestions } from "../../components/suggestions/index.jsx"
 
 import svgClose from "../../assets/close.svg";
 import svgCheck from "../../assets/check.svg";
@@ -21,6 +22,7 @@ export function Assets() {
         Voltar
       </span>
 
+      {/* <INPUT FILE> */}
       {asset.upload.progress < 100 &&
         <InputUpload>
           <input
@@ -32,7 +34,9 @@ export function Assets() {
           />
         </InputUpload>
       }
+      {/* </INPUT FILE> */}
 
+      {/* <UPLOAD> */}
       {asset.upload.file?.name && (
         <UploadLoading file={asset.upload.file} progress={asset.upload.progress} id={asset.upload.progress === 100 ? "invisible" : "visible"}>
           <a
@@ -48,8 +52,9 @@ export function Assets() {
           </a>
         </UploadLoading>
       )}
+      {/* </UPLOAD> */}
 
-
+      {/* <LOADING AND IMG> */}
       {!asset.upload.loading ? (
         asset.upload.file?.name && 
         asset.upload.file.type.startsWith("image/") &&
@@ -68,6 +73,7 @@ export function Assets() {
           <h2>Carregando....</h2>
         </div>
       )}
+      {/* </LOADING AND IMG> */}
 
       {asset.upload.progress == 100 ||
         (asset.upload.file?.name && (
@@ -86,6 +92,8 @@ export function Assets() {
         ))}
 
       <form onSubmit={asset.SubmitForm}>
+
+        {/* <EQUIPMENT> */}
         <Input
           value={asset.equipment}
           onFocus={() => {
@@ -98,24 +106,18 @@ export function Assets() {
           Equipamento:
         </Input>
 
-        {!asset.suggestions.searchEquipment && asset.suggestions.suggestionsEquipment.length > 0 && (
-          <div className="suggestions">
-            {asset.suggestions.suggestionsEquipment.map((value, index) => (
-              <div key={index}>
-                <span
-                  onClick={() => {
-                    asset.setEquipment(value);
-                    asset.suggestions.setSearchEquipment(!asset.suggestions.searchEquipment);
-                  }}
-                >
-                  {value}
-                </span>
-                <br />
-              </div>
-            ))}
-          </div>
-        )}
 
+        {!asset.suggestions.searchEquipment && asset.suggestions.suggestionsEquipment.length > 0 && (
+          <Suggestions 
+            suggestions={asset.suggestions.suggestionsEquipment} 
+            setName={asset.setEquipment}
+            setSearch={asset.suggestions.setSearchEquipment}
+            Search={asset.suggestions.searchEquipment}
+          />
+        )}
+        {/* </EQUIPMENT> */}
+
+        {/* <SECTOR> */}
         <Input
           value={asset.sector}
           onFocus={() => {
@@ -128,34 +130,28 @@ export function Assets() {
           Setor:
         </Input>
 
-        {!asset.suggestions.searchSector && asset.suggestions.suggestions.length > 0 && (
-          <div className="suggestions">
-            {asset.suggestions.suggestions.map((value, index) => (
-              <div key={index}>
-                <span
-                  onClick={() => {
-                    asset.setSector(value);
-                    asset.suggestions.setSearchSector(!asset.suggestions.searchSector);
-                  }}
-                >
-                  {value}
-                </span>
-                <br />
-              </div>
-            ))}
-          </div>
+        {!asset.suggestions.searchSector && asset.suggestions.suggestionsSector.length > 0 && (
+          <Suggestions 
+            suggestions={asset.suggestions.suggestionsSector} 
+            setName={asset.setSector}
+            setSearch={asset.suggestions.setSearchSector}
+            Search={asset.suggestions.searchSector}
+            />
         )}
+        {/* </SECTOR> */}
 
+        {/* <SN> */}
         <Input
           value={asset.sn}
           onChange={(e) => {
             asset.setSN(e.target.value);
-            asset.suggestions.setSuggestions([]);
+            asset.suggestions.setSuggestionsSector([]);
             asset.suggestions.setSuggestionsEquipment([]);
           }}
         >
           SN:
         </Input>
+        {/* </SN> */}
 
         <Button>
           <button

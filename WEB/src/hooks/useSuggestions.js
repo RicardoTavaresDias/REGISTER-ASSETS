@@ -5,11 +5,11 @@ import { ArrayEquipment } from "../utils/arrayEquipment.js"
 export function useSuggestions(sector, equipment){
   const [searchSector, setSearchSector] = useState(true);
   const [searchEquipment, setSearchEquipment] = useState(true);
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsSector, setSuggestionsSector] = useState([]);
   const [suggestionsEquipment, setSuggestionsEquipment] = useState([])
 
   useEffect(() => {
-      setSuggestions(
+      setSuggestionsSector(
         sector ?
         ArraySector.filter((value) =>
           value.toLowerCase().includes(sector.toLowerCase())
@@ -31,8 +31,8 @@ export function useSuggestions(sector, equipment){
     setSearchSector,
     searchEquipment,
     setSearchEquipment,
-    suggestions,
-    setSuggestions,
+    suggestionsSector,
+    setSuggestionsSector,
     suggestionsEquipment,
     setSuggestionsEquipment
   }
