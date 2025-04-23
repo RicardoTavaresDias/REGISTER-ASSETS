@@ -18,7 +18,7 @@ export function Assets() {
 
   return (
     <main>
-      <span id="closeLink" onClick={() => asset.CloseForm()}>
+      <span id="closeLink" onClick={() => asset.closeForm()}>
         Voltar
       </span>
 
@@ -29,7 +29,7 @@ export function Assets() {
             type="file"
             id='birth-file'
             name="birth-file"
-            onChange={(e) => asset.upload.AddUPload(e.target.files[0])}
+            onChange={(e) => asset.upload.addUPload(e.target.files[0])}
             disabled={asset.upload.file?.name ? true : asset.upload.progress ? true : false}
           />
         </InputUpload>
@@ -82,7 +82,7 @@ export function Assets() {
               <button
                 className="btn-primary"
                 type="submit"
-                onClick={asset.upload.FileSubmit}
+                onClick={asset.upload.fileSubmit}
                 disabled={asset.upload.progress > 0 && asset.upload.progress < 99}
               >
                 Upload
@@ -91,7 +91,7 @@ export function Assets() {
           </>
         ))}
 
-      <form onSubmit={asset.SubmitForm}>
+      <form onSubmit={asset.submitForm}>
 
         {/* <EQUIPMENT> */}
         <Input

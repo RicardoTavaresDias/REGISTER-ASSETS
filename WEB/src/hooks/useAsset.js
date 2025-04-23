@@ -13,11 +13,11 @@ export function useAsset(){
   const upload = useUpload(setSN)
   const suggestions = useSuggestions(sector, equipment)
 
-  async function SubmitForm(e) {
+  async function submitForm(e) {
     e.preventDefault();
     try {
       const response = await app.post("/", { SN: sn, SETOR: sector, EQUIPAMENTO: equipment });
-      CloseForm();
+      closeForm();
       toast.success(response.data.message);
     } catch (error) {
       console.log(error)
@@ -25,8 +25,8 @@ export function useAsset(){
     }
   }
 
-  function CloseForm(){
-    upload.ResetForm()
+  function closeForm(){
+    upload.resetForm()
     setSN("");
     setSector("");
     setEquipment("")
@@ -39,8 +39,8 @@ export function useAsset(){
     setSector,
     equipment,
     setEquipment,
-    SubmitForm,
-    CloseForm,
+    submitForm,
+    closeForm,
     upload,
     suggestions
   }

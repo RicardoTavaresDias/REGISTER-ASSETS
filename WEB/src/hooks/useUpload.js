@@ -9,7 +9,7 @@ export function useUpload(setSN){
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  async function FileSubmit() {
+  async function fileSubmit() {
     const formData = new FormData();
     formData.append("file", file);
     setLoading(true);
@@ -35,7 +35,7 @@ export function useUpload(setSN){
             : error.message
         );
       }
-      ResetForm();
+      resetForm();
       setError(true);
       toast.error(error.response ? error.response.data.message : error.message);
     } finally {
@@ -43,14 +43,14 @@ export function useUpload(setSN){
     }
   }
 
-  function ResetForm() {
+  function resetForm() {
     setFile({});
     setProgress(0);
     setLoading(false);
   }
 
 
-  function AddUPload(value) {
+  function addUPload(value) {
     setFile(value);
     setProgress(0);
   }
@@ -64,8 +64,8 @@ export function useUpload(setSN){
     setError,
     loading,
     setLoading,
-    FileSubmit,
-    AddUPload,
-    ResetForm
+    fileSubmit,
+    addUPload,
+    resetForm
   }
 }
