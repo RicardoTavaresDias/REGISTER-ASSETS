@@ -84,8 +84,8 @@ export function Assets() {
       )}
       {/* </LOADING AND IMG> */}
 
-      {asset.upload.progress == 100 ||
-        (asset.upload.file?.name && (
+      {uploadComplet ||
+        asset.upload.file?.name && (
           <>
             <Button>
               <button
@@ -98,7 +98,7 @@ export function Assets() {
               </button>
             </Button>
           </>
-        ))}
+        )}
 
       <form onSubmit={asset.submitForm}>
 
