@@ -92,7 +92,7 @@ export function Assets() {
                 className="btn-primary"
                 type="submit"
                 onClick={asset.upload.fileSubmit}
-                disabled={uploadInProgress}  //asset.upload.progress > 0 && asset.upload.progress < 99
+                disabled={uploadInProgress}
               >
                 Upload
               </button>

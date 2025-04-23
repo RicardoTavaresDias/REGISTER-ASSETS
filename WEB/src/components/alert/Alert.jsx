@@ -14,7 +14,7 @@ export function Alert(){
   },[close])
 
   return (
-    <div className={"alert " + message.value.type} role="alert" id={show ? 'open' : 'close'}>
+    <div className={"alert " + message.value.type} id={show ? 'open' : 'close'}>
       <span>{message.value.message}</span>
       <button type="button" className='close' onClick={() => setShow(false)} >
         ✕
