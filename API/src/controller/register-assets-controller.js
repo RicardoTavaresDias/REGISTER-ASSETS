@@ -29,7 +29,8 @@ export class RegisterAssetsController {
         );
 
         return response.status(200).json({
-          message: "Upload completed successfully!",
+          // message: "Upload completed successfully!",
+          message: "Leitura realizado da imagem!",
           file: request.file,
           SN:
             // Extrai no texto somente palavra que começa BR

@@ -94,7 +94,7 @@ export function Assets() {
                 onClick={asset.upload.fileSubmit}
                 disabled={uploadInProgress}
               >
-                Upload
+                Realizar a leitura da imagem
               </button>
             </Button>
           </>
