@@ -10,74 +10,52 @@ import svgClose from "../../assets/close.svg";
 import svgCheck from "../../assets/check.svg";
 import svgCloseError from "../../assets/closeError.svg";
 
-import { useAssets } from "../../hooks/useAssets.js";
+import { useAssetForm } from "../../hooks/useAssetForm.js";
 
 export function Assets() {
-  const {
-    file,
-    progress,
-    error,
-    FileSubmit,
-    AddUPload,
-    sn,
-    sector,
-    setSN,
-    setSector,
-    SubmitForm,
-    suggestions,
-    setSuggestions,
-    search,
-    setSearch,
-    loading,
-    setFile,
-    CloseForm,
-    equipment,
-    setEquipment,
-    suggestionsEquipment,
-    setSuggestionsEquipment,
-  } = useAssets();
+  const asset = useAssetForm();
 
   return (
     <main>
-      <span id="closeLink" href="#" onClick={() => CloseForm()}>
+      <span id="closeLink" href="#" onClick={() => asset.CloseForm()}>
         Voltar
       </span>
 
-      {progress < 100 && (
+      {asset.upload.progress < 100 && (
         <InputUpload>
           <input
             type="file"
             id="birth-file"
             name="birth-file"
-            onChange={(e) => AddUPload(e.target.files[0])}
-            disabled={file?.name ? true : progress ? true : false}
+            onChange={(e) => asset.upload.AddUPload(e.target.files[0])}
+            disabled={asset.upload.file?.name ? true : asset.upload.progress ? true : false}
           />
         </InputUpload>
       )}
 
-      {file?.name && (
-        <UploadLoading file={file} progress={progress}>
+      {asset.upload.file?.name && (
+        <UploadLoading file={asset.upload.file} progress={asset.upload.progress}>
           <a
             className={
-              progress < 1 ? (progress === 100 ? "check" : "close") : "clean"
+              asset.upload.progress < 1 ? (asset.upload.progress === 100 ? "check" : "close") : "clean"
             }
             href="#"
-            onClick={progress === 100 ? null : () => setFile({})}
+            onClick={asset.upload.progress === 100 ? null : () => asset.upload.setFile({})}
           >
-            {!(progress > 0 && progress < 100) ? (
-              <img src={progress === 100 ? error && svgCheck : svgClose} />
+            {!(asset.upload.progress > 0 && asset.upload.progress < 100) ? (
+              <img src={asset.upload.progress === 100 ? (asset.upload.error && svgCheck) : svgClose} />
             ) : null}
           </a>
         </UploadLoading>
       )}
 
-      {!loading ? (
-        file?.name &&
-        file.type.startsWith("image/") &&
-        (progress === 100 ? (
+      {!asset.upload.loading ? (
+        asset.upload.file?.name &&
+        asset.upload.file.type.startsWith("image/") &&
+        (asset.upload.progress === 100 ? (
           <img
             className="imgPreview"
-            src={URL.createObjectURL(file)}
+            src={URL.createObjectURL(asset.upload.file)}
             alt="preview"
           />
         ) : null)
@@ -90,15 +68,15 @@ export function Assets() {
         </div>
       )}
 
-      {progress == 100 ||
-        (file?.name && (
+      {asset.upload.progress == 100 ||
+        (asset.upload.file?.name && (
           <>
             <Button>
               <button
                 className="btn-primary"
                 type="submit"
-                onClick={FileSubmit}
-                disabled={progress > 0 && progress < 99}
+                onClick={asset.upload.FileSubmit}
+                disabled={asset.upload.progress > 0 && asset.upload.progress < 99}
               >
                 Upload
               </button>
@@ -106,26 +84,29 @@ export function Assets() {
           </>
         ))}
 
-      <form onSubmit={SubmitForm}>
+      <form onSubmit={asset.SubmitForm}>
         <Input
-          value={equipment}
+          value={asset.equipment}
+          onFocus={() => {
+            asset.suggestions.setSearchEquipment(!asset.suggestions.searchEquipment)
+          }}
           onChange={(e) => {
-            setEquipment(e.target.value);
+            asset.setEquipment(e.target.value);
           }}
         >
           Equipamento:
         </Input>
 
-        {search && suggestionsEquipment.length > 0 && (
+        {!asset.suggestions.searchEquipment && asset.suggestions.suggestionsEquipment.length > 0 && (
           <div className="suggestions">
-            {suggestionsEquipment.map((value, index) => (
+            {asset.suggestions.suggestionsEquipment.map((value, index) => (
               <div key={index}>
                 <span
                   onClick={() => {
-                    setSuggestionsEquipment([]);
-                    setEquipment(value);
-                    setSearch(!search);
-                    setSuggestions([]);
+                    asset.suggestions.setSuggestionsEquipment([]);
+                    asset.setEquipment(value);
+                    asset.suggestions.setSearchEquipment(!asset.suggestions.searchEquipment);
+                    asset.suggestions.setSuggestions([]);
                   }}
                 >
                   {value}
@@ -137,24 +118,27 @@ export function Assets() {
         )}
 
         <Input
-          value={sector}
+          value={asset.sector}
+          onFocus={() => {
+            asset.suggestions.setSearchSector(!asset.suggestions.searchSector)
+          }}
           onChange={(e) => {
-            setSector(e.target.value);
+            asset.setSector(e.target.value);
           }}
         >
           Setor:
         </Input>
 
-        {!search && suggestions.length > 0 && (
+        {!asset.suggestions.searchSector && asset.suggestions.suggestions.length > 0 && (
           <div className="suggestions">
-            {suggestions.map((value, index) => (
+            {asset.suggestions.suggestions.map((value, index) => (
               <div key={index}>
                 <span
                   onClick={() => {
-                    setSuggestionsEquipment([]);
-                    setSector(value);
-                    setSearch(!search);
-                    setSuggestions([]);
+                    asset.suggestions.setSuggestionsEquipment([]);
+                    asset.setSector(value);
+                    asset.suggestions.setSearchSector(!asset.suggestions.searchSector);
+                    asset.suggestions.setSuggestions([]);
                   }}
                 >
                   {value}
@@ -166,11 +150,11 @@ export function Assets() {
         )}
 
         <Input
-          value={sn}
+          value={asset.sn}
           onChange={(e) => {
-            setSN(e.target.value);
-            setSuggestions([]);
-            setSuggestionsEquipment([]);
+            asset.setSN(e.target.value);
+            asset.suggestions.setSuggestions([]);
+            asset.suggestions.setSuggestionsEquipment([]);
           }}
         >
           SN:
@@ -180,9 +164,6 @@ export function Assets() {
           <button
             className="btn-primary"
             type="submit"
-            onClick={() => {
-              setSearch(!search);
-            }}
           >
             Enviar
           </button>
