@@ -37,9 +37,11 @@
  #closeLink {
    text-decoration: none;
    cursor: pointer;
-   color: #4b4a4ad1;
+   color: #DC2626;
+   font-weight: 500;
    margin: 20px auto;
    margin-left: 5px;
+   display: block;
  }
  
  #closeLink:hover {

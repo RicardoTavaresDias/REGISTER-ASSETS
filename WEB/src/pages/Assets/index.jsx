@@ -17,24 +17,24 @@ export function Assets() {
 
   return (
     <main>
-      <span id="closeLink" href="#" onClick={() => asset.CloseForm()}>
+      <span id="closeLink" onClick={() => asset.CloseForm()}>
         Voltar
       </span>
 
-      {asset.upload.progress < 100 && (
+      {asset.upload.progress < 100 &&
         <InputUpload>
           <input
             type="file"
-            id="birth-file"
+            id='birth-file'
             name="birth-file"
             onChange={(e) => asset.upload.AddUPload(e.target.files[0])}
             disabled={asset.upload.file?.name ? true : asset.upload.progress ? true : false}
           />
         </InputUpload>
-      )}
+      }
 
       {asset.upload.file?.name && (
-        <UploadLoading file={asset.upload.file} progress={asset.upload.progress}>
+        <UploadLoading file={asset.upload.file} progress={asset.upload.progress} id={asset.upload.progress === 100 ? "invisible" : "visible"}>
           <a
             className={
               asset.upload.progress < 1 ? (asset.upload.progress === 100 ? "check" : "close") : "clean"
@@ -51,7 +51,7 @@ export function Assets() {
 
 
       {!asset.upload.loading ? (
-        asset.upload.file?.name &&
+        asset.upload.file?.name && 
         asset.upload.file.type.startsWith("image/") &&
         (asset.upload.progress === 100 ? (
           <img

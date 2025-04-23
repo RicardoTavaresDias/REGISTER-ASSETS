@@ -1,11 +1,11 @@
 import './styles.css'
 
-export function InputUpload({ children }) {
+export function InputUpload({ children, id }) {
 
   return (
     <>
-      <div className='area'>
-        <div className="dropzone">
+      <div className='area' >
+        <div className="dropzone" id={id}>
           {children}
 
           <svg

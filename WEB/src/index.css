@@ -54,3 +54,21 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+#visible {
+  transition: 0.5s ease-in;
+}
+
+#invisible {
+  animation: moveBox 1.5s ease-out forwards;
+}
+
+@keyframes moveBox {
+  from {
+    
+  }
+  to {
+   
+    display: none;
+  }
+}

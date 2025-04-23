@@ -34,9 +34,8 @@ export function useUpload(setSN){
             ? error.response.data.message 
             : error.message
         );
-        ResetForm();
       }
-
+      ResetForm();
       setError(true);
       toast.error(error.response ? error.response.data.message : error.message);
     } finally {

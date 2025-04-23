@@ -1,9 +1,9 @@
 import "./styles.css";
 import svg from "../../assets/file.svg";
 
-export function UploadLoading({ file, progress, children }) {
+export function UploadLoading({ file, progress, children, id }) {
   return (
-    <div className="containerUploadLoading">
+    <div className="containerUploadLoading" id={id}>
       <div className="file">
         <img src={svg} />
         <a className="link" target="_parent">
