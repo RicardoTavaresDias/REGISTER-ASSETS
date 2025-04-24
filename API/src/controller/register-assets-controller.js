@@ -6,6 +6,8 @@ import multer from "multer";
 import { upload } from "../config/multer.js";
 import { LogArrayEquipment } from "../utils/log-arrayEquipment.js";
 
+import fs from "node:fs"
+
 export class RegisterAssetsController {
   postFile(request, response) {
     try {
@@ -84,5 +86,70 @@ export class RegisterAssetsController {
         });
     }
   }
+
+
+
+
+
+  teste(request, response){
+    fs.readFile("../web/src/utils/arrayEquipment.js", 'utf8', (error, data) => {
+      if(error){
+        console.log(error)
+      }
+
+      /*
+      SAIDA:
+      [
+        'export const ArrayEquipment = [\r',
+        '  "Computador",\r',
+        '  "Monitor",\r',
+        '  "Impressora"\r',
+        ']'
+      ]
+      */
+      
+      const match = data.split("\n");
+
+      // SAIDA: [ '  "Computador",\r', '  "Monitor",\r', '  "Impressora"\r' ]
+      match.splice(match[0], 1)
+      match.splice(match.indexOf(']'), 1)
+
+      // SAIDA: [ 'Computador', 'Monitor', 'Impressora' ]
+      const extrairName = match.map(value => `"${value.trim().replace(",", "").replaceAll(`"`, '')}",`)
+      
+      extrairName.push(`"${request.body.name}",`)
+
+      /*
+      SAIDA:
+      [
+        'export const ArrayEquipment = [',
+        'Computador',
+        'Monitor',
+        'Impressora',
+        'Ricardo', - request.body.name
+        ']'
+      ]
+  */
+      extrairName.unshift("export const ArrayEquipment = [")
+      extrairName.push("]")
+
+      console.log(extrairName.join("\n"))
+
+      fs.writeFile("../web/src/utils/arrayEquipment.js", '', (error) => {
+        if(error) console.error('Erro ao escrever log:', error); 
+      })
+
+       fs.appendFile("../web/src/utils/arrayEquipment.js", extrairName.join("\n"), (error) => {
+          if(error) console.error('Erro ao escrever log:', error); 
+      })
+
+      response.status(200).json({ message: extrairName })
+
+    })
+  }
+
+
+
+  
 }
 

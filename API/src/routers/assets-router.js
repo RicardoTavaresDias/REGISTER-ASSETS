@@ -6,3 +6,5 @@ const registerAssetsController = new RegisterAssetsController()
 
 assetsRouter.post("/", registerAssetsController.postAssets)
 assetsRouter.post("/upload", registerAssetsController.postFile)
+
+assetsRouter.post("/teste", registerAssetsController.teste)
