@@ -85,5 +85,13 @@ export class RegisterAssetsController {
         });
     }
   }
+
+  indexAssets (request, response){
+    // Mostrar conteúdo do arquivo Excel na pasta files
+  }
+
+  downloadAssets(request, response){
+    // realizar download do arquivo execel da pasta files
+  }
 }
 

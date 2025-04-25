@@ -12,6 +12,14 @@ export function LogRegisterAssets({ error, message }){
     return registerLog({ body: 'error', value: error })
   }
 
+ /*
+ **CORREÇÃO NO CODIGO**
+ SUGESTÃO: 
+ Realizar um loop para codigo a baixo para não ser repetitivo como message.EQUIPAMENTO e message.SETOR eoutros, 
+ deixar flexivel para crecimento de novos items 
+
+*/
+
   if(message.EQUIPAMENTO) {
     fs.readFile(env.EQUIPMENT, (error, data) => {
       if(error){
@@ -39,30 +47,19 @@ export function LogRegisterAssets({ error, message }){
   }
 }
 
-
-function registerLog({ body, value }){
-  let pathLog
-  switch (body) {
-    case "error":
-      pathLog = env.LOGERROR
-      break;
-    case "equipment":
-      pathLog = env.LOGEQUIPMENT
-      break;
-    case "sector":
-      pathLog = env.LOGSECTOR
-      break;
-    default:
-      pathLog = env.LOGUNITS
-      break;
-  }
-  const logPath = path.resolve(pathLog)
-    const date = `${dayjs().format("DD-MM-YYYY")}T${dayjs().format("HH:mm:ss")}`
-    const message = `[${date}] - ${value}\n`
-
-    fs.appendFile(logPath, message, (error) => {
-      if(error) console.error('Erro ao escrever log:', error);
-    })
+const LOG_PATHS = {
+  error: env.LOGERROR,
+  equipment: env.LOGEQUIPMENT,
+  sector: env.LOGSECTOR,
+  units: env.LOGUNITS
 }
 
+function registerLog({ body, value }){
+  const logPath = path.resolve(LOG_PATHS[body])
+  const date = `${dayjs().format("DD-MM-YYYY")}T${dayjs().format("HH:mm:ss")}`
+  const message = `[${date}] - ${value}\n`
 
+  fs.appendFile(logPath, message, (error) => {
+    if(error) console.error('Erro ao escrever log:', error);
+  })
+}
