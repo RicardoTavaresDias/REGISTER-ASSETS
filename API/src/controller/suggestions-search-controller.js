@@ -1,4 +1,5 @@
 import { SuggestionsServer } from "../servers/suggestions-service.js"
+import { env } from "../config/env.js"
 
 export class SuggestionsSearch {
    index(request, response) {
@@ -18,13 +19,17 @@ export class SuggestionsSearch {
       response)
       .addWriteFile()
   }
+
+  remove(request, response){
+    // Realizar remoção do conteúdo que foi cadastrado errado ou item removido no glpi.
+  }
 }
 
 function getPath(type){
   const map = {
-    equipment: "./src/utils/suggestions-data/suggestions-equipment.json",
-    sector: "./src/utils/suggestions-data/suggestions-sector.json",
-    units: "./src/utils/suggestions-data/suggestions-units.json"
+    equipment: { path: env.EQUIPMENT, type: type },
+    sector: { path: env.SECTOR, type: type },
+    units: { path: env.UNITS, type: type }
   }
 
   if (!map[type]) throw new Error("Tipo inválido: equipment, sector ou units")

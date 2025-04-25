@@ -2,6 +2,7 @@ import Tesseract from "tesseract.js";
 import XLSX from "xlsx";
 import ExcelJS from "exceljs";
 import multer from "multer";
+import { env } from "../config/env.js"
 
 import { upload } from "../config/multer.js";
 import { LogRegisterAssets } from "../servers/log-RegisterAssets.js";
@@ -47,10 +48,10 @@ export class RegisterAssetsController {
   async postAssets(request, response) {
     try {
       const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.readFile("./src/files/register_assets.xlsx");
+      await workbook.xlsx.readFile(env.XLSX);
       const sheet = workbook.getWorksheet("Ativos");
 
-      const xlsxFile = XLSX.readFile("./src/files/register_assets.xlsx");
+      const xlsxFile = XLSX.readFile(env.XLSX);
       const xlsxSheetName = xlsxFile.SheetNames[0];
       const xlsxSheet = xlsxFile.Sheets[xlsxSheetName];
       const data = XLSX.utils.sheet_to_json(xlsxSheet, { header: 2 });
@@ -66,7 +67,7 @@ export class RegisterAssetsController {
         rowIndex++;
       }
       
-      await workbook.xlsx.writeFile("./src/files/register_assets.xlsx");
+      await workbook.xlsx.writeFile(env.XLSX);
       LogRegisterAssets({ message: request.body })
       response
         .status(200)

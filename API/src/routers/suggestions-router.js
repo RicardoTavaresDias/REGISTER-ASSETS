@@ -6,7 +6,3 @@ export const suggestionsRouter = Router()
 
 suggestionsRouter.get('/:type', suggestionsSearch.index)
 suggestionsRouter.post('/:type', suggestionsSearch.insert)
-
-
-
-

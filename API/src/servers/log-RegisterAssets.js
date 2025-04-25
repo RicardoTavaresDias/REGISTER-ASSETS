@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'path'
 import dayjs from 'dayjs'
+import { env } from "../config/env.js"
 
 export function LogRegisterAssets({ error, message }){
 
@@ -12,7 +13,7 @@ export function LogRegisterAssets({ error, message }){
   }
 
   if(message.EQUIPAMENTO) {
-    fs.readFile("./src/utils/suggestions-data/suggestions-equipment.json", (error, data) => {
+    fs.readFile(env.EQUIPMENT, (error, data) => {
       if(error){
         return console.error("Error ao ler o log")
       }
@@ -25,7 +26,7 @@ export function LogRegisterAssets({ error, message }){
   }
   
   if(message.SETOR){
-    fs.readFile("./src/utils/suggestions-data/suggestions-sector.json", (error, data) => {
+    fs.readFile(env.SECTOR, (error, data) => {
       if(error){
         return console.error("Error ao ler e escrver log")
       }
@@ -40,10 +41,22 @@ export function LogRegisterAssets({ error, message }){
 
 
 function registerLog({ body, value }){
-  const logPath = path.resolve( 
-    body === 'error' ? "./src/logs/error.txt" : 
-    (body === 'equipment' ? './src/logs/log_array_equipment.txt' : "./src/logs/log_array_sector.txt") 
-  )
+  let pathLog
+  switch (body) {
+    case "error":
+      pathLog = env.LOGERROR
+      break;
+    case "equipment":
+      pathLog = env.LOGEQUIPMENT
+      break;
+    case "sector":
+      pathLog = env.LOGSECTOR
+      break;
+    default:
+      pathLog = env.LOGUNITS
+      break;
+  }
+  const logPath = path.resolve(pathLog)
     const date = `${dayjs().format("DD-MM-YYYY")}T${dayjs().format("HH:mm:ss")}`
     const message = `[${date}] - ${value}\n`
 
