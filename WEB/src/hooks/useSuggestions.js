@@ -1,6 +1,7 @@
+import { useAlert } from '../context/AlertContext.jsx'
 import { useState, useEffect } from "react";
-import { ArraySector } from "../utils/arraySector.js";
-import { ArrayEquipment } from "../utils/arrayEquipment.js"
+import { app } from "../server/app.js"
+import { AxiosError } from 'axios';
 
 export function useSuggestions(sector, equipment){
   const [searchSector, setSearchSector] = useState(true);
@@ -8,23 +9,37 @@ export function useSuggestions(sector, equipment){
   const [suggestionsSector, setSuggestionsSector] = useState([]);
   const [suggestionsEquipment, setSuggestionsEquipment] = useState([])
 
+  const{ openAlert } = useAlert()
+ 
   useEffect(() => {
-      setSuggestionsSector(
-        sector ?
-        ArraySector.filter((value) =>
-          value.toLowerCase().includes(sector.toLowerCase())
-        ) : []
-      );
+    suggestionsFetch("sector", setSuggestionsSector)
   }, [sector]);
 
   useEffect(() => {
-      setSuggestionsEquipment(
-        equipment ?
-        ArrayEquipment.filter((value) =>
-          value.toLowerCase().includes(equipment.toLowerCase())
+    suggestionsFetch("equipment", setSuggestionsEquipment)
+  }, [equipment])
+
+  const suggestionsFetch = async (typeValue, setHook) => {
+    try {
+      const response = await app.get(`/${typeValue}`)
+      const dataFetch = response.data.map(value => 
+        typeValue === 'equipment' ? 
+          value.equipment : value.sector)
+      setHook(
+        (typeValue === 'equipment' ? equipment : sector) ?
+        dataFetch.filter((value) =>
+          value.toLowerCase().includes(typeValue === 'equipment' ? 
+            equipment.toLowerCase() : sector.toLowerCase())
         ) : []
       );
-  }, [equipment])
+    } catch (error) {
+      if(error instanceof AxiosError){
+       return openAlert({ message: error, type: "danger" })
+      }
+
+      openAlert({ message: error.message, type:'danger' })
+    }
+  }
 
   return {
     searchSector,
