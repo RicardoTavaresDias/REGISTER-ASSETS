@@ -4,24 +4,22 @@ import ExcelJS from "exceljs";
 import multer from "multer";
 
 import { upload } from "../config/multer.js";
-import { LogArrayEquipment } from "../utils/log-arrayEquipment.js";
-
-import fs from "node:fs"
+import { LogRegisterAssets } from "../servers/log-RegisterAssets.js";
 
 export class RegisterAssetsController {
   postFile(request, response) {
     try {
       upload.single("file")(request, response, async (error) => {
         if (error instanceof multer.MulterError) {
-          LogArrayEquipment({ error: error.message })
+          LogRegisterAssets({ error: error.message })
           return response.status(422).json({ message: error.message });      
         } else if (error) {
-          LogArrayEquipment({ error: error.message })
+          LogRegisterAssets({ error: error.message })
           return response.status(500).json({ message: error.message });
         }
 
         if (request.errorMessage) {
-          LogArrayEquipment({ error: request.errorMessage })
+          LogRegisterAssets({ error: request.errorMessage })
           return response.status(422).json({ message: request.errorMessage }); 
         }
 
@@ -42,7 +40,7 @@ export class RegisterAssetsController {
       });
     } catch (error) {
       console.log(error);
-      LogArrayEquipment({ error: error })
+      LogRegisterAssets({ error: error })
     }
   }
 
@@ -69,7 +67,7 @@ export class RegisterAssetsController {
       }
       
       await workbook.xlsx.writeFile("./src/files/register_assets.xlsx");
-      LogArrayEquipment({ message: request.body })
+      LogRegisterAssets({ message: request.body })
       response
         .status(200)
         .json({
@@ -77,7 +75,7 @@ export class RegisterAssetsController {
         });
     } catch (error) {
       console.log(error)
-      LogArrayEquipment({ error: error })
+      LogRegisterAssets({ error: error })
       response
         .status(422)
         .json({
@@ -86,70 +84,5 @@ export class RegisterAssetsController {
         });
     }
   }
-
-
-
-
-
-  teste(request, response){
-    fs.readFile("../web/src/utils/arrayEquipment.js", 'utf8', (error, data) => {
-      if(error){
-        console.log(error)
-      }
-
-      /*
-      SAIDA:
-      [
-        'export const ArrayEquipment = [\r',
-        '  "Computador",\r',
-        '  "Monitor",\r',
-        '  "Impressora"\r',
-        ']'
-      ]
-      */
-      
-      const match = data.split("\n");
-
-      // SAIDA: [ '  "Computador",\r', '  "Monitor",\r', '  "Impressora"\r' ]
-      match.splice(match[0], 1)
-      match.splice(match.indexOf(']'), 1)
-
-      // SAIDA: [ 'Computador', 'Monitor', 'Impressora' ]
-      const extrairName = match.map(value => `"${value.trim().replace(",", "").replaceAll(`"`, '')}",`)
-      
-      extrairName.push(`"${request.body.name}",`)
-
-      /*
-      SAIDA:
-      [
-        'export const ArrayEquipment = [',
-        'Computador',
-        'Monitor',
-        'Impressora',
-        'Ricardo', - request.body.name
-        ']'
-      ]
-  */
-      extrairName.unshift("export const ArrayEquipment = [")
-      extrairName.push("]")
-
-      console.log(extrairName.join("\n"))
-
-      fs.writeFile("../web/src/utils/arrayEquipment.js", '', (error) => {
-        if(error) console.error('Erro ao escrever log:', error); 
-      })
-
-       fs.appendFile("../web/src/utils/arrayEquipment.js", extrairName.join("\n"), (error) => {
-          if(error) console.error('Erro ao escrever log:', error); 
-      })
-
-      response.status(200).json({ message: extrairName })
-
-    })
-  }
-
-
-
-  
 }
 
