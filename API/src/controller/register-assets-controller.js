@@ -2,6 +2,7 @@ import Tesseract from "tesseract.js";
 import XLSX from "xlsx";
 import ExcelJS from "exceljs";
 import multer from "multer";
+import path from "node:path";
 import { env } from "../config/env.js"
 
 import { upload } from "../config/multer.js";
@@ -87,11 +88,38 @@ export class RegisterAssetsController {
   }
 
   indexAssets (request, response){
-    // Mostrar conteúdo do arquivo Excel na pasta files
+    try {
+      const xlsxFile = XLSX.readFile(env.XLSX);
+      const sheet = xlsxFile.Sheets["Ativos"];
+      const data = XLSX.utils.sheet_to_json(sheet, { header: 2 })
+      response.status(200).json(data)
+    } catch(error){
+      console.log(error)
+      LogRegisterAssets({ error: error })
+      response.status(422).json({
+          message: "Error ao acessar/ler o arquivo .xlsx",
+          error: error.message,
+      });
+    }
   }
 
   downloadAssets(request, response){
-    // realizar download do arquivo execel da pasta files
+    try {
+      const pathDonload = path.resolve(env.XLSX)
+      response.download(pathDonload, (error) => {
+        if(error){
+          console.log("Erro no download:", error)
+          LogRegisterAssets({ error: error })
+          return response.status(404).json({ message: "File not found" })
+        }
+      })
+    } catch(error){
+      console.log(error)
+      LogRegisterAssets({ error: error })
+      response.status(422).json({
+          message: "Error ao acessar/ler o arquivo .xlsx",
+          error: error.message,
+      });
+    }
   }
 }
-

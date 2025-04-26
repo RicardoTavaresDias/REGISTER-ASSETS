@@ -4,5 +4,8 @@ import { RegisterAssetsController } from "../controller/register-assets-controll
 export const assetsRouter = Router()
 const registerAssetsController = new RegisterAssetsController()
 
-assetsRouter.post("/", registerAssetsController.postAssets)
 assetsRouter.post("/upload", registerAssetsController.postFile)
+
+assetsRouter.post("/", registerAssetsController.postAssets)
+assetsRouter.get("/assets", registerAssetsController.indexAssets)
+assetsRouter.get("/download", registerAssetsController.downloadAssets)
