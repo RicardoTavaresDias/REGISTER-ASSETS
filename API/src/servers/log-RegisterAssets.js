@@ -12,40 +12,46 @@ export function LogRegisterAssets({ error, message }){
     return registerLog({ body: 'error', value: error })
   }
 
- /*
- **CORREÇÃO NO CODIGO**
- SUGESTÃO: 
- Realizar um loop para codigo a baixo para não ser repetitivo como message.EQUIPAMENTO e message.SETOR eoutros, 
- deixar flexivel para crecimento de novos items 
-
-*/
-
-  if(message.EQUIPAMENTO) {
-    fs.readFile(env.EQUIPMENT, (error, data) => {
-      if(error){
-        return console.error("Error ao ler o log")
-      }
-      const result = JSON.parse(data)
-      const filter = result.filter(value => notAccents(value.equipment).includes(notAccents(message.EQUIPAMENTO))) 
-      if(!filter.length){
-        registerLog({ body: "equipment", value: message.EQUIPAMENTO })
-      }
-    })
+  const sources = {
+    EQUIPAMENTO: {
+      envPath: env.EQUIPMENT,
+      itemKey: "equipment",
+      messageKey: "EQUIPAMENTO",
+    },
+    SETOR: {
+      envPath: env.SECTOR,
+      itemKey: "sector",
+      messageKey: "SETOR",
+    },
+    // SN: {
+    //   envPath: env.UNITS,
+    //   itemKey: "units",
+    //   messageKey: "SN",
+    // }
   }
-  
-  if(message.SETOR){
-    fs.readFile(env.SECTOR, (error, data) => {
-      if(error){
-        return console.error("Error ao ler e escrver log")
-      }
-      const result = JSON.parse(data)
-      const filter = result.filter(value => notAccents(value.sector).includes(notAccents(message.SETOR))) 
-      if(!filter.length){
-        registerLog({ body: "sector", value: message.SETOR })
-      }
-    })
+
+  // Verifica o campo e ve se tem no JSON suggestions
+  for(const key in sources){
+    if(sources[key]){
+      fs.readFile(sources[key].envPath, (error, data) => {
+        if(error){
+          return console.error("Error ao ler o log")
+        }
+        const result = JSON.parse(data)
+        const filter = result.filter(value => 
+          notAccents(value[sources[key].itemKey])
+            .includes(notAccents(message[sources[key].messageKey]))) 
+        if(!filter.length){
+          registerLog({ 
+            body: sources[key].itemKey, 
+            value: message[sources[key].messageKey] 
+          })
+        }
+      })
+    }
   }
 }
+
 
 const LOG_PATHS = {
   error: env.LOGERROR,
@@ -54,6 +60,7 @@ const LOG_PATHS = {
   units: env.LOGUNITS
 }
 
+// Cria arquivo log em .txt
 function registerLog({ body, value }){
   const logPath = path.resolve(LOG_PATHS[body])
   const date = `${dayjs().format("DD-MM-YYYY")}T${dayjs().format("HH:mm:ss")}`
