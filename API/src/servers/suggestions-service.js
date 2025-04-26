@@ -25,7 +25,8 @@ export class SuggestionsServer {
       }
 
       const suggestionsSchema = z.object({
-        name: z.string().min(1, { message: "Este campo é obrigatório. Informe um valor." }),
+        id: z.string().min(1, { message: "Este campo é obrigatório. Informe id novo do GLPI." }),
+        name: z.string().min(1, { message: "Este campo é obrigatório. Informe setor novo do GLPI." })
       })
       const suggestionsArraySchema = z.array(suggestionsSchema)
       const result = suggestionsArraySchema.safeParse(this.request.body)
@@ -39,7 +40,7 @@ export class SuggestionsServer {
       const dataJson = JSON.parse(data)
 
       for(const items of result.data){
-        dataJson.push({ [this.objectPath.type]: items.name })
+        dataJson.push({ id: items.id, [this.objectPath.type]: items.name })
       }
     
       fs.writeFile(this.objectPath.path, JSON.stringify(dataJson, null, 1), (error) => {
