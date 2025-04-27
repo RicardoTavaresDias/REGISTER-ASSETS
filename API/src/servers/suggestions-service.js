@@ -1,5 +1,6 @@
 import { z } from "zod"
 import fs from "node:fs"
+import { pagination } from "../utils/pagination.js"
 
 export class SuggestionsServer {
   constructor (objectPath, request, response){
@@ -26,8 +27,12 @@ export class SuggestionsServer {
   
 
   async readAll(){
+    const page = this.request.query.page
+    const limit = this.request.query.limit
+
     const data = await this._Read()
-    return this.response.status(200).json(JSON.parse(data))
+    const { results, totalPage } = pagination(page, limit, JSON.parse(data))
+    return this.response.status(200).json({ totalPage: totalPage, results })
   }
 
 
