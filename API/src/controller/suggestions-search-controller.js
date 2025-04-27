@@ -21,7 +21,12 @@ export class SuggestionsSearch {
   }
 
   remove(request, response){
-    // Realizar remoção do conteúdo que foi cadastrado errado ou item removido no glpi.
+    const { type } = request.params
+    new SuggestionsServer(
+      getPath(type), 
+      request, 
+      response)
+      .removeWriteFile()
   }
 }
 
@@ -34,6 +39,5 @@ function getPath(type){
 
   if (!map[type]) throw new Error("Tipo inválido: equipment, sector ou units")
     
-  return map[type] 
-    
+  return map[type]   
 }

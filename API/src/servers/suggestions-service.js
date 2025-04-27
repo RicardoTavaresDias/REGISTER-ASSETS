@@ -8,54 +8,98 @@ export class SuggestionsServer {
     this.response = response
   }
 
-  readAll(){
-    fs.readFile(this.objectPath.path, (error, data) => {
-      if(error){
-        return this.response.status(400).json({ message: error.message })
-      }
-      return this.response.status(200).json(JSON.parse(data))
-    })
+  async _Read(){
+    try {
+      return await fs.promises.readFile(this.objectPath.path)
+    }catch(error){
+      return this.response.status(400).json({ message: error.message })
+    }
   }
 
-  addWriteFile(){
-    fs.readFile(this.objectPath.path, (error, data) => {
-      if(error){
-        this.response.status(400).json({ message: error.message })
-        return
-      }
-
-      const suggestionsSchema = z.object({
-        id: z.string().min(1, { message: "Este campo é obrigatório. Informe id novo do GLPI." }),
-        name: z.string().min(1, { message: "Este campo é obrigatório. Informe setor novo do GLPI." })
-      })
-      const suggestionsArraySchema = z.array(suggestionsSchema)
-      const result = suggestionsArraySchema.safeParse(this.request.body)
-
-      if(!result.success){
-        return this.response.status(400).json({
-          error: result.error.issues[0].message
-        })
-      }
-      
-      const dataJson = JSON.parse(data)
-
-      for(const items of result.data){
-        dataJson.push({ id: items.id, [this.objectPath.type]: items.name })
-      }
-    
-      fs.writeFile(this.objectPath.path, JSON.stringify(dataJson, null, 1), (error) => {
-        if(error){
-          return this.response.status(400).json({ message: `Erro ao adicionar item no ${this.objectPath.type}!:`, error })
-        } 
-      })
+  async _Write(data){
+    try {
+      return fs.promises.writeFile(this.objectPath.path, JSON.stringify(data, null, 1))
+    }catch(error){
+      return this.response.status(400).json({ message: error.message })
+    }
+  }
   
-      return this.response.status(201).json({ message: `Item adicionado com sucesso no ${this.objectPath.type}` })
-    })
+
+  async readAll(){
+    const data = await this._Read()
+    return this.response.status(200).json(JSON.parse(data))
   }
 
-  removeWriteFile(){
-    // Realizar remoção do conteúdo que foi cadastrado errado ou item removido no glpi.
+
+  async addWriteFile(){
+    const suggestionsSchema = z.object({
+      id: z.string().optional(),
+      name: z.string().min(1, { message: "Este campo é obrigatório. Informe setor novo do GLPI." })
+    }).superRefine((value, contexo) => {
+      if(this.request.params.type === "sector"){
+        if(!value.id){
+          contexo.addIssue({
+            path: ['id'],
+            message: "Este campo é obrigatório. Informe id novo do GLPI."
+          })
+        }
+      }      
+    })
+
+    const suggestionsArraySchema = z.array(suggestionsSchema)
+    const result = suggestionsArraySchema.safeParse(this.request.body)
+
+    if(!result.success){
+      return this.response.status(400).json({
+        error: result.error.issues[0].message
+      })
+    }
+
+    const data = await this._Read()
+
+    const dataJson = JSON.parse(data)
+
+    for(const items of result.data){
+      this.request.params.type !== "sector" ?
+        dataJson.push({ [this.objectPath.type]: items.name }) :
+          dataJson.push({ id: items.id, [this.objectPath.type]: items.name })
+    }
+
+    await this._Write(dataJson)
+    return this.response.status(201).json({ message: `Item adicionado com sucesso no ${this.objectPath.type}` })
+  }
+
+
+  async removeWriteFile(){
+    const suggestionsSchema = z.object({
+      name: z.string().min(1, { message: "Adiciona name na 'params query' para remoção do item da lista."})
+    })
+
+    const result = suggestionsSchema.safeParse(this.request.query)
+
+    if(!result.success){
+      return this.response.status(400).json({
+        error: result.error.issues[0].message
+      })
+    }
+
+    const data = await this._Read()
+    const dataJson = JSON.parse(data)
+
+    // Comparação ignorando acentos - exemplos: "Coração", "coracao" = true - são iguais
+    const notAccents = word => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+   
+    const remove = dataJson.filter(value => 
+      !(notAccents(value[this.objectPath.type]) === notAccents(result.data.name))
+    )
+
+    if(remove.length === dataJson.length){
+      return this.response.status(400).json({ message: "Item não encontrado na base."})
+    }
+    console.log(remove)
+    await this._Write(remove)
+    return this.response.status(201).json({ 
+      message: `Item removido com sucesso no ${this.objectPath.type} - ${this.request.query.name}` 
+    })
   }
 }
-
-
