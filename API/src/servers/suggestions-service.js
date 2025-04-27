@@ -75,7 +75,8 @@ export class SuggestionsServer {
       name: z.string().min(1, { message: "Adiciona name na 'params query' para remoção do item da lista."})
     })
 
-    const result = suggestionsSchema.safeParse(this.request.query)
+    const suggestionsArraySchema = z.array(suggestionsSchema)
+    const result = suggestionsArraySchema.safeParse(this.request.body)
 
     if(!result.success){
       return this.response.status(400).json({
@@ -88,18 +89,19 @@ export class SuggestionsServer {
 
     // Comparação ignorando acentos - exemplos: "Coração", "coracao" = true - são iguais
     const notAccents = word => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-   
+
+    const namesBody = result.data.map(value => value.name)
     const remove = dataJson.filter(value => 
-      !(notAccents(value[this.objectPath.type]) === notAccents(result.data.name))
+      !notAccents(String(namesBody)).includes(notAccents(value[this.request.params.type]))
     )
 
     if(remove.length === dataJson.length){
       return this.response.status(400).json({ message: "Item não encontrado na base."})
     }
-    console.log(remove)
+   
     await this._Write(remove)
     return this.response.status(201).json({ 
-      message: `Item removido com sucesso no ${this.objectPath.type} - ${this.request.query.name}` 
+      message: "Item removido com sucesso."
     })
   }
 }
