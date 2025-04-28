@@ -5,7 +5,7 @@ import { userAcess } from "../middlewares/userAcess.js"
 const suggestionsSearch = new SuggestionsSearch()
 export const suggestionsRouter = Router()
 
-suggestionsRouter.use(userAcess(["adm"]))
+suggestionsRouter.use(userAcess(["admin"]))
 suggestionsRouter.get('/:type', suggestionsSearch.index)
 suggestionsRouter.post('/:type', suggestionsSearch.insert)
 suggestionsRouter.delete('/:type', suggestionsSearch.remove)

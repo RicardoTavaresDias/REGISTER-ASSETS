@@ -1,7 +1,7 @@
 export function userAcess(role){
   return (request, response, next) => {
     // exemplo para liberação.
-    request.Headers = { role: "adm" }
+    request.Headers = { role: "admin" }
 
     if(!request.Headers){
       return response.status(401).json({ message: 'Não autorizado' })
