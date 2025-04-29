@@ -29,22 +29,6 @@ export function Paths(element){
     }
   }
 
-/*
-  {
-    path: 'env.EQUIPMENT',
-    value: { typeController: 'suggestions', type: 'equipment' }
-  }
-*/
-
-/**
- * @example
- * @return
- * {
- *  path: 'env.EQUIPMENT',
-  * value: { typeController: 'suggestions', value: 'equipment' }
-  }
- */
-
   if (!map[element.typeController][element.type]) throw new Error("Tipo inválido: equipment, sector ou units")
 
   // Removendo typeController
