@@ -19,18 +19,18 @@ export class SuggestionsSearch {
 
   async insert(request, response){
     const suggestionsSchema = z.object({
-          id: z.string().optional(),
-          name: z.string().min(1, { message: "Este campo é obrigatório. Informe setor novo do GLPI." })
-        }).superRefine((value, contexo) => {
-          if(request.params.type === "sector"){
-            if(!value.id){
-              contexo.addIssue({
-                path: ['id'],
-                message: "Este campo é obrigatório. Informe id novo do GLPI."
-              })
-            }
-          }      
-        })
+      id: z.optional(z.string().min(1, { message: "Este campo é obrigatório. Informe id novo do GLPI." })),
+      name: z.string().min(1, { message: "Este campo é obrigatório. Informe setor novo do GLPI." })
+    }).superRefine((value, contexo) => { 
+      if(request.params.type === "sector"){
+        if(!value.id){
+          contexo.addIssue({
+            path: ['id'],
+            message: "Informe id do setor."
+          })
+        }
+      }
+    })
 
     const suggestionsArraySchema = z.array(suggestionsSchema)
     const resultSchema = suggestionsArraySchema.safeParse(request.body)
