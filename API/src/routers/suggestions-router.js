@@ -8,5 +8,5 @@ export const suggestionsRouter = Router()
 
 suggestionsRouter.use(authentication)
 suggestionsRouter.get('/:type', userAcess(["admin"]), suggestionsSearch.index)
-suggestionsRouter.post('/:type', userAcess(["admin"]), suggestionsSearch.insert)
+suggestionsRouter.post('/:type', userAcess(["admin"]), suggestionsSearch.create)
 suggestionsRouter.delete('/:type', userAcess(["admin"]), suggestionsSearch.remove)

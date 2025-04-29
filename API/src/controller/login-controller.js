@@ -1,8 +1,8 @@
-import { CrudFile } from "../servers/CrudFile.js"
+import { CrudFile } from "../services/CrudFile.js"
 import { env } from "../config/env.js"
 
 export class LoginController {
-  async insert(request, response){
+  async create(request, response){
     const data = await new CrudFile({ path: env.LOGIN })._Read()
     const dataJson = JSON.parse(data)
 

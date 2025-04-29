@@ -6,7 +6,7 @@ import path from "node:path";
 import { env } from "../config/env.js"
 
 import { upload } from "../config/multer.js";
-import { LogRegisterAssets } from "../servers/log-RegisterAssets.js";
+import { LogRegisterAssets } from "../services/log-RegisterAssets.js";
 
 export class RegisterAssetsController {
   postFile(request, response) {

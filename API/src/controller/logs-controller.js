@@ -1,4 +1,4 @@
-import { CrudFile } from "../servers/CrudFile.js"
+import { CrudFile } from "../services/CrudFile.js"
 import { Paths } from "../utils/Paths.js"
 
 export class LogsController {

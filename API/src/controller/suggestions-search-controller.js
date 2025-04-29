@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { CrudFile } from "../servers/CrudFile.js"
+import { CrudFile } from "../services/CrudFile.js"
 import { Paths } from "../utils/Paths.js"
 
 export class SuggestionsSearch {
@@ -17,7 +17,7 @@ export class SuggestionsSearch {
     return response.status(200).json( dataRead )
   }
 
-  async insert(request, response){
+  async create(request, response){
     const suggestionsSchema = z.object({
       id: z.optional(z.string().min(1, { message: "Este campo é obrigatório. Informe id novo do GLPI." })),
       name: z.string().min(1, { message: "Este campo é obrigatório. Informe setor novo do GLPI." })
