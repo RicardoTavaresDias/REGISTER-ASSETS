@@ -7,12 +7,10 @@ export class SuggestionsSearch {
     const page = request.query.page
     const limitPage = request.query.limit
 
-    const dataRead = await new CrudFile(
-      Paths(
-        { typeController: "suggestions", type: request.params.type }
-      ))
-        .readFile(page, limitPage)
-    
+    const path = Paths({ typeController: "suggestions", type: request.params.type })
+    const crudfile = new CrudFile(path)
+    const dataRead = await crudfile.readFile(page, limitPage)
+
     if(!dataRead){
       return response.status(400).json({ message: "Dados não encontrado." })
     }
@@ -43,9 +41,9 @@ export class SuggestionsSearch {
       })
     }
 
-    const dataWrite = await new CrudFile(
-      Paths({ typeController: "suggestions", type: request.params.type }))
-      .addWriteFile(resultSchema)
+    const path = Paths({ typeController: "suggestions", type: request.params.type })
+    const crudfile = new CrudFile(path)
+    const dataWrite = await crudfile.addWriteFile(resultSchema)
 
     response.status(201).json(dataWrite)
   }
@@ -64,9 +62,9 @@ export class SuggestionsSearch {
       })
     }
 
-    const dataRemove = await new CrudFile(
-      Paths({ typeController: "suggestions", type: request.params.type }))
-      .removeWriteFile(resultSchema)
+    const path = Paths({ typeController: "suggestions", type: request.params.type })
+    const crudfile = new CrudFile(path)
+    const dataRemove = await crudfile.removeWriteFile(resultSchema)
 
     response.status(201).json(dataRemove)
   }
