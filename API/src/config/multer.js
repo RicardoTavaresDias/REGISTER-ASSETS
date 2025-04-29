@@ -1,6 +1,18 @@
 import multer from "multer"
 import fs from "node:fs"
 
+/**
+ * Middleware de upload de arquivos usando Multer.
+ *
+ * - Salva os arquivos na pasta `tmp/`, criando-a se necessário.
+ * - Define o nome do arquivo como `assets.<extensão original>`.
+ * - Aceita apenas arquivos `.jpg`, `.jpeg` e `.png`.
+ * - Limita o tamanho do arquivo para 100MB.
+ *
+ * @constant
+ * @type {import('multer').Multer}
+ */
+
 export const upload = multer({
 
   storage: multer.diskStorage({

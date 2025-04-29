@@ -3,6 +3,22 @@ import path from 'path'
 import dayjs from 'dayjs'
 import { env } from "../config/env.js"
 
+/**
+ * Registra um log de erro ou de item não encontrado nas sugestões.
+ *
+ * @param {Object} params Parâmetros da função.
+ * @param {string} [params.error] Mensagem de erro a ser registrada.
+ * @param {Object} [params.message] Objeto com os nomes dos elementos para verificação.
+ * @param {string} [params.message.EQUIPAMENTO] Nome do equipamento (opcional).
+ * @param {string} [params.message.SETOR] Nome do setor (opcional).
+ */
+
+/**
+ * @param {object} params Parâmetros da função.
+ * @param {'error' | 'equipment' | 'sector'} params.body Tipo do log (define qual arquivo será usado).
+ * @param {string} params.value Conteúdo a ser escrito no log.
+ */
+
 export function LogRegisterAssets({ error, message }){
 
   // Comparação ignorando acentos - exemplos: "Coração", "coracao" = true - são iguais

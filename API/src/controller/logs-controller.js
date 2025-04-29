@@ -6,7 +6,7 @@ export class LogsController {
   async index(request, response){
     const { path }  = Paths({ typeController: "logs", type: request.params.type })
     const data = await fs.promises.readFile(path)
-    if(data.toString() === "") return response.status(400).json({ message: "Não tem log." })
+    if(data.toString() === "") return response.status(400).json({ message: "Sem registros disponíveis no log." })
     response.status(200).json(data.toString().split('\n'))
   }
 

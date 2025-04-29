@@ -1,6 +1,21 @@
 import fs from "node:fs"
 import { pagination } from "../utils/pagination.js"
 
+/**
+ * Abstrair operações de leitura, escrita e remoção de dados em arquivos JSON locais.
+ * 
+ * @typedef {Object} objectPath
+ * @property { 'suggestions' | 'logs' } path caminho do arquivo
+ * @property { 'equipment' | 'sector' | 'units' } [type] Tipo do elemento. Só presente em suggestions.
+ */ 
+
+/**
+ * @typedef {Object} RequestBody
+ * @property { string } name schema request body
+ * @property { number } [id] schema request body
+ */
+
+
 export class CrudFile {
   constructor (objectPath){
     this.objectPath = objectPath
@@ -8,7 +23,7 @@ export class CrudFile {
 
   async _Read(){
     try {
-      return await fs.promises.readFile(this.objectPath.path)
+      return await fs.promises.readFile(this.objectPath.path, "utf-8")
     }catch(error){
       throw new Error( error.message )
       
