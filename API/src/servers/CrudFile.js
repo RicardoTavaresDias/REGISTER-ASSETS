@@ -32,7 +32,7 @@ export class CrudFile {
 
   async _Write(data){
     try {
-      return fs.promises.writeFile(this.objectPath.path, JSON.stringify(data, null, 1))
+      return fs.promises.writeFile(this.objectPath.path, data)
     }catch(error){
       throw new Error( error.message )
     }
@@ -62,8 +62,8 @@ export class CrudFile {
         dataJson.push({ [this.objectPath.type]: items.name }) :
           dataJson.push({ id: items.id, [this.objectPath.type]: items.name })
     }
-
-    await this._Write(dataJson)
+    
+    await this._Write(JSON.stringify(dataJson, null, 1))
     return { message: `Item adicionado com sucesso no ${this.objectPath.type}` }
   }
 
@@ -83,8 +83,8 @@ export class CrudFile {
     if(remove.length === dataJson.length){
       throw new Error("Item não encontrado na base.")
     }
-   
-    await this._Write(remove)
+    
+    await this._Write(JSON.stringify(remove, null, 1))
     return { message: "Item removido com sucesso." }
   }
 }

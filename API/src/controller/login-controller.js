@@ -1,9 +1,9 @@
-import fs from "node:fs"
+import { CrudFile } from "../servers/CrudFile.js"
 import { env } from "../config/env.js"
 
 export class LoginController {
   async insert(request, response){
-    const data = await fs.promises.readFile(env.LOGIN)
+    const data = await new CrudFile({ path: env.LOGIN })._Read()
     const dataJson = JSON.parse(data)
 
     const [{ user, passaword, role }] = dataJson
