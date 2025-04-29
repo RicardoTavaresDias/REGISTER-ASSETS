@@ -4,7 +4,14 @@ import { Paths } from "../utils/Paths.js"
 
 export class SuggestionsSearch {
    async index(request, response) {  
-    const dataRead = await new CrudFile(Paths({ typeController: "suggestions", type: request.params.type }), request, response).readFile()
+    const page = request.query.page
+    const limitPage = request.query.limit
+
+    const dataRead = await new CrudFile(
+      Paths(
+        { typeController: "suggestions", type: request.params.type }
+      ))
+        .readFile(page, limitPage)
     
     if(!dataRead){
       return response.status(400).json({ message: "Dados não encontrado." })
@@ -28,15 +35,17 @@ export class SuggestionsSearch {
         })
 
     const suggestionsArraySchema = z.array(suggestionsSchema)
-    const result = suggestionsArraySchema.safeParse(request.body)
+    const resultSchema = suggestionsArraySchema.safeParse(request.body)
 
-    if(!result.success){
+    if(!resultSchema.success){
       return response.status(400).json({
-        error: result.error.issues[0].message
+        error: resultSchema.error.issues[0].message
       })
     }
 
-    const dataWrite = await new CrudFile(Paths({ typeController: "suggestions", type: request.params.type }), request, response).addWriteFile(result)
+    const dataWrite = await new CrudFile(
+      Paths({ typeController: "suggestions", type: request.params.type }))
+      .addWriteFile(resultSchema)
 
     response.status(201).json(dataWrite)
   }
@@ -47,15 +56,17 @@ export class SuggestionsSearch {
     })
 
     const suggestionsArraySchema = z.array(suggestionsSchema)
-    const result = suggestionsArraySchema.safeParse(request.body)
+    const resultSchema = suggestionsArraySchema.safeParse(request.body)
 
-    if(!result.success){
+    if(!resultSchema.success){
       return response.status(400).json({
-        error: result.error.issues[0].message
+        error: resultSchema.error.issues[0].message
       })
     }
 
-    const dataRemove = await new CrudFile(Paths({ typeController: "suggestions", type: request.params.type }), request, response).removeWriteFile(result)
+    const dataRemove = await new CrudFile(
+      Paths({ typeController: "suggestions", type: request.params.type }))
+      .removeWriteFile(resultSchema)
 
     response.status(201).json(dataRemove)
   }

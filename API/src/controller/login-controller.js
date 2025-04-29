@@ -1,8 +1,9 @@
 import fs from "node:fs"
+import { env } from "../config/env.js"
 
 export class LoginController {
   async insert(request, response){
-    const data = await fs.promises.readFile("./src/utils/suggestions-data/login.json")
+    const data = await fs.promises.readFile(env.LOGIN)
     const dataJson = JSON.parse(data)
 
     const [{ user, passaword, role }] = dataJson

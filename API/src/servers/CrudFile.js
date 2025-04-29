@@ -2,17 +2,16 @@ import fs from "node:fs"
 import { pagination } from "../utils/pagination.js"
 
 export class CrudFile {
-  constructor (objectPath, request, response){
+  constructor (objectPath){
     this.objectPath = objectPath
-    this.request = request
-    this.response = response
   }
 
   async _Read(){
     try {
       return await fs.promises.readFile(this.objectPath.path)
     }catch(error){
-      return this.response.status(400).json({ message: error.message })
+      throw new Error( error.message )
+      
     }
   }
 
@@ -20,17 +19,14 @@ export class CrudFile {
     try {
       return fs.promises.writeFile(this.objectPath.path, JSON.stringify(data, null, 1))
     }catch(error){
-      return this.response.status(400).json({ message: error.message })
+      throw new Error( error.message )
     }
   }
   
 
-  async readFile(){
-    const page = this.request.query.page
-    const limit = this.request.query.limit
-
+  async readFile(page, limitPage){
     const data = await this._Read()
-    const { results, totalPage } = pagination(page, limit, JSON.parse(data))
+    const { results, totalPage } = pagination(page, limitPage, JSON.parse(data))
     return { totalPage: totalPage, results }
   }
 
@@ -43,11 +39,11 @@ export class CrudFile {
     const existsDataJson = requestBody.data.filter(value => mapDataJson.includes(value.name))
     
     if(existsDataJson.length){
-      return this.response.status(400). json({ message: "Item já foi adicionado na lista." })
+      throw new Error("Item já foi adicionado na lista.")
     }
 
     for(const items of requestBody.data){
-      this.request.params.type !== "sector" ?
+      this.objectPath.type !== "sector" ?
         dataJson.push({ [this.objectPath.type]: items.name }) :
           dataJson.push({ id: items.id, [this.objectPath.type]: items.name })
     }
@@ -66,11 +62,11 @@ export class CrudFile {
 
     const namesBody = RequestBody.data.map(value => value.name)
     const remove = dataJson.filter(value => 
-      !notAccents(String(namesBody)).includes(notAccents(value[this.request.params.type]))
+      !notAccents(String(namesBody)).includes(notAccents(value[this.objectPath.type]))
     )
     
     if(remove.length === dataJson.length){
-      return this.response.status(400).json({ message: "Item não encontrado na base."})
+      throw new Error("Item não encontrado na base.")
     }
    
     await this._Write(remove)

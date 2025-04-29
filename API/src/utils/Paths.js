@@ -1,5 +1,17 @@
 import { env } from "../config/env.js"
 
+/**
+ * @typedef {Object} Element
+ * @property {'suggestions' | 'logs'} typeController - Tipo da função que está chamando: 'suggestions' ou 'logs'.
+ * @property {'equipment' | 'sector' | 'units' | 'error'} type - Tipo do elemento.
+ */
+
+/**
+ * Retorna o caminho e tipo dependendo do tipoController.
+ * @param {Element} element - Objeto contendo informações de tipo e controle.
+ * @returns {{ path: string, type?: string }} - Objeto com o caminho da API e, opcionalmente, o tipo.
+ */
+
 export function Paths(element){
   const map = {
     suggestions: {
@@ -17,7 +29,7 @@ export function Paths(element){
 
 /*
   {
-    path: './src/utils/suggestions-data/suggestions-equipment.json',
+    path: 'env.EQUIPMENT',
     value: { typeController: 'suggestions', type: 'equipment' }
   }
 */
