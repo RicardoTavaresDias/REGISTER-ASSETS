@@ -1,5 +1,4 @@
 import XLSX from "xlsx";
-import ExcelJS from "exceljs";
 
 export class CsvReader {
   async _ReadCsv(){
@@ -11,17 +10,17 @@ export class CsvReader {
     const dataFormat = data.map((value) => {
       if(value.Equipamento){
       return { 
-              setor: value.Setor ? value.Setor : " ", 
-              equipamento: value.Equipamento ? value.Equipamento : " ", 
-              serie: value.Serie ? value.Serie : " "
+              setor: value.Setor?.trim() || "", 
+              equipamento: value.Equipamento?.trim() || "", 
+              serie: value.Serie?.trim() || ""
             }
       }
-      return { 
-        setor: "", 
-        equipamento: "", 
-        serie: ""
+      return {
+        setor: " ", 
+        equipamento: " ", 
+        serie: " "
       }
-  })
+  }).filter(value => value.setor !== " " || value.equipamento !== " " || value.serie !== " ")
 
     return dataFormat 
   }
