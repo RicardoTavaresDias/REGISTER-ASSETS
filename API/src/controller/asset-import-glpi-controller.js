@@ -55,9 +55,14 @@
   │
   ├── routers/index.js                       # Onde você adiciona as rotas
 */
+import { CsvReader } from "../services/Csv-reader.js"
+import { manualReviewLogger } from "../services/manual-review-logger.js"
 
 export class AssetsImportGlpiController {
-  create(request, response){
-    response.status(200).json({ message: "Aqui será o post do Assets Glpi." })
+  async create(request, response){
+    const readCsv = await new CsvReader()._ReadCsv()
+    manualReviewLogger(readCsv)
+    
+    response.status(200).json(readCsv)
   }
 }

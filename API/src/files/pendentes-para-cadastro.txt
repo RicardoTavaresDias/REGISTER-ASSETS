@@ -1,0 +1,7 @@
+
+
+Cadastros pedentes devido o setor não encontrado no glpi, realizar cadastro manual. 
+
++--------------------------------+-----------------+--------------------+
+|              SETOR             |   EQUIPAMENTO   |     N° SERIE       |
++--------------------------------+-----------------+--------------------+
