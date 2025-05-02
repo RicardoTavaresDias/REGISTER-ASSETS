@@ -17,8 +17,8 @@ export class Validatorglpi{
 
   async loginGlpi(page){
     await page.goto(env.GLPIINITIAL, { timeout: 35000 })
-    await page.type("#login_name", "ricardo.dias")
-    await page.type("#login_password", "chopper2#")
+    await page.type("#login_name", this.user.user)
+    await page.type("#login_password", this.user.password)
     await page.type("#dropdown_auth1", "DC-SACA")
     await page.click(`[type="submit"]`)
     await page.waitForNavigation()
@@ -71,7 +71,8 @@ export class Validatorglpi{
     )
   }
 
-  async glpiAssets(){
+  async glpiAssets(user){
+    this.user = user
     try {
       const page = await this.initBrowser()
       await this.loginGlpi(page)
