@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer'
+import puppeteer, { TimeoutError } from 'puppeteer'
 import { env } from "../config/env.js"
 
 export class Validatorglpi{
@@ -9,14 +9,14 @@ export class Validatorglpi{
   }
 
   async initBrowser(){
-    const browser = await puppeteer.launch({ headless: false })
-    const page = await browser.newPage()
+    this.browser = await puppeteer.launch({ headless: false })
+    const page = await this.browser.newPage()
 
     return page
   }
 
   async loginGlpi(page){
-    await page.goto(env.GLPIINITIAL)
+    await page.goto(env.GLPIINITIAL, { timeout: 35000 })
     await page.type("#login_name", "ricardo.dias")
     await page.type("#login_password", "chopper2#")
     await page.type("#dropdown_auth1", "DC-SACA")
@@ -41,7 +41,7 @@ export class Validatorglpi{
   async assetsGlpiRegisterWeb(page, item){
     const path = `https://glpi.ints.org.br/front/monitor.php?is_deleted=0&as_map=0&criteria%5B0%5D%5Blink%5D=AND&criteria%5B0%5D%5Bfield%5D=view&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=${item.serie}&search=Pesquisar&itemtype=Monitor&start=0&_glpi_csrf_token=5b75a0f06d84fcd184e1d9b0f64992b9`
 
-    await page.goto(path)
+    await page.goto(path, { timeout: 35000 })
     const dataGlpi = await page.evaluate(() => {
       const existsGlpi = [
         document.querySelectorAll('.tab_bg_2 td')[1]?.textContent.replace("\t", ""), 
@@ -88,6 +88,7 @@ export class Validatorglpi{
         doesNotExistsAssets: this.doesNotExistsAssets
       }
     }catch(error){
+      this.browser.close()
       throw new Error(error.message)
     }
   }
