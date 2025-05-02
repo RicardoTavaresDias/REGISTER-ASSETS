@@ -1,0 +1,74 @@
+import puppeteer from 'puppeteer'
+import { CrudFile } from "./CrudFile.js"
+import { env } from "../config/env.js"
+
+import { manualReviewLogger } from "./manual-review-logger.js"
+
+export async function glpiValidator(planilha){
+  const crudFile = new CrudFile({ path: "./src/files/html.txt" })
+ 
+  const browser = await puppeteer.launch({ headless: false })
+  const page = await browser.newPage()
+
+  try {
+    await page.goto(env.GLPIINITIAL)
+    await page.type("#login_name", "ricardo.dias")
+    await page.type("#login_password", "chopper2#")
+    await page.type("#dropdown_auth1", "DC-SACA")
+    await page.click(`[type="submit"]`)
+    await page.waitForNavigation()
+
+   
+    const arrayExistente = []
+    const arraynotExistente = []
+
+    const items = {
+      computer: "computador",
+      monitor: "monitor",
+      printer: "impressora"
+    }
+    
+    for(const key in items){
+      for(const serie of planilha[items[key]]){ 
+        
+        const path = {
+          computer: `https://glpi.ints.org.br/front/computer.php?is_deleted=0&as_map=0&criteria%5B0%5D%5Blink%5D=AND&criteria%5B0%5D%5Bfield%5D=view&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=${serie.serie}&search=Pesquisar&itemtype=Computer&start=0&_glpi_csrf_token=aac8fcd6823684fd0d7cbd81371040c5`,
+    
+          monitor: `https://glpi.ints.org.br/front/monitor.php?is_deleted=0&as_map=0&criteria%5B0%5D%5Blink%5D=AND&criteria%5B0%5D%5Bfield%5D=view&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=${serie.serie}&search=Pesquisar&itemtype=Monitor&start=0&_glpi_csrf_token=edce4a4ab3bcf593df49163c028837ef`,
+    
+          printer: `https://glpi.ints.org.br/front/printer.php?is_deleted=0&as_map=0&criteria%5B0%5D%5Blink%5D=AND&criteria%5B0%5D%5Bfield%5D=view&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=${serie.serie}&search=Pesquisar&itemtype=Printer&start=0&_glpi_csrf_token=6f6d1473e2c579e94adfd88042e67915`
+        }
+        
+        for(const chave in path){
+          await page.goto(path[chave])
+          const data = await page.evaluate(() => {
+            const existente = document.querySelector('[id^="Computer_"]')?.textContent
+            return existente 
+          })
+
+          data === serie.serie ? 
+          arrayExistente.push({ setor: serie.setor, equipamento: serie.equipamento, serie: serie.serie }) : 
+          arraynotExistente.push({ setor: serie.setor, equipamento: serie.equipamento, serie: serie.serie })
+        }
+      }
+    }
+    
+
+    // console.log("arrayExistente =>  " + arrayExistente)
+    // console.log("-----------------------------------------------")
+    // console.log("-----------------------------------------------")
+    // console.log("arrayNOTExistente =>  " + arraynotExistente)
+
+    return {
+      arrayExistente,
+      arraynotExistente
+    }
+
+    return 
+
+    crudFile._Write(data)
+  
+  } catch (error) {
+    console.log(error)
+  }
+}

@@ -10,7 +10,8 @@ const envSchema = z.object({
   LOGEQUIPMENT: z.string(),
   LOGSECTOR: z.string(),
   LOGUNITS: z.string(),
-  LOGIN: z.string()
+  LOGIN: z.string(),
+  GLPIINITIAL: z.string(),
 })
 
 export const env = envSchema.parse(process.env)
