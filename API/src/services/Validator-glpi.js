@@ -1,10 +1,6 @@
 import puppeteer from 'puppeteer'
 import { env } from "../config/env.js"
 
-/*
-sugestão: criar uma class, com construtor criar arrayexistente e notexistente, criar funcoes dentro da class e demandar computador, monitor e impressora, e alimetando os arrays e no ultimo retornar para gravação em arquivo .txt
-*/
-
 export class Validatorglpi{
   constructor(data){
     this.data = data
@@ -26,6 +22,15 @@ export class Validatorglpi{
     await page.type("#dropdown_auth1", "DC-SACA")
     await page.click(`[type="submit"]`)
     await page.waitForNavigation()
+
+    const loginError = await page.evaluate(() => {
+      return document.querySelector('[class="center b"]')?.textContent
+    })
+
+    if(loginError){
+      page.browser().close()
+      throw new Error(loginError + " no GLPI.")
+    }
   }
 
   _notAccents(text = ""){
@@ -67,19 +72,23 @@ export class Validatorglpi{
   }
 
   async glpiAssets(){
-    const page = await this.initBrowser()
-    await this.loginGlpi(page)
+    try {
+      const page = await this.initBrowser()
+      await this.loginGlpi(page)
 
-    for(const item of this.data){
-      const dataGlpi = await this.assetsGlpiRegisterWeb(page, item)
-      await this.glpiAssetValidation(dataGlpi, item)
-    }
+      for(const item of this.data){
+        const dataGlpi = await this.assetsGlpiRegisterWeb(page, item)
+        await this.glpiAssetValidation(dataGlpi, item)
+      }
 
-    page.browser().close()
+      page.browser().close()
 
-    return {
-      existsAssets: this.existsAssets,
-      doesNotExistsAssets: this.doesNotExistsAssets
+      return {
+        existsAssets: this.existsAssets,
+        doesNotExistsAssets: this.doesNotExistsAssets
+      }
+    }catch(error){
+      throw new Error(error.message)
     }
   }
 }
