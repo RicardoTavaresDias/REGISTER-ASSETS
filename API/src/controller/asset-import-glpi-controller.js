@@ -68,7 +68,8 @@ export class AssetsImportGlpiController {
 
     
 
-    const { existsAssets, doesNotExistsAssets } = await Validatorglpi(monitor)
+    const validatorglpi = new Validatorglpi(monitor)
+    const { existsAssets, doesNotExistsAssets } = await validatorglpi.glpiAssets()
 
     //const validatorPrinter = await glpiValidator({ data: monitor, path:  })
 
