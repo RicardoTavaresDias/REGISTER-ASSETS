@@ -1,16 +1,36 @@
 import puppeteer from 'puppeteer'
 import { env } from "../config/env.js"
+import { listEquipment } from "../lib/listEquipment.js"
+
+/**
+ * Classe responsável por validar ativos no GLPI via web scraping.
+ */
 
 export class Validatorglpi{
+
+  /**
+   * @param {Object[]} data - Lista de dados dos equipamentos a validar.
+   */
+
   constructor(data){
     this.data = data
     this.existsAssets = []
     this.doesNotExistsAssets = []
   }
 
+  /**
+   * Define o usuário que será utilizado para login no GLPI.
+   * @param {{user: string, password: string}} user - Credenciais do usuário.
+   */
+
   _user(user){
     this.user = user
   }
+
+   /**
+   * Inicializa o navegador Puppeteer.
+   * @returns {Promise<puppeteer.Page>} Página do navegador.
+   */
 
   async initBrowser(){
     this.browser = await puppeteer.launch({ headless: false })
@@ -18,6 +38,12 @@ export class Validatorglpi{
 
     return page
   }
+
+   /**
+   * Realiza o login no GLPI com as credenciais fornecidas.
+   * @param {puppeteer.Page} page - Página atual do Puppeteer.
+   * @throws Lança erro se o login falhar.
+   */
 
   async loginGlpi(page){
     await page.goto(env.GLPIINITIAL, { timeout: 35000 })
@@ -37,15 +63,25 @@ export class Validatorglpi{
     }
   }
 
+  /**
+   * Remove acentos e converte para minúsculas para facilitar comparações.
+   * @param {string} [text=""] Texto a ser normalizado.
+   * @returns {string} Texto sem acentos e em minúsculas.
+   */
+
   _notAccents(text = ""){
-    // Comparação ignorando acentos - exemplos: "Coração", "coracao" = true - são iguais
     return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
   }
 
-  async assetsGlpiRegisterWeb(page, item){
-    const path = `https://glpi.ints.org.br/front/monitor.php?is_deleted=0&as_map=0&criteria%5B0%5D%5Blink%5D=AND&criteria%5B0%5D%5Bfield%5D=view&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=${item.serie}&search=Pesquisar&itemtype=Monitor&start=0&_glpi_csrf_token=5b75a0f06d84fcd184e1d9b0f64992b9`
+  /**
+   * Acessa a página de um ativo e retorna seus dados do GLPI.
+   * @param {puppeteer.Page} page - Página atual.
+   * @param {string} url - URL da página do ativo no GLPI.
+   * @returns {Promise<string[]>} Dados coletados [serie, setor].
+   */
 
-    await page.goto(path, { timeout: 35000 })
+  async assetsGlpiRegisterWeb(page, url){
+    await page.goto(url, { timeout: 35000 })
     const dataGlpi = await page.evaluate(() => {
       const existsGlpi = [
         document.querySelectorAll('.tab_bg_2 td')[1]?.textContent.replace("\t", ""), 
@@ -57,6 +93,12 @@ export class Validatorglpi{
 
     return dataGlpi
   }
+
+   /**
+   * Valida se um ativo existe no GLPI comparando número de série e setor.
+   * @param {string[]} dataGlpi - Dados retornados da página do GLPI.
+   * @param {{sector: string, equipment: string, serie: string}} item - Ativo a ser validado.
+   */
 
   async glpiAssetValidation(dataGlpi, item){
     dataGlpi[0] === item.serie ? 
@@ -75,14 +117,26 @@ export class Validatorglpi{
     )
   }
 
-  async glpiAssets(){
+  /**
+   * Executa todo o processo de validação dos ativos no GLPI.
+   * @returns {Promise<{existsAssets: Object[], doesNotExistsAssets: Object[]}>} Resultado da validação.
+   */
+ 
+  async glpiAssets(){    
+    const dataEquipment = listEquipment(this.data)
+
     try {
       const page = await this.initBrowser()
       await this.loginGlpi(page)
 
-      for(const item of this.data){
-        const dataGlpi = await this.assetsGlpiRegisterWeb(page, item)
-        await this.glpiAssetValidation(dataGlpi, item)
+      for(const key in dataEquipment){
+        const items = dataEquipment[key]
+        
+        for(const item of items.data){
+          const url = items.path + item.serie + items.base
+          const dataGlpi = await this.assetsGlpiRegisterWeb(page, url)
+          await this.glpiAssetValidation(dataGlpi, item)
+        }
       }
 
       page.browser().close()
@@ -91,9 +145,13 @@ export class Validatorglpi{
         existsAssets: this.existsAssets,
         doesNotExistsAssets: this.doesNotExistsAssets
       }
+
     }catch(error){
       this.browser.close()
       throw new Error(error.message)
     }
   }
 }
+
+
+

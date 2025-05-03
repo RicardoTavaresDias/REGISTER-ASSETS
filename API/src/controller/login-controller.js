@@ -34,7 +34,7 @@ export class LoginController {
     })
 
     const user = userSchema.parse(request.body)
-    const token = jwt.sign({ sub: user }, jwtConfig.secret, { expiresIn: "15s" })
+    const token = jwt.sign({ sub: user }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
 
     response.status(200).json({ token })
   }

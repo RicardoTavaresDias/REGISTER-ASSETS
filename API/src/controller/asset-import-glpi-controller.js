@@ -64,12 +64,10 @@ export class AssetsImportGlpiController {
   async create(request, response){
     const cvsData = new CsvReader().csvData()
 
-    const {computer, monitor } = assetProcessor(cvsData)
-    const validatorglpi = new Validatorglpi(monitor)
+    const dataEquipment = assetProcessor(cvsData)
+    const validatorglpi = new Validatorglpi(dataEquipment)
     validatorglpi._user(request.headers)
     const { existsAssets, doesNotExistsAssets } = await validatorglpi.glpiAssets()
-
-    //const validatorPrinter = await glpiValidator({ data: monitor, path:  })
 
     manualReviewLogger(existsAssets, doesNotExistsAssets)
     response.status(200).json({ message: "Relatório gerado com sucesso." })
