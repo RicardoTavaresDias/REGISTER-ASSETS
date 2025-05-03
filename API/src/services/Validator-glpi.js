@@ -105,18 +105,23 @@ export class Validatorglpi{
 
    /**
    * Valida se um ativo existe no GLPI comparando número de série e setor.
-   * @param {string[]} dataGlpi - Dados retornados da página do GLPI.
+   * @param {string[]} dataGlpi - [ dataGlpi[0] - serie | dataGlpi[1] - sector ] - Dados retornados da página do GLPI.
    * @param {{sector: string, equipment: string, serie: string}} item - Ativo a ser validado.
    */
 
   async glpiAssetValidation(dataGlpi, item){
+    console.log(dataGlpi)
+    
     dataGlpi[0] === item.serie ? 
       this.existsAssets.push(
         { 
           sector: item.sector && 
             this._notAccents(String(item.sector)) === this._notAccents(String(dataGlpi[1])) ? 
-            item.sector : 
-            dataGlpi[1] ? item.sector + " => " + dataGlpi[1] : item.sector, 
+              item.sector : 
+                dataGlpi[1] ? 
+                  item.sector + " => " + dataGlpi[1] : 
+                    (item.sector !== "" && dataGlpi[1] === "") ?
+                      "n/a => " + item.sector : item.sector, 
 
           equipment: item.equipment, 
           serie: item.serie 
