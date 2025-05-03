@@ -67,9 +67,9 @@ export class AssetsImportGlpiController {
     const dataEquipment = assetProcessor(cvsData)
     const validatorglpi = new Validatorglpi(dataEquipment)
     validatorglpi._user(request.headers)
-    const { existsAssets, doesNotExistsAssets } = await validatorglpi.glpiAssets()
+    const dataValidator = await validatorglpi.glpiAssets()
 
-    manualReviewLogger(existsAssets, doesNotExistsAssets)
+    manualReviewLogger(dataValidator)
     response.status(200).json({ message: "Relatório gerado com sucesso." })
   }
 }

@@ -16,6 +16,7 @@ export class Validatorglpi{
     this.data = data
     this.existsAssets = []
     this.doesNotExistsAssets = []
+    this.updateAssets = []
   }
 
   /**
@@ -104,29 +105,50 @@ export class Validatorglpi{
   }
 
    /**
-   * Valida se um ativo existe no GLPI comparando número de série e setor.
-   * @param {string[]} dataGlpi - [ dataGlpi[0] - serie | dataGlpi[1] - sector ] - Dados retornados da página do GLPI.
-   * @param {{sector: string, equipment: string, serie: string}} item - Ativo a ser validado.
-   */
+ * Valida se um ativo existe no GLPI comparando número de série e setor.
+ * Classifica o ativo em uma das três categorias:
+ *
+ * 1. `existsAssets`: Quando o número de série e o setor coincidem.
+ * 2. `updateAssets`: Quando o número de série confere, mas o setor está diferente.
+ * 3. `doesNotExistsAssets`: Quando o número de série não é encontrado no GLPI.
+ *
+ * Os ativos são armazenados nos arrays correspondentes dentro da instância atual.
+ *
+ * @param {string[]} dataGlpi - Dados retornados da página do GLPI:
+ *   - `dataGlpi[0]`: Número de série do ativo encontrado.
+ *   - `dataGlpi[1]`: Setor atual do ativo no GLPI.
+ *
+ * @param {{ sector: string, equipment: string, serie: string }} item - 
+ *   Ativo a ser validado, com os dados esperados.
+ *
+ * @returns {void}
+ */
 
   async glpiAssetValidation(dataGlpi, item){
-    dataGlpi[0] === item.serie ? 
-      this.existsAssets.push(
-        { 
-          sector: item.sector && 
-            this._notAccents(String(item.sector)) === this._notAccents(String(dataGlpi[1])) ? 
-              item.sector : 
-                dataGlpi[1] ? 
-                  item.sector + " => " + dataGlpi[1] : 
-                    (item.sector !== "" && dataGlpi[1] === "") ?
-                      "n/a => " + item.sector : item.sector, 
-
-          equipment: item.equipment, 
-          serie: item.serie 
-        }) : 
-    this.doesNotExistsAssets.push(
-      { sector: item.sector, equipment: item.equipment, serie: item.serie }
-    )
+    if(dataGlpi[0] === item.serie){
+      if(this._notAccents(String(item.sector)) === this._notAccents(String(dataGlpi[1]))){
+        this.existsAssets.push(
+          { 
+            sector: item.sector,
+            equipment: item.equipment, 
+            serie: item.serie 
+          }) 
+      }else {
+        this.updateAssets.push(
+          {
+            sector: dataGlpi[1] ? item.sector + " => " + dataGlpi[1] : 
+            (item.sector !== "" && dataGlpi[1] === "") ?
+              "n/a => " + item.sector : item.sector, 
+            equipment: item.equipment, 
+            serie: item.serie 
+          }
+        )
+      }
+    }else {
+      this.doesNotExistsAssets.push(
+        { sector: item.sector, equipment: item.equipment, serie: item.serie }
+      )
+    }
   }
 
   /**
@@ -155,7 +177,8 @@ export class Validatorglpi{
 
       return {
         existsAssets: this.existsAssets,
-        doesNotExistsAssets: this.doesNotExistsAssets
+        doesNotExistsAssets: this.doesNotExistsAssets,
+        updateAssets: this.updateAssets
       }
 
     }catch(error){
