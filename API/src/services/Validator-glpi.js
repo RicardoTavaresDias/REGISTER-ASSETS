@@ -110,8 +110,6 @@ export class Validatorglpi{
    */
 
   async glpiAssetValidation(dataGlpi, item){
-    console.log(dataGlpi)
-    
     dataGlpi[0] === item.serie ? 
       this.existsAssets.push(
         { 
