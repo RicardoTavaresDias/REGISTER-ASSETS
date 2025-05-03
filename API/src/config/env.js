@@ -12,6 +12,7 @@ const envSchema = z.object({
   LOGUNITS: z.string(),
   LOGIN: z.string(),
   GLPIINITIAL: z.string(),
+  JWTSECRET: z.string()
 })
 
 export const env = envSchema.parse(process.env)

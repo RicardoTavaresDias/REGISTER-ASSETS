@@ -8,6 +8,10 @@ export class Validatorglpi{
     this.doesNotExistsAssets = []
   }
 
+  _user(user){
+    this.user = user
+  }
+
   async initBrowser(){
     this.browser = await puppeteer.launch({ headless: false })
     const page = await this.browser.newPage()
@@ -71,8 +75,7 @@ export class Validatorglpi{
     )
   }
 
-  async glpiAssets(user){
-    this.user = user
+  async glpiAssets(){
     try {
       const page = await this.initBrowser()
       await this.loginGlpi(page)

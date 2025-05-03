@@ -59,21 +59,15 @@ import { CsvReader } from "../services/Csv-reader.js"
 import { manualReviewLogger } from "../services/manual-review-logger.js"
 import { Validatorglpi } from "../services/Validator-glpi.js"
 import { assetProcessor } from "../services/asset-processor.js"
-import { z } from "zod"
 
 export class AssetsImportGlpiController {
   async create(request, response){
-    const userSchema = z.object({
-      user: z.string().min(1, { message: "Informe usuario e senha do GLPI." }),
-      password: z.string().min(1, { message: "Informe usuario e senha do GLPI." })
-    })
-
-    const user = userSchema.parse(request.body)
-
     const cvsData = new CsvReader().csvData()
+
     const {computer, monitor } = assetProcessor(cvsData)
     const validatorglpi = new Validatorglpi(monitor)
-    const { existsAssets, doesNotExistsAssets } = await validatorglpi.glpiAssets(user)
+    validatorglpi._user(request.headers)
+    const { existsAssets, doesNotExistsAssets } = await validatorglpi.glpiAssets()
 
     //const validatorPrinter = await glpiValidator({ data: monitor, path:  })
 

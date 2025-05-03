@@ -1,3 +1,6 @@
+import jwt from "jsonwebtoken";
+import { jwtConfig } from "../config/token.js"
+
 export function authentication(request, response, next){
 
   const authent = request.headers['authorization'];
@@ -18,6 +21,22 @@ export function authentication(request, response, next){
   request.headers = {
     role: stringCredentials
   }
+  
+  return next()
+}
+
+export function authenticationGlpi(request, response, next){
+
+  const authent = request.headers['authorization']
+  
+  if(!authent){
+    return response.status(401).json({ message: "Realizar autenticação" });
+  }
+
+  const token = authent.split(" ")[1]
+  const user = jwt.verify(token, jwtConfig.secret)
+ 
+  request.headers = user.sub
   
   return next()
 }
