@@ -38,11 +38,14 @@ export class CrudFile {
     }
   }
   
-
-  async readFile(page, limitPage){
-    const data = await this._Read()
-    const { results, totalPage } = pagination(page, limitPage, JSON.parse(data))
+  _GetPagination(page, limitPage, data){
+    const { results, totalPage } = pagination(page, limitPage, data)
     return { totalPage: totalPage, results }
+  }
+
+  async readFile(){
+    const data = await this._Read()
+    return JSON.parse(data)
   }
 
 

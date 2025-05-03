@@ -9,7 +9,8 @@ export class SuggestionsSearch {
 
     const path = Paths({ typeController: "suggestions", type: request.params.type })
     const crudfile = new CrudFile(path)
-    const dataRead = await crudfile.readFile(page, limitPage)
+    const readFile = await crudfile.readFile()
+    const dataRead = crudfile._GetPagination(page, limitPage, readFile)
 
     if(!dataRead){
       return response.status(400).json({ message: "Dados não encontrado." })
