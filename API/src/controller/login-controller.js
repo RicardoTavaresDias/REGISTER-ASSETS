@@ -1,18 +1,20 @@
 import { CrudFile } from "../services/CrudFile.js"
 import { env } from "../config/env.js"
+import { compare } from "bcrypt"
 
 export class LoginController {
   async create(request, response){
     const data = await new CrudFile({ path: env.LOGIN })._Read()
     const dataJson = JSON.parse(data)
 
-    const [{ user, passaword, role }] = dataJson
+    const { user, password, role } = dataJson
+    const comparePassword = await compare(request.body.password, password)
 
     if(!user.includes(request.body.user)){
       return response.status(401).json({ message: "Usuario não cadastrado no sistema.", role: ""})
     }
    
-    if(user === request.body.user && passaword === request.body.passaword){
+    if(user.includes(request.body.user) && comparePassword){
       request.headers = {
         role: role
       }

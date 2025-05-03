@@ -1,4 +1,4 @@
-import puppeteer, { TimeoutError } from 'puppeteer'
+import puppeteer from 'puppeteer'
 import { env } from "../config/env.js"
 
 export class Validatorglpi{
