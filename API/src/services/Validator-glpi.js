@@ -83,8 +83,17 @@ export class Validatorglpi{
   async assetsGlpiRegisterWeb(page, url){
     await page.goto(url, { timeout: 35000 })
     const dataGlpi = await page.evaluate(() => {
+
+      // Procura a posição da tabela para extrair dados corretos, tabela muda de index.
+      const searchSeriesTable = [
+        ...document.querySelectorAll('.tab_cadrehov tr th')
+      ]
+        .filter((value) => value.textContent.includes("Número de série"))[0]
+
+      const indexNumberSeriePosition = [...document.querySelectorAll('.tab_cadrehov tr th')].indexOf(searchSeriesTable)
+
       const existsGlpi = [
-        document.querySelectorAll('.tab_bg_2 td')[1]?.textContent.replace("\t", ""), 
+        document.querySelectorAll('.tab_bg_2 td')[indexNumberSeriePosition]?.textContent.replace("\t", ""), 
         document.querySelectorAll('.tab_bg_2 td')[5]?.textContent
       ]
       
