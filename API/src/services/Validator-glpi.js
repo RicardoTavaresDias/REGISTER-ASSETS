@@ -71,7 +71,12 @@ export class Validatorglpi{
    */
 
   _notAccents(text = ""){
-    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    return text.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/[^a-z0-9\s]/gi, "")                    // remove caracteres especiais
+    .replace(/\b0+(\d+)/g, "$1")                     // remove zeros à esquerda
+    .replace(/\s+/g, " ")                            // remove espaços extras
+    .trim();
   }
 
   /**
@@ -86,16 +91,17 @@ export class Validatorglpi{
     const dataGlpi = await page.evaluate(() => {
 
       // Procura a posição da tabela para extrair dados corretos, tabela muda de index.
-      const searchSeriesTable = [
-        ...document.querySelectorAll('.tab_cadrehov tr th')
-      ]
-        .filter((value) => value.textContent.includes("Número de série"))[0]
-
-      const indexNumberSeriePosition = [...document.querySelectorAll('.tab_cadrehov tr th')].indexOf(searchSeriesTable)
+      const tableBaseHtml = [...document.querySelectorAll('.tab_cadrehov tr th')]
+      
+      const searchSeriesTable = tableBaseHtml.filter((value) => value.textContent.includes("Número de série"))[0]
+      const searchLocationTable = tableBaseHtml.filter((value) => value.textContent.includes("Localização"))[0]
+        
+      const indexNumberSeriePosition = tableBaseHtml.indexOf(searchSeriesTable)
+      const indexNumberLocationPosition = tableBaseHtml.indexOf(searchLocationTable)
 
       const existsGlpi = [
         document.querySelectorAll('.tab_bg_2 td')[indexNumberSeriePosition]?.textContent.replace("\t", ""), 
-        document.querySelectorAll('.tab_bg_2 td')[5]?.textContent
+        document.querySelectorAll('.tab_bg_2 td')[indexNumberLocationPosition]?.textContent
       ]
       
       return existsGlpi

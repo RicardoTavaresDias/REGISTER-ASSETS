@@ -46,7 +46,8 @@ export async function manualReviewLogger(dataValidator){
   }
 
 
-  output += "\n\nCadastros para atualizar setor no GLPI . \n\n"
+  output += "\n\nCadastros para atualizar setor no GLPI . \n"
+  output += "SETOR DA PLANILHA => SETOR DO GLPI. \n\n"
   output += "+------------------------------------------+-----------------+--------------------+\n"
   output += "|                  SETOR                   |   EQUIPAMENTO   |     N° SERIE       |\n"
   output += "+------------------------------------------+-----------------+--------------------+\n"
