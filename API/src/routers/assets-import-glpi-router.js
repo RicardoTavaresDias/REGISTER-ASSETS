@@ -6,3 +6,5 @@ export const assetsImportGlpiRouter = Router()
 const assetsImportGlpiController = new AssetsImportGlpiController()
 
 assetsImportGlpiRouter.post("/", authenticationGlpi, assetsImportGlpiController.create)
+assetsImportGlpiRouter.patch("/", authenticationGlpi, assetsImportGlpiController.update)
+assetsImportGlpiRouter.post("/", authenticationGlpi, assetsImportGlpiController.create)

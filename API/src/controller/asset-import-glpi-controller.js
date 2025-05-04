@@ -72,4 +72,24 @@ export class AssetsImportGlpiController {
     manualReviewLogger(dataValidator)
     response.status(200).json({ message: "Relatório gerado com sucesso." })
   }
+
+  async update(request, response){
+    const glpiInserter = new GlpiInserter(request.headers)
+
+    await glpiInserter._initBrowser()
+    await glpiInserter.treeStructureGlpi("UPA")
+    await glpiInserter.updateSectorGlpi()
+
+    response.status(200).json({ message: "ok update" })
+  }
+
+  async create(request, response){
+    const glpiInserter = new GlpiInserter(request.headers)
+    await glpiInserter._initBrowser()
+    await glpiInserter.treeStructureGlpi(request.body.units)
+
+    //await glpiInserter.registerAssets()
+
+    response.status(200).json({ message: "ok create" })
+  }
 }
