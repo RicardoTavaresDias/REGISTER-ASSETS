@@ -59,9 +59,10 @@ import { CsvReader } from "../services/Csv-reader.js"
 import { manualReviewLogger } from "../services/manual-review-logger.js"
 import { Validatorglpi } from "../services/Validator-glpi.js"
 import { assetProcessor } from "../services/asset-processor.js"
+import { GlpiInserter } from "../services/glpi-inserter.js"
 
 export class AssetsImportGlpiController {
-  async create(request, response){
+  async index(request, response){
     const cvsData = new CsvReader().csvData()
 
     const dataEquipment = assetProcessor(cvsData)
