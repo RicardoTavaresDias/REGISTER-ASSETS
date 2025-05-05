@@ -1,4 +1,5 @@
 import { Validatorglpi } from "./Validator-glpi.js"
+import { listEquipment } from "../lib/listEquipment.js"
 
 export class GlpiInserter {
   constructor(user) {
@@ -18,13 +19,13 @@ export class GlpiInserter {
     this.units = value
 
     try {
-      await this.page.waitForSelector("#global_entity_select")
+      await this.page.waitForSelector("#global_entity_select", { timeout: 10000 })
       await this.page.click("#global_entity_select")
 
-      await this.page.waitForSelector(".jstree-closed")
+      await this.page.waitForSelector(".jstree-closed", { timeout: 10000 })
       await this.page.click(".jstree-icon")
 
-      await this.page.waitForSelector(".jstree-children")
+      await this.page.waitForSelector(".jstree-children", { timeout: 10000 })
       
       const result = await this.page.evaluate((units) => {
         return new Promise((resolve, reject) => {
@@ -44,52 +45,71 @@ export class GlpiInserter {
             }
 
             unit.click()
-
             resolve(false);
           }, 1000)
         })
       }, this.units)
 
-
-      
-
       // PAREI AQUI
       if(result){
         this.page.browser().close()
-        return false
+        return { message: result }
       }
+
+      await this.page.waitForSelector("#ui-tabs-1", { timeout: 10000 })
+      .catch(() => { 
+        this.page.screenshot({ path: './src/logs/files_puppeteer/after_tree_structure_glpi.png' })
+        throw new Error("Não foi carregado as unidades no glpi, tente novamente.") 
+      })
       
-
-
-      await this.page.waitForNavigation()
     }catch(error){
       this.browser.close()
       throw new Error(error.message)
     }
   }
 
-  async updateSectorGlpi(){
+  async updateSectorGlpi(dataUpdate){
     try {
-      // link de teste
-      await this.page.goto("https://glpi.ints.org.br/front/monitor.php?is_deleted=0&as_map=0&criteria%5B0%5D%5Blink%5D=AND&criteria%5B0%5D%5Bfield%5D=view&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=BRC323024F&search=Pesquisar&itemtype=Monitor&start=0&_glpi_csrf_token=8c16506e1bb040a53218865f21876257", { timeout: 35000 })
+      const dataEquipment = listEquipment(dataUpdate)
+
+      for(const key in dataEquipment){
+        const items = dataEquipment[key]
+        for(const item of items.data){
+
+          await this.page.goto(items.path + item.serie + items.base, { timeout: 35000 })
+
+          await this.page.waitForSelector(".tab_bg_2 td a", { timeout: 10000 })
+          .catch(() => { 
+            throw new Error("Número de serie não encontrado no glpi, verifica o número de serie corretamente para atualização.") 
+          })
+
+          await this.page.evaluate(() => {
+            document.querySelectorAll('.tab_bg_2 td a')[0].click()
+          })
+
+          await this.page.waitForSelector(`[name="name"]`, { timeout: 10000 })
+          .catch(() => { 
+            throw new Error("Pagina de ativos no glpi não foi carregado corretamente, tente novamente.") 
+          })
+
+          await this.page.evaluate((item) => {
+            document.querySelectorAll(`.select2-hidden-accessible`)[3].innerHTML = `<option value=${"707"} title="${item} - ">${item}</option>`
+            //document.querySelector(".submit").click()
+          }, item.sector)
+
+          await this.page.waitForSelector(`[name="name"]`, { timeout: 10000 })
+
+          // TESTE
+          //this.page.screenshot({ path: `./src/logs/files_puppeteer/${key}_${item.serie}.png` })
+        }
+      }
+
+      await this.page.waitForNavigation({timeout: 3000})
       
-      await this.page.waitForSelector(".tab_bg_2 td a")
-
-      await this.page.evaluate(() => {
-        document.querySelectorAll('.tab_bg_2 td a')[0].click()
-      })
-
-      await this.page.waitForSelector(`[name="name"]`)
-    
-      await this.page.evaluate(() => {
-        document.querySelectorAll(`.select2-hidden-accessible`)[3].innerHTML = `<option value="707" title="VACINA - ">VACINA</option>`
-        //document.querySelector(".submit").click()
-      })
-
-      this.page.browser().close()
     }catch(error){
-      this.browser.close()
       throw new Error(error.message)
+    }finally{
+      this.page.browser().close()
     }
   }
 
@@ -97,7 +117,10 @@ export class GlpiInserter {
     try {
       await this.page.goto("https://glpi.ints.org.br/front/monitor.form.php?id=1506&withtemplate=2", { timeout: 35000 })
 
-      await this.page.waitForSelector(`[name="name"]`)
+      await this.page.waitForSelector(`[name="name"]`, { timeout: 10000 })
+      .catch(() => { 
+        throw new Error("Pagina de ativos no glpi não foi carregado corretamente, tente novamente.") 
+      })
 
       await this.page.evaluate(() => {
         document.querySelector("[name='name']").value = "teste"
@@ -106,13 +129,15 @@ export class GlpiInserter {
         //document.querySelector(".submit").click()
       })
 
-      await this.page.waitForSelector(`[name="name"]`)
+      await this.page.waitForSelector(`[name="name"]`, { timeout: 10000 })
+      .catch(() => { 
+        throw new Error("Error no glpi, para cadastrar próximo ativo.") 
+      })
       
-      this.page.browser().close()
     }catch(error){
-      this.browser.close()
       throw new Error(error.message)
+    }finally{
+      this.page.browser().close()
     }
   }
-
 }

@@ -22,7 +22,8 @@ import { CrudFile } from "./CrudFile.js"
  */
 
 export async function manualReviewLogger(dataValidator){
-  const crudFile = new CrudFile({ path: "./src/files/pendentes-para-cadastro.txt" })
+  const crudFileTxt = new CrudFile({ path: "./src/files/pendentes-para-cadastro.txt" })
+  const crudFile = new CrudFile({ path: "./src/files/pendentes-para-cadastro.json" })
 
   let output = "\n\nCadastros encontrados no glpi. \n\n"
   output += "+------------------------------------------+-----------------+--------------------+\n"
@@ -57,5 +58,11 @@ export async function manualReviewLogger(dataValidator){
     output += "+------------------------------------------+-----------------+--------------------+\n"
   }
 
-  await crudFile._Write(output)
+  await crudFile._Write( JSON.stringify({
+     updateAssets: dataValidator.updateAssets,
+     doesNotExistsAssets: dataValidator.doesNotExistsAssets,
+     updateAssets: dataValidator.updateAssets
+  }, null, 2))
+
+  await crudFileTxt._Write(output)
 }

@@ -52,8 +52,15 @@ export class Validatorglpi{
     await page.type("#login_password", this.user.password)
     await page.type("#dropdown_auth1", "DC-SACA")
     await page.click(`[type="submit"]`)
-    await page.waitForNavigation()
+    // await page.waitForNavigation()
 
+    await page.waitForSelector(".tab_cadrehov", { timeout: 10000 })
+    .catch(() => {
+      page.screenshot({ path: './src/logs/files_puppeteer/after-login.png' })
+      page.browser().close()
+      throw new Error("Elemento de entidade não carregou após login no Glpi.") 
+    })
+    
     const loginError = await page.evaluate(() => {
       return document.querySelector('[class="center b"]')?.textContent
     })
@@ -175,7 +182,7 @@ export class Validatorglpi{
         for(const item of items.data){
           const url = items.path + item.serie + items.base
           const dataGlpi = await this.assetsGlpiRegisterWeb(page, url)
-          await this.glpiAssetValidation(dataGlpi, item)
+          this.glpiAssetValidation(dataGlpi, item)
         }
       }
 
