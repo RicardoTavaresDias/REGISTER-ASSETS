@@ -58,7 +58,7 @@
 import { CsvReader } from "../services/Csv-reader.js"
 import { manualReviewLogger } from "../services/manual-review-logger.js"
 import { Validatorglpi } from "../services/Validator-glpi.js"
-import { assetProcessor, mapUpdateSector } from "../services/asset-processor.js"
+import { assetProcessor, mapUpdateSectorId } from "../services/asset-processor.js"
 import { GlpiInserter } from "../services/glpi-inserter.js"
 import { z } from "zod"
 import { CrudFile } from "../services/CrudFile.js"
@@ -78,27 +78,14 @@ export class AssetsImportGlpiController {
   }
 
   async update(request, response){
-    // const readerUnits = await new CrudFile({ path: env.UNITS })._Read()
-    // const readerUnitsJson = JSON.parse(readerUnits)
-    // const mapUnits = readerUnitsJson.map(value => value.units)
-  
-    // const unitsSchema = z.object({
-    //   units: z.string().refine(value => mapUnits.includes(value), {
-    //     message: "Unidade inválida"
-    //   })
-    // })
-
-    // const { units } = unitsSchema.parse(request.body)
-
     const glpiInserter = new GlpiInserter(request.headers)
     await glpiInserter._initBrowser()
-   // await glpiInserter.treeStructureGlpi(units)
 
     const readerUpdate = new CrudFile({ path: "./src/files/pendentes-para-cadastro.json" })._Read()
     const readerUpdateJson = JSON.parse(await readerUpdate)
     
     const dataEquipment = assetProcessor(readerUpdateJson.updateAssets)
-    const sectorUpdate = mapUpdateSector(dataEquipment)
+    const sectorUpdate = await mapUpdateSectorId(dataEquipment)
     await glpiInserter.updateSectorGlpi(sectorUpdate)
 
     response.status(201).json({ message: `Setores da unidade ${request.body.units}, atualizado com sucesso.` })
@@ -117,6 +104,12 @@ export class AssetsImportGlpiController {
 
     const { units } = unitsSchema.parse(request.body)
 
+    const readerCreate = new CrudFile({ path: "./src/files/pendentes-para-cadastro.json" })._Read()
+    const readerCreateJson = JSON.parse(await readerCreate)
+    
+    const dataEquipment = assetProcessor(readerCreateJson.doesNotExistsAssets)
+    const sectorCreate = await mapUpdateSectorId(dataEquipment)
+
     const glpiInserter = new GlpiInserter(request.headers)
     await glpiInserter._initBrowser()
     const result = await glpiInserter.treeStructureGlpi(units)
@@ -124,16 +117,8 @@ export class AssetsImportGlpiController {
     if(result){
       response.status(401).json(result)
     }
-
-
-
-
-
-
-
-
-    // passar database para cadastrar
-    await glpiInserter.registerAssets()
+    
+    await glpiInserter.registerAssets(sectorCreate)
 
     response.status(201).json({ message: `Novos ativos da unidade ${request.body.units}, cadastrados com sucesso.` })
   }
