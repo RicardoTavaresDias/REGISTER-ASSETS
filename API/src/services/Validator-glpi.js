@@ -2,6 +2,7 @@ import puppeteer from 'puppeteer'
 import { env } from "../config/env.js"
 import { listEquipment } from "../lib/listEquipment.js"
 import { normalizeText } from '../lib/normalizeText.js'
+import CryptoJS from "crypto-js";
 
 /**
  * Classe responsável por validar ativos no GLPI via web scraping.
@@ -41,35 +42,39 @@ export class Validatorglpi{
     return page
   }
 
-   /**
-   * Realiza o login no GLPI com as credenciais fornecidas.
-   * @param {puppeteer.Page} page - Página atual do Puppeteer.
-   * @throws Lança erro se o login falhar.
+  /**
+   * Realiza o login no GLPI utilizando Puppeteer e credenciais criptografadas.
+   * 
+   * As credenciais (`this.user.user` e `this.user.password`) devem estar criptografadas com AES.
+   * Elas são descriptografadas em tempo de execução com `CryptoJS` antes de serem utilizadas no formulário de login.
+   * 
+   * @param {import('puppeteer').Page} page - Página Puppeteer já inicializada.
+   * 
+   * @throws {Error} Lança erro caso as credenciais estejam incorretas ou a entidade GLPI não carregue.
+   * 
    */
 
   async loginGlpi(page){
     await page.goto(env.GLPIINITIAL, { timeout: 35000 })
-    await page.type("#login_name", this.user.user)
-    await page.type("#login_password", this.user.password)
+    await page.type("#login_name", CryptoJS.AES.decrypt(this.user.user, "secret").toString(CryptoJS.enc.Utf8))
+    await page.type("#login_password", CryptoJS.AES.decrypt(this.user.password, "secret").toString(CryptoJS.enc.Utf8))
     await page.type("#dropdown_auth1", "DC-SACA")
     await page.click(`[type="submit"]`)
-    // await page.waitForNavigation()
 
     await page.waitForSelector(".tab_cadrehov", { timeout: 10000 })
-    .catch(() => {
-      page.screenshot({ path: './src/logs/files_puppeteer/after-login.png' })
+    .catch(async () => {
+        const loginError = await page.evaluate(() => {
+        return document.querySelector('[class="center b"]')?.textContent
+      })
+  
+      if(loginError){
+        page.browser().close()
+        throw new Error(loginError + " no GLPI.")
+      }
+
       page.browser().close()
       throw new Error("Elemento de entidade não carregou após login no Glpi.") 
     })
-    
-    const loginError = await page.evaluate(() => {
-      return document.querySelector('[class="center b"]')?.textContent
-    })
-
-    if(loginError){
-      page.browser().close()
-      throw new Error(loginError + " no GLPI.")
-    }
   }
 
   

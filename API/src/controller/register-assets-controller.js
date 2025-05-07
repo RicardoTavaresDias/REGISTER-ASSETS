@@ -8,7 +8,22 @@ import { env } from "../config/env.js"
 import { upload } from "../config/multer.js";
 import { LogRegisterAssets } from "../services/log-RegisterAssets.js";
 
+/**
+ * Controller responsável pelo gerenciamento de ativos via upload de arquivos de imagem ou Excel.
+ * Realiza leitura OCR com Tesseract, manipulação de planilha com ExcelJS e leitura com XLSX.
+ */
+
 export class RegisterAssetsController {
+
+  /**
+   * Realiza o upload de um arquivo de imagem e extrai o número de série (SN) usando OCR (Tesseract.js).
+   *
+   * @param {import('express').Request} request - Requisição HTTP com o arquivo em `multipart/form-data`.
+   * @param {import('express').Response} response - Resposta com o SN reconhecido ou erro.
+   *
+   * @returns {void}
+   */
+
   postFile(request, response) {
     try {
       upload.single("file")(request, response, async (error) => {
@@ -45,6 +60,15 @@ export class RegisterAssetsController {
       LogRegisterAssets({ error: error })
     }
   }
+
+  /**
+   * Insere os dados de ativos (equipamento, número de série, setor) em uma planilha Excel.
+   *
+   * @param {import('express').Request} request - Requisição contendo os dados no corpo da requisição.
+   * @param {import('express').Response} response - Resposta confirmando o registro na planilha ou erro.
+   *
+   * @returns {Promise<void>}
+   */
 
   async postAssets(request, response) {
     try {
@@ -87,6 +111,15 @@ export class RegisterAssetsController {
     }
   }
 
+   /**
+   * Retorna os dados de ativos armazenados na planilha Excel.
+   *
+   * @param {import('express').Request} request - Requisição HTTP.
+   * @param {import('express').Response} response - Resposta com os dados lidos da planilha.
+   *
+   * @returns {void}
+   */
+
   indexAssets (request, response){
     try {
       const xlsxFile = XLSX.readFile(env.XLSX);
@@ -102,6 +135,15 @@ export class RegisterAssetsController {
       });
     }
   }
+
+    /**
+   * Realiza o download da planilha Excel com os registros de ativos.
+   *
+   * @param {import('express').Request} request - Requisição HTTP.
+   * @param {import('express').Response} response - Resposta com o arquivo baixado ou erro.
+   *
+   * @returns {void}
+   */
 
   downloadAssets(request, response){
     try {

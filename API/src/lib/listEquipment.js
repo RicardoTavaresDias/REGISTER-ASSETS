@@ -1,3 +1,23 @@
+/**
+ * Gera um objeto contendo dados e URLs baseados nos tipos de equipamentos (computer, monitor, printer, others),
+ * formatados para uso no sistema GLPI.
+ * 
+ * @function listEquipment
+ * 
+ * @param {Object} valueData - Objeto contendo os dados de equipamentos categorizados.
+ * @param {Array} valueData.computer - Lista de computadores.
+ * @param {Array} valueData.monitor - Lista de monitores.
+ * @param {Array} valueData.printer - Lista de impressoras.
+ * @param {Array} valueData.others - Lista de periféricos (outros).
+ * 
+ * @returns {Object} Retorna um objeto com os seguintes campos para cada tipo de equipamento:
+ * 
+ * - `data`: Os dados correspondentes a esse tipo (vindo de `valueData`).
+ * - `path`: URL inicial de pesquisa no GLPI para o tipo de equipamento (antes do valor dinâmico).
+ * - `base`: Sufixo da URL da pesquisa, com parâmetros fixos e token CSRF do GLPI.
+ * 
+ */
+
 export const listEquipment = (valueData) => {
   const dataEquipment = {
     computer: {

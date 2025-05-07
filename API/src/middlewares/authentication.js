@@ -10,16 +10,21 @@ export function authentication(request, response, next){
   }
 
   // Extraindo string adm do authent
-  const base64Credentials = authent.split(" ")[1]
-  const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
-  const stringCredentials = credentials.split(":")[0]
+  /*
+    const base64Credentials = authent.split(" ")[1]
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
+    const stringCredentials = credentials.split(":")[0]
 
-  if(!stringCredentials){
-    return response.status(401).json({ message: "Realizar Autenticação" })
-  }
+    if(!stringCredentials){
+      return response.status(401).json({ message: "Realizar Autenticação" })
+    }
+  */
+
+  const token = authent.split(" ")[1]
+  const role = jwt.verify(token, jwtConfig.secret)
 
   request.headers = {
-    role: stringCredentials
+    role: role.sub
   }
   
   return next()

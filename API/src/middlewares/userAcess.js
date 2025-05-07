@@ -1,3 +1,4 @@
+import { compare } from "bcrypt"
 
 /**
  * Verifica se o usuário tem acesso com base nas roles (ex: admin ou member)
@@ -7,13 +8,13 @@
  */
 
 export function userAcess(role){
-  return (request, response, next) => {
+  return async (request, response, next) => {
 
     if(!request.headers){
       return response.status(401).json({ message: 'Não autorizado' })
     }
 
-    if(!role.includes(request.headers.role)){
+    if(!await compare(role[0], request.headers.role)){
       return response.status(401).json({ message: 'Não autorizado' })
     }
 

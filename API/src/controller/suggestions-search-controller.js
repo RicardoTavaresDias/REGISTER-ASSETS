@@ -2,7 +2,21 @@ import { z } from "zod"
 import { CrudFile } from "../services/CrudFile.js"
 import { Paths } from "../utils/Paths.js"
 
+/**
+ * Controller responsável pelo gerenciamento de sugestões de dados (ex: setores, locais, etc.).
+ * Lê e grava dados em arquivos usando paginação, validação com Zod e estrutura dinamicamente os caminhos.
+ */
+
 export class SuggestionsSearch {
+  /**
+   * Lista sugestões com paginação.
+   *
+   * @param {import('express').Request} request - Requisição contendo `page` e `limit` como query params, além de `type` como param.
+   * @param {import('express').Response} response - Retorna um array paginado das sugestões.
+   * 
+   * @returns {Promise<void>}
+   */
+
    async index(request, response) {  
     const page = request.query.page
     const limitPage = request.query.limit
@@ -17,6 +31,15 @@ export class SuggestionsSearch {
     }
     return response.status(200).json( dataRead )
   }
+
+  /**
+   * Cria novas sugestões, com validação condicional se o tipo for "sector".
+   * 
+   * @param {import('express').Request} request - Requisição contendo um array de sugestões no corpo e `type` como param.
+   * @param {import('express').Response} response - Retorna os dados adicionados ou erro de validação.
+   * 
+   * @returns {Promise<void>}
+   */
 
   async create(request, response){
     const suggestionsSchema = z.object({
@@ -48,6 +71,15 @@ export class SuggestionsSearch {
 
     response.status(201).json(dataWrite)
   }
+
+  /**
+   * Remove sugestões com base no campo `name` passado no corpo da requisição.
+   *
+   * @param {import('express').Request} request - Requisição com array de objetos contendo `name` para remoção.
+   * @param {import('express').Response} response - Resposta confirmando remoção dos dados.
+   * 
+   * @returns {Promise<void>}
+   */
 
   async remove(request, response){
     const suggestionsSchema = z.object({
