@@ -29,12 +29,12 @@ export function LogRegisterAssets({ error, message }){
     EQUIPAMENTO: {
       envPath: env.EQUIPMENT,
       itemKey: "equipment",
-      messageKey: "EQUIPAMENTO",
+      messageKey: "equipment",
     },
     SETOR: {
       envPath: env.SECTOR,
       itemKey: "sector",
-      messageKey: "SETOR",
+      messageKey: "sector",
     },
     // SN: {
     //   envPath: env.UNITS,
@@ -54,7 +54,6 @@ export function LogRegisterAssets({ error, message }){
         const filter = result.filter(value => 
           normalizeText(value[sources[key].itemKey])
             .includes(normalizeText(message[sources[key].messageKey]))) 
-            console.log(filter)
         if(!filter.length){
           registerLog({ 
             body: sources[key].itemKey, 

@@ -3,7 +3,9 @@ Anotação:
 - ✅ Padronizar normalize no codigo!
 - ✅ verificar o erro ao termino do puppeteer no arquivo glpi-inserter.js
 
-- Analizar os erros no codigo para não ter quebra do codigo
+⚠️ Analizar os erros no codigo para não ter quebra do codigo
+  - Realizar testes unitarios por partes do codigo.
+
 - corrigir indentificação numero de serie no texto da imagem para leitura demais numeros de serie
 
 - ✅verificar o processo do token na aplicação
@@ -11,9 +13,9 @@ Anotação:
 - ✅ verificar as rotas
 - ✅ documentar arquivos asset-import-glpi-controller.js e glpi-inserter.js
 
-- verificar o arquivo excel como padrão
-- analizar o caso de uso no arquivo excel exclusão de dados etc
+⚠️ REALIZAR A MUDANÇA PARA BANCO DE DADOS SQLITE, E SERA CARREGADO PELA PLANILHA BASE.
+  - verificar o arquivo excel como padrão
+  - analizar o caso de uso no arquivo excel exclusão de dados etc
+  - analizar uso do sistema em multiplos acessos
 
-- analiar uso do sistema em multiplos acessos
-- Realizar testes unitarios por partes do codigo.
 - verificar funcionamento no deploy

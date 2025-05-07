@@ -4,6 +4,8 @@ import ExcelJS from "exceljs";
 import multer from "multer";
 import path from "node:path";
 import { env } from "../config/env.js"
+import { z } from "zod"
+import { CrudFile } from "../services/CrudFile.js";
 
 import { upload } from "../config/multer.js";
 import { LogRegisterAssets } from "../services/log-RegisterAssets.js";
@@ -72,23 +74,38 @@ export class RegisterAssetsController {
 
   async postAssets(request, response) {
     try {
+      const mapUnits = await new CrudFile({ path: env.UNITS })._Read()
+
+      const bodySchema = z.object({
+        serie: z.string().optional(),
+        equipment: z.string().optional(),
+        sector: z.string().optional(),
+        units: z.string().refine(value => mapUnits.includes(value), {
+          message: "Unidade inválida"
+        })
+      })
+
+      const { serie, equipment, sector, units } = bodySchema.parse(request.body)
+
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(env.XLSX);
-      const sheet = workbook.getWorksheet("Ativos");
+      const sheet = workbook.getWorksheet(units.replace("/", " "));
 
       const xlsxFile = XLSX.readFile(env.XLSX);
-      const xlsxSheetName = xlsxFile.SheetNames[0];
+      const xlsxSheetName = xlsxFile.SheetNames = units.replace("/", " ");
       const xlsxSheet = xlsxFile.Sheets[xlsxSheetName];
       const data = XLSX.utils.sheet_to_json(xlsxSheet, { header: 2 });
       
-      let rowIndex = data.length + 2;
+      let rowIndex = data.length + 3;
 
       for (const item of [request.body]) {
-        const row = sheet.getRow(rowIndex);
+        const row = sheet.getRow(rowIndex); 
 
-        row.getCell(1).value = item.EQUIPAMENTO
-        row.getCell(2).value = item.SN,
-        row.getCell(3).value = item.SETOR,
+        row.getCell(1).value = sector,
+        row.getCell(2).value = equipment,
+        row.getCell(6).value = serie,
+
+        row.commit()
         rowIndex++;
       }
       
