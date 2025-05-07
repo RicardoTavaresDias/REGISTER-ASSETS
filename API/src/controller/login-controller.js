@@ -66,8 +66,8 @@ export class LoginController {
     const user = userSchema.parse(request.body)
    
     const tokenGlpi = jwt.sign({ sub: { 
-      user: CryptoJS.AES.encrypt(user.user, "secret").toString(),
-      password: CryptoJS.AES.encrypt(user.password, "secret").toString()
+      user: CryptoJS.AES.encrypt(user.user, jwtConfig.secret).toString(),
+      password: CryptoJS.AES.encrypt(user.password, jwtConfig.secret).toString()
     } }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
 
     response.status(200).json({ tokenGlpi })

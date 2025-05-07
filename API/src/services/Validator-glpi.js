@@ -3,6 +3,7 @@ import { env } from "../config/env.js"
 import { listEquipment } from "../lib/listEquipment.js"
 import { normalizeText } from '../lib/normalizeText.js'
 import CryptoJS from "crypto-js";
+import { jwtConfig } from "../config/token.js"
 
 /**
  * Classe responsável por validar ativos no GLPI via web scraping.
@@ -56,8 +57,8 @@ export class Validatorglpi{
 
   async loginGlpi(page){
     await page.goto(env.GLPIINITIAL, { timeout: 35000 })
-    await page.type("#login_name", CryptoJS.AES.decrypt(this.user.user, "secret").toString(CryptoJS.enc.Utf8))
-    await page.type("#login_password", CryptoJS.AES.decrypt(this.user.password, "secret").toString(CryptoJS.enc.Utf8))
+    await page.type("#login_name", CryptoJS.AES.decrypt(this.user.user, jwtConfig.secret).toString(CryptoJS.enc.Utf8))
+    await page.type("#login_password", CryptoJS.AES.decrypt(this.user.password, jwtConfig.secret).toString(CryptoJS.enc.Utf8))
     await page.type("#dropdown_auth1", "DC-SACA")
     await page.click(`[type="submit"]`)
 

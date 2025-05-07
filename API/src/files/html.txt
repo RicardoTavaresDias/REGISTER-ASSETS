@@ -2,14 +2,18 @@ Anotação:
 
 - ✅ Padronizar normalize no codigo!
 - ✅ verificar o erro ao termino do puppeteer no arquivo glpi-inserter.js
+
 - Analizar os erros no codigo para não ter quebra do codigo
 - corrigir indentificação numero de serie no texto da imagem para leitura demais numeros de serie
+
 - ✅verificar o processo do token na aplicação
 - ✅ tornar no arquivo authentication.js para token
-- verificar as rotas
+- ✅ verificar as rotas
+- ✅ documentar arquivos asset-import-glpi-controller.js e glpi-inserter.js
+
 - verificar o arquivo excel como padrão
 - analizar o caso de uso no arquivo excel exclusão de dados etc
+
 - analiar uso do sistema em multiplos acessos
-- ✅ documentar arquivos asset-import-glpi-controller.js e glpi-inserter.js
 - Realizar testes unitarios por partes do codigo.
 - verificar funcionamento no deploy

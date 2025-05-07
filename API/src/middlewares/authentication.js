@@ -21,13 +21,22 @@ export function authentication(request, response, next){
   */
 
   const token = authent.split(" ")[1]
-  const role = jwt.verify(token, jwtConfig.secret)
-
-  request.headers = {
-    role: role.sub
-  }
   
-  return next()
+  try {
+    const role = jwt.verify(token, jwtConfig.secret)
+
+    request.headers = {
+      role: role.sub
+    }
+    
+    return next()
+  }catch(error){
+    if(error.name === "TokenExpiredError"){
+      return response.status(401).json({ message: "Token expirado, realizar login." })
+    }
+    
+    return response.status(401).json({ message: "Token inválido." })
+  }
 }
 
 export function authenticationGlpi(request, response, next){
@@ -39,9 +48,18 @@ export function authenticationGlpi(request, response, next){
   }
 
   const token = authent.split(" ")[1]
-  const user = jwt.verify(token, jwtConfig.secret)
- 
-  request.headers = user.sub
+
+  try {
+    const user = jwt.verify(token, jwtConfig.secret)
   
-  return next()
+    request.headers = user.sub
+    
+    return next()
+  }catch(error){
+    if(error.name === "TokenExpiredError"){
+      return response.status(401).json({ message: "Token expirado, realizar login." })
+    }
+    
+    return response.status(401).json({ message: "Token inválido." })
+  }
 }
