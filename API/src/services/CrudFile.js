@@ -1,5 +1,6 @@
 import fs from "node:fs"
 import { pagination } from "../utils/pagination.js"
+import { normalizeText } from "../lib/normalizeText.js"
 
 /**
  * Abstrair operações de leitura, escrita e remoção de dados em arquivos JSON locais.
@@ -9,12 +10,11 @@ import { pagination } from "../utils/pagination.js"
  * @property { 'equipment' | 'sector' | 'units' } [type] Tipo do elemento. Só presente em suggestions.
  */ 
 
-/**
+ /**
  * @typedef {Object} RequestBody
  * @property { string } name schema request body
  * @property { number } [id] schema request body
  */
-
 
 export class CrudFile {
   constructor (objectPath){
@@ -48,7 +48,6 @@ export class CrudFile {
     return JSON.parse(data)
   }
 
-
   async addWriteFile(requestBody){
     const data = await this._Read()
     const dataJson = JSON.parse(data)
@@ -72,15 +71,12 @@ export class CrudFile {
 
 
   async removeWriteFile(RequestBody){
-    // Comparação ignorando acentos - exemplos: "Coração", "coracao" = true - são iguais
-    const notAccents = word => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-
     const data = await this._Read()
     const dataJson = JSON.parse(data)
 
     const namesBody = RequestBody.data.map(value => value.name)
     const remove = dataJson.filter(value => 
-      !notAccents(String(namesBody)).includes(notAccents(value[this.objectPath.type]))
+      !normalizeText(String(namesBody)).includes(normalizeText(value[this.objectPath.type]))
     )
     
     if(remove.length === dataJson.length){

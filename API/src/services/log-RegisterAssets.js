@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'path'
 import dayjs from 'dayjs'
 import { env } from "../config/env.js"
+import { normalizeText } from '../lib/normalizeText.js'
 
 /**
  * Registra um log de erro ou de item não encontrado nas sugestões.
@@ -20,10 +21,6 @@ import { env } from "../config/env.js"
  */
 
 export function LogRegisterAssets({ error, message }){
-
-  // Comparação ignorando acentos - exemplos: "Coração", "coracao" = true - são iguais
-  const notAccents = word => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-
   if(error){
     return registerLog({ body: 'error', value: error })
   }
@@ -55,8 +52,9 @@ export function LogRegisterAssets({ error, message }){
         }
         const result = JSON.parse(data)
         const filter = result.filter(value => 
-          notAccents(value[sources[key].itemKey])
-            .includes(notAccents(message[sources[key].messageKey]))) 
+          normalizeText(value[sources[key].itemKey])
+            .includes(normalizeText(message[sources[key].messageKey]))) 
+            console.log(filter)
         if(!filter.length){
           registerLog({ 
             body: sources[key].itemKey, 

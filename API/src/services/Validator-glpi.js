@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer'
 import { env } from "../config/env.js"
 import { listEquipment } from "../lib/listEquipment.js"
+import { normalizeText } from '../lib/normalizeText.js'
 
 /**
  * Classe responsável por validar ativos no GLPI via web scraping.
@@ -71,21 +72,7 @@ export class Validatorglpi{
     }
   }
 
-  /**
-   * Remove acentos e converte para minúsculas para facilitar comparações.
-   * @param {string} [text=""] Texto a ser normalizado.
-   * @returns {string} Texto sem acentos e em minúsculas.
-   */
-
-  _notAccents(text = ""){
-    return text.toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove acentos
-    .replace(/[^a-z0-9\s]/gi, "")                    // remove caracteres especiais
-    .replace(/\b0+(\d+)/g, "$1")                     // remove zeros à esquerda
-    .replace(/\s+/g, " ")                            // remove espaços extras
-    .trim();
-  }
-
+  
   /**
    * Acessa a página de um ativo e retorna seus dados do GLPI.
    * @param {puppeteer.Page} page - Página atual.
@@ -139,7 +126,7 @@ export class Validatorglpi{
 
   async glpiAssetValidation(dataGlpi, item){
     if(dataGlpi[0] === item.serie){
-      if(this._notAccents(String(item.sector)) === this._notAccents(String(dataGlpi[1]))){
+      if(normalizeText(String(item.sector)) === normalizeText(String(dataGlpi[1]))){
         this.existsAssets.push(
           { 
             sector: item.sector,

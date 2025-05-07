@@ -1,62 +1,15 @@
-PARTE 1 - COLOCAR ARVORE DA UNIDADE NA PAGINA INICIAL
+Anotação:
 
-document.querySelector("#global_entity_select").click()
-
-document.querySelector(".jstree-icon").click()
-
-[...document.querySelectorAll(".jstree-children .jstree-anchor")].filter(value => value.innerText.includes("UPA"))[0].click()
-
-
-=>
-
-[...document.querySelectorAll(".jstree-children .jstree-anchor")].filter(value => value.innerText.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("upa santo".normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()))
-
-
-
-
-
-
-
-
-PARTE 2 - ATUALIZAR SETOR
-
-https://glpi.ints.org.br/front/monitor.php?is_deleted=0&as_map=0&criteria%5B0%5D%5Blink%5D=AND&criteria%5B0%5D%5Bfield%5D=view&criteria%5B0%5D%5Bsearchtype%5D=contains&criteria%5B0%5D%5Bvalue%5D=BRC323023Q&search=Pesquisar&itemtype=Monitor&start=0&_glpi_csrf_token=8c16506e1bb040a53218865f21876257
-
-document.querySelectorAll('.tab_bg_2 td a')[0].click()
-
-document.querySelectorAll(".select2-hidden-accessible")[3].innerHTML = `<option value="707" title="VACINA - ">VACINA</option>`
-
-document.querySelector(".submit").click()
-
-
-
-
-
-
-
-
-
-PARTE 3 - CADASTRAR ATIVO NOVO
-
-Modelo em branco
-https://glpi.ints.org.br/front/monitor.form.php?id=-1&withtemplate=2
-
-HISA
-https://glpi.ints.org.br/front/monitor.form.php?id=2310&withtemplate=2
-
-PATRIMONIO MONITOR
-https://glpi.ints.org.br/front/monitor.form.php?id=2759&withtemplate=2
-
-SMS
-https://glpi.ints.org.br/front/monitor.form.php?id=1506&withtemplate=2
-
-
-
-document.querySelector("[name='name']").value = "BRC323013R"
-
-document.querySelectorAll(".select2-hidden-accessible")[3].innerHTML = `<option value="707" title="VACINA - ">VACINA</option>`
-
-document.querySelector("[name='serial']").value = "BRC323013R"
-
-document.querySelector(".submit").click()
-
+- ✅ Padronizar normalize no codigo!
+- verificar o erro ao termino do puppeteer no arquivo glpi-inserter.js
+- Analizar os erros no codigo para não ter quebra do codigo
+- corrigir indentificação numero de serie no texto da imagem para leitura demais numeros de serie
+- verificar o processo do token na aplicação
+- tornar no arquivo authentication.js para token
+- verificar as rotas
+- verificar o arquivo excel como padrão
+- analizar o caso de uso no arquivo excel exclusão de dados etc
+- analiar uso do sistema em multiplos acessos
+- documentar arquivos asset-import-glpi-controller.js e glpi-inserter.js
+- Realizar testes unitarios por partes do codigo.
+- verificar funcionamento no deploy

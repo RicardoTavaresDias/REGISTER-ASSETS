@@ -1,3 +1,9 @@
+/**
+   * Remove acentos e converte para minúsculas para facilitar comparações.
+   * @param {string} [text] Texto a ser normalizado.
+   * @returns {string} Texto sem acentos e em minúsculas.
+   */
+
 export function normalizeText(text){
   return text.toLowerCase()
   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")               // remove acentos
