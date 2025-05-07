@@ -9,12 +9,21 @@ import { Paths } from "../utils/Paths.js"
 
 export class SuggestionsSearch {
   /**
-   * Lista sugestões com paginação.
+   * Lista sugestões armazenadas em arquivo, com ou sem paginação.
    *
-   * @param {import('express').Request} request - Requisição contendo `page` e `limit` como query params, além de `type` como param.
-   * @param {import('express').Response} response - Retorna um array paginado das sugestões.
-   * 
+   * - Se `page` e `limit` forem fornecidos via query, os dados retornados serão paginados.
+   * - Caso contrário, retorna todos os dados.
+   *
+   * @param {import('express').Request} request - Requisição HTTP contendo:
+   *   - `type` (param): tipo da sugestão (ex: 'sector', 'local', etc.), para definir roteamento.
+   *   - `page` (query, opcional): número da página para paginação.
+   *   - `limit` (query, opcional): quantidade de itens por página.
+   *
+   * @param {import('express').Response} response - Retorna JSON com os dados das sugestões (paginados ou não).
+   *
    * @returns {Promise<void>}
+   *
+   * @throws {400} - Caso o arquivo não contenha dados ou esteja vazio.
    */
 
    async index(request, response) {  
@@ -24,12 +33,17 @@ export class SuggestionsSearch {
     const path = Paths({ typeController: "suggestions", type: request.params.type })
     const crudfile = new CrudFile(path)
     const readFile = await crudfile.readFile()
-    const dataRead = crudfile._GetPagination(page, limitPage, readFile)
 
-    if(!dataRead){
-      return response.status(400).json({ message: "Dados não encontrado." })
+    if(!readFile || !readFile.length){
+      return response.status(400).json({ message: "Dados não encontrados." })
     }
-    return response.status(200).json( dataRead )
+
+    if(page && limitPage){
+      const dataRead = crudfile._GetPagination(page, limitPage, readFile)
+      return response.status(200).json(dataRead)
+    }
+    
+    return response.status(200).json(readFile)
   }
 
   /**
