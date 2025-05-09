@@ -17,9 +17,9 @@ import { env } from "../config/env.js"
 export function Paths(element){
   const map = {
     suggestions: {
-      equipment: { path: env.EQUIPMENT, value: element },
-      sector: { path: env.SECTOR, value: element },
-      units: { path: env.UNITS, value: element }
+      equipment: { path: "type_Equipment", value: element },
+      sector: { path: "sector", value: element },
+      units: { path: "unit", value: element }
     },
     logs: {
       error: { path: env.LOGERROR },

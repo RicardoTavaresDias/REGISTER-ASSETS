@@ -5,7 +5,9 @@ import { assetProcessor, mapUpdateSectorId } from "../services/asset-processor.j
 import { GlpiInserter } from "../services/glpi-inserter.js"
 import { z } from "zod"
 import { CrudFile } from "../services/CrudFile.js"
-import { env } from "../config/env.js"
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 /**
  * Controller responsável pelas rotas de importação, atualização e criação de ativos no GLPI.
@@ -44,12 +46,13 @@ export class AssetsImportGlpiController {
     })
 
     const glpiInserter = new GlpiInserter(request.headers)
-    await glpiInserter._initBrowser()
+   await glpiInserter._initBrowser()
 
     const readerUpdateJson = JSON.parse(readerUpdate)
     
     const dataEquipment = assetProcessor(readerUpdateJson.updateAssets)
     const sectorUpdate = await mapUpdateSectorId(dataEquipment)
+    console.log(sectorUpdate)
     await glpiInserter.updateSectorGlpi(sectorUpdate)
 
     response.status(201).json({ message: `Setores da unidade, atualizado com sucesso.` })
@@ -64,10 +67,19 @@ export class AssetsImportGlpiController {
    */
 
   async create(request, response){
-    const readerUnits = await new CrudFile({ path: env.UNITS })._Read()
-    const readerUnitsJson = JSON.parse(readerUnits)
-    const mapUnits = readerUnitsJson.map(value => value.units)
-  
+    const readerUnits = await prisma.unit.findMany({ 
+      where: {
+        name: {
+          contains: request.body.units
+        },
+      },
+      select: {
+        name: true
+      }
+    })
+
+    const mapUnits = readerUnits.map(value => value.name)
+
     const unitsSchema = z.object({
       units: z.string().refine(value => mapUnits.includes(value), {
         message: "Unidade inválida"

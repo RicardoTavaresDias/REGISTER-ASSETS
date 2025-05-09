@@ -1,6 +1,9 @@
 import { z } from "zod"
 import { CrudFile } from "../services/CrudFile.js"
 import { Paths } from "../utils/Paths.js"
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 /**
  * Controller responsável pelo gerenciamento de sugestões de dados (ex: setores, locais, etc.).
@@ -26,7 +29,7 @@ export class SuggestionsSearch {
    * @throws {400} - Caso o arquivo não contenha dados ou esteja vazio.
    */
 
-   async index(request, response) {  
+   async index(request, response) {
     const page = request.query.page
     const limitPage = request.query.limit
 
@@ -43,17 +46,25 @@ export class SuggestionsSearch {
       return response.status(200).json(dataRead)
     }
     
-    return response.status(200).json(readFile)
+     return response.status(200).json(readFile.map(value => ({ name: value.name })))
   }
 
   /**
-   * Cria novas sugestões, com validação condicional se o tipo for "sector".
-   * 
-   * @param {import('express').Request} request - Requisição contendo um array de sugestões no corpo e `type` como param.
-   * @param {import('express').Response} response - Retorna os dados adicionados ou erro de validação.
-   * 
-   * @returns {Promise<void>}
-   */
+ * Cria novas sugestões, com validação condicional se o tipo for "sector".
+ * 
+ * - Se o `type` for `"sector"`, o campo `id` será obrigatório em cada sugestão.
+ * - Para outros tipos, apenas o campo `name` será exigido.
+ * 
+ * @param {import('express').Request} request - Requisição contendo:
+ *   - `params.type`: tipo da sugestão (ex: "sector", "local", etc.).
+ *   - `body`: array de sugestões a serem criadas. Cada sugestão deve conter ao menos `name`, e `id` se o tipo for "sector".
+ *
+ * @param {import('express').Response} response - Retorna os dados adicionados em caso de sucesso, ou mensagem de erro de validação.
+ * 
+ * @returns {Promise<void>}
+ * 
+ * @throws {400} - Se a validação falhar, retorna a primeira mensagem de erro encontrada.
+ */
 
   async create(request, response){
     const suggestionsSchema = z.object({
@@ -86,18 +97,26 @@ export class SuggestionsSearch {
     response.status(201).json(dataWrite)
   }
 
+
   /**
-   * Remove sugestões com base no campo `name` passado no corpo da requisição.
-   *
-   * @param {import('express').Request} request - Requisição com array de objetos contendo `name` para remoção.
-   * @param {import('express').Response} response - Resposta confirmando remoção dos dados.
-   * 
-   * @returns {Promise<void>}
-   */
+ * Remove sugestões com base no campo `name` passado no corpo da requisição.
+ * 
+ * - Cada item do corpo da requisição deve conter o campo `name` da sugestão a ser removida.
+ *
+ * @param {import('express').Request} request - Requisição contendo:
+ *   - `params.type`: tipo da sugestão (ex: "sector", "local", etc.), para localizar o arquivo correspondente.
+ *   - `body`: array de objetos, cada um com um campo `name` representando a sugestão a ser removida.
+ *
+ * @param {import('express').Response} response - Retorna os dados removidos, ou erro de validação.
+ * 
+ * @returns {Promise<void>}
+ * 
+ * @throws {400} - Se algum item do corpo não contiver `name` válido.
+ */
 
   async remove(request, response){
     const suggestionsSchema = z.object({
-      name: z.string().min(1, { message: "Adiciona name na 'params query' para remoção do item da lista."})
+      name: z.string().min(1, { message: "O campo 'name' é obrigatório para remover o item da lista."})
     })
 
     const suggestionsArraySchema = z.array(suggestionsSchema)

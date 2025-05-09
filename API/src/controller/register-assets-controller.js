@@ -5,7 +5,9 @@ import multer from "multer";
 import path from "node:path";
 import { env } from "../config/env.js"
 import { z } from "zod"
-import { CrudFile } from "../services/CrudFile.js";
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 import { upload } from "../config/multer.js";
 import { LogRegisterAssets } from "../services/log-RegisterAssets.js";
@@ -74,13 +76,13 @@ export class RegisterAssetsController {
 
   async postAssets(request, response) {
     try {
-      const mapUnits = await new CrudFile({ path: env.UNITS })._Read()
+      const mapUnits = await prisma.unit.findMany({ select: { name: true }})
 
       const bodySchema = z.object({
         serie: z.string().optional(),
         equipment: z.string().optional(),
         sector: z.string().optional(),
-        units: z.string().refine(value => mapUnits.includes(value), {
+        units: z.string().refine(value => mapUnits.map(element => element.name).includes(value), {
           message: "Unidade inválida"
         })
       })
@@ -141,7 +143,7 @@ export class RegisterAssetsController {
     try {
       const xlsxFile = XLSX.readFile(env.XLSX);
       const sheet = xlsxFile.Sheets["Ativos"];
-      const data = XLSX.utils.sheet_to_json(sheet, { header: 2 })
+      const data = XLSX.utils.sheet_to_json(sheet, { range: 11, header: ["Setor", "Equipamento", "Modelo", "Patrimonio", "F", "Serie"] })
       response.status(200).json(data)
     } catch(error){
       console.log(error)
