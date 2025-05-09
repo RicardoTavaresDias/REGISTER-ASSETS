@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Sector {
+  id Int @id @default(autoincrement())
+  name String
+  id_glpi String
+
+  asset Asset[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("sector")
+}
+
+model Equipment {
+  id Int @id @default(autoincrement())
+  idTypeEquipment Int @map("id_type_equipment")
+  serie String
+  
+  asset Asset[]
+  typeEquipment Type_Equipment @relation(fields: [idTypeEquipment], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("equipment")
+}
+
+model Type_Equipment {
+  id Int @id @default(autoincrement())
+  name String
+
+  equipment Equipment[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  @@map("type_equipment")
+}
+
+model Unit {
+  id Int @id @default(autoincrement())
+  name String
+
+  asset Asset[]
+
+  createAt DateTime @default(now()) @map("created_at")
+  updateAt DateTime? @updatedAt @map("updated_at")
+  @@map("unit")
+}
+
+model Asset {
+  id Int @id @default(autoincrement())
+  idsector Int @map("id_sector")
+  idequipment Int @map("id_equipment")
+  idunit Int @map("id_unit")
+
+  sector Sector @relation(fields: [idsector], references: [id])
+  equipment Equipment  @relation(fields: [idequipment], references: [id])
+  unit Unit @relation(fields: [idunit], references: [id])
+
+
+  createAt DateTime @default(now()) @map("created_at")
+  updateAt DateTime? @updatedAt @map("updated_at")
+  @@map("asset")
+}
