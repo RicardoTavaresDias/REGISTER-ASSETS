@@ -23,8 +23,6 @@ export function Paths(element){
   }
 
   if (!map[element.type]) throw new Error("Tipo inválido: equipment, sector ou units")
-
-  // Removendo typeController
   const  path = map[element.type] || ""
   
   return path 

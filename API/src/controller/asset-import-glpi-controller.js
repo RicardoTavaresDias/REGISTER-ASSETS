@@ -52,7 +52,6 @@ export class AssetsImportGlpiController {
     
     const dataEquipment = assetProcessor(readerUpdateJson.updateAssets)
     const sectorUpdate = await mapUpdateSectorId(dataEquipment)
-    console.log(sectorUpdate)
     await glpiInserter.updateSectorGlpi(sectorUpdate)
 
     response.status(201).json({ message: `Setores da unidade, atualizado com sucesso.` })

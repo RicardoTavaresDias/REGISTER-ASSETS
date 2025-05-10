@@ -56,11 +56,11 @@ export async function manualReviewLogger(dataValidator){ // ✅
     output += "+------------------------------------------+-----------------+--------------------+\n"
   }
 
-  await fs.promises.writeFile("./src/files/pendentes-para-cadastro.txt", JSON.stringify({
+  await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", JSON.stringify({
      updateAssets: dataValidator.updateAssets,
      doesNotExistsAssets: dataValidator.doesNotExistsAssets,
      updateAssets: dataValidator.updateAssets
   }, null, 2))
 
-  await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", output)
+  await fs.promises.writeFile("./src/files/pendentes-para-cadastro.txt", output)
 }

@@ -23,7 +23,7 @@ export class LoginController {
    */
 
   async create(request, response){ // ✅
-    const data = await new fs.promises.readFile(env.LOGIN)
+    const data = await fs.promises.readFile(env.LOGIN)
     const dataJson = JSON.parse(data)
 
     const { user, password, role } = dataJson

@@ -2,9 +2,6 @@ import { z } from "zod"
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
-  EQUIPMENT: z.string(),
-  SECTOR: z.string(),
-  UNITS: z.string(),
   XLSX: z.string(),
   LOGERROR: z.string(),
   LOGEQUIPMENT: z.string(),
