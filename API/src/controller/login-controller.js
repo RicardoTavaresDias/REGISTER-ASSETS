@@ -1,4 +1,4 @@
-import { CrudFile } from "../services/CrudFile.js"
+import fs from "node:fs"
 import { env } from "../config/env.js"
 import { compare, hash } from "bcrypt"
 import { z } from "zod"
@@ -22,8 +22,8 @@ export class LoginController {
    * @returns {Promise<void>}
    */
 
-  async create(request, response){
-    const data = await new CrudFile({ path: env.LOGIN })._Read()
+  async create(request, response){ // ✅
+    const data = await new fs.promises.readFile(env.LOGIN)
     const dataJson = JSON.parse(data)
 
     const { user, password, role } = dataJson
@@ -57,7 +57,7 @@ export class LoginController {
    * @throws {z.ZodError} - Se `user` ou `password` estiverem ausentes.
    */
 
-  async createGlpi(request, response){
+  async createGlpi(request, response){ // ✅
     const userSchema = z.object({
       user: z.string().min(1, { message: "Informe usuario e senha do GLPI." }),
       password: z.string().min(1, { message: "Informe usuario e senha do GLPI." })

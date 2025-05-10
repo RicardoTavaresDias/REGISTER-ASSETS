@@ -1,4 +1,4 @@
-import { CrudFile } from "./CrudFile.js"
+import fs from "node:fs"
 
 /**
  * Gera um relatório de ativos classificados em três grupos:
@@ -21,9 +21,7 @@ import { CrudFile } from "./CrudFile.js"
  * @returns {Promise<void>} Promessa que resolve após o arquivo ser escrito com sucesso.
  */
 
-export async function manualReviewLogger(dataValidator){
-  const crudFileTxt = new CrudFile({ path: "./src/files/pendentes-para-cadastro.txt" })
-  const crudFile = new CrudFile({ path: "./src/files/pendentes-para-cadastro.json" })
+export async function manualReviewLogger(dataValidator){ // ✅
 
   let output = "\n\nCadastros encontrados no glpi. \n\n"
   output += "+------------------------------------------+-----------------+--------------------+\n"
@@ -58,11 +56,11 @@ export async function manualReviewLogger(dataValidator){
     output += "+------------------------------------------+-----------------+--------------------+\n"
   }
 
-  await crudFile._Write( JSON.stringify({
+  await fs.promises.writeFile("./src/files/pendentes-para-cadastro.txt", JSON.stringify({
      updateAssets: dataValidator.updateAssets,
      doesNotExistsAssets: dataValidator.doesNotExistsAssets,
      updateAssets: dataValidator.updateAssets
   }, null, 2))
 
-  await crudFileTxt._Write(output)
+  await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", output)
 }

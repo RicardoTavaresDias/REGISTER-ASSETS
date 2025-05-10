@@ -16,24 +16,16 @@ import { env } from "../config/env.js"
 
 export function Paths(element){
   const map = {
-    suggestions: {
-      equipment: { path: "type_Equipment", value: element },
-      sector: { path: "sector", value: element },
-      units: { path: "unit", value: element }
-    },
-    logs: {
-      error: { path: env.LOGERROR },
-      equipment: { path: env.LOGEQUIPMENT },
-      sector: { path: env.LOGSECTOR },
-      units: { path: env.LOGUNITS }
-    }
+    error: { path: env.LOGERROR },
+    equipment: { path: env.LOGEQUIPMENT },
+    sector: { path: env.LOGSECTOR },
+    units: { path: env.LOGUNITS }
   }
 
-  if (!map[element.typeController][element.type]) throw new Error("Tipo inválido: equipment, sector ou units")
+  if (!map[element.type]) throw new Error("Tipo inválido: equipment, sector ou units")
 
   // Removendo typeController
-  const { path, value } = map[element.typeController][element.type] || ""
-  const { type } = value || ""
-    
-  return  value ? { path, type } : { path } 
+  const  path = map[element.type] || ""
+  
+  return path 
 }

@@ -91,10 +91,10 @@ export class RegisterAssetsController {
 
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(env.XLSX);
-      const sheet = workbook.getWorksheet(units.replace("/", " "));
+      const sheet = workbook.getWorksheet("Ativos");
 
       const xlsxFile = XLSX.readFile(env.XLSX);
-      const xlsxSheetName = xlsxFile.SheetNames = units.replace("/", " ");
+      const xlsxSheetName = xlsxFile.SheetNames = "Ativos";
       const xlsxSheet = xlsxFile.Sheets[xlsxSheetName];
       const data = XLSX.utils.sheet_to_json(xlsxSheet, { header: 2 });
       

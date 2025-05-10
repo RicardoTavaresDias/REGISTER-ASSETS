@@ -4,8 +4,8 @@ import { Validatorglpi } from "../services/Validator-glpi.js"
 import { assetProcessor, mapUpdateSectorId } from "../services/asset-processor.js"
 import { GlpiInserter } from "../services/glpi-inserter.js"
 import { z } from "zod"
-import { CrudFile } from "../services/CrudFile.js"
 import { PrismaClient } from '@prisma/client';
+import fs from "node:fs"
 
 const prisma = new PrismaClient();
 
@@ -20,7 +20,7 @@ export class AssetsImportGlpiController {
    * Gera um relatório de equipamentos existentes, não existentes ou com inconsistências.
    */
 
-  async index(request, response){
+  async index(request, response){ // ✅
     const cvsData = new CsvReader().csvData()
 
     const dataEquipment = assetProcessor(cvsData)
@@ -40,13 +40,13 @@ export class AssetsImportGlpiController {
    * @returns {Promise<void>}
    */
 
-  async update(request, response){
-    const readerUpdate = await new CrudFile({ path: "./src/files/pendentes-para-cadastro.json" })._Read().catch(() => {
+  async update(request, response){ // ✅
+    const readerUpdate = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json").catch(() => {
       throw new Error("Não foi encontrado a lista atualização dos setores, realizar verificação cadastros no glpi e na planilha." )
     })
-
+  
     const glpiInserter = new GlpiInserter(request.headers)
-   await glpiInserter._initBrowser()
+    await glpiInserter._initBrowser()
 
     const readerUpdateJson = JSON.parse(readerUpdate)
     
@@ -66,7 +66,7 @@ export class AssetsImportGlpiController {
    * @returns {Promise<void>}
    */
 
-  async create(request, response){
+  async create(request, response){ // ✅
     const readerUnits = await prisma.unit.findMany({ 
       where: {
         name: {
@@ -88,7 +88,7 @@ export class AssetsImportGlpiController {
 
     const { units } = unitsSchema.parse(request.body)
 
-    const readerCreate = await new CrudFile({ path: "./src/files/pendentes-para-cadastro.json" })._Read().catch(() => {
+    const readerCreate = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json").catch(() => {
       throw new Error("Não foi encontrado a lista atualização dos setores, realizar verificação cadastros no glpi e na planilha." )
     })
 

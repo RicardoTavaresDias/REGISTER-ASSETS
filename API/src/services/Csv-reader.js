@@ -9,7 +9,7 @@ export class CsvReader {
    * @returns {Array<Object>} Array de objetos com as colunas definidas no cabeçalho.
    */
 
-  _ReadCsv(){
+  _ReadCsv(){ // ✅
     const file = XLSX.readFile("./src/files/register_assets.xlsx")
     const SheetName = file.SheetNames[0]
     const sheet = file.Sheets[SheetName]
@@ -25,7 +25,7 @@ export class CsvReader {
    * @returns {Array<{ sector: string, equipment: string, serie: string }>}
    */
 
-  csvData(){
+  csvData(){ // ✅
     const data = this._ReadCsv()
     const dataFormat = data.map((value) => {
       if(value.Equipamento){
