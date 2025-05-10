@@ -3,6 +3,9 @@ import path from 'path'
 import dayjs from 'dayjs'
 import { env } from "../config/env.js"
 import { normalizeText } from '../lib/normalizeText.js'
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 /**
  * Registra um log de erro ou de item não encontrado nas sugestões.
@@ -20,19 +23,19 @@ import { normalizeText } from '../lib/normalizeText.js'
  * @param {string} params.value Conteúdo a ser escrito no log.
  */
 
-export function LogRegisterAssets({ error, message }){
+export async function LogRegisterAssets({ error, message }){
   if(error){
     return registerLog({ body: 'error', value: error })
   }
 
   const sources = {
     EQUIPAMENTO: {
-      envPath: env.EQUIPMENT,
+      envPath: "type_Equipment",
       itemKey: "equipment",
       messageKey: "equipment",
     },
     SETOR: {
-      envPath: env.SECTOR,
+      envPath: "sector",
       itemKey: "sector",
       messageKey: "sector",
     },
@@ -46,21 +49,20 @@ export function LogRegisterAssets({ error, message }){
   // Verifica o campo e ve se tem no JSON suggestions
   for(const key in sources){
     if(sources[key]){
-      fs.readFile(sources[key].envPath, (error, data) => {
-        if(error){
-          return console.error("Error ao ler o log")
-        }
-        const result = JSON.parse(data)
-        const filter = result.filter(value => 
-          normalizeText(value[sources[key].itemKey])
-            .includes(normalizeText(message[sources[key].messageKey]))) 
-        if(!filter.length){
-          registerLog({ 
-            body: sources[key].itemKey, 
-            value: message[sources[key].messageKey] 
-          })
+      const result = await prisma[sources[key].envPath].findFirst({
+        where: {
+          name: {
+            endsWith: normalizeText(message[sources[key].itemKey])
+          }
         }
       })
+       
+      if(!result){
+        registerLog({ 
+          body: sources[key].itemKey, 
+          value: message[sources[key].messageKey] 
+        })
+      }
     }
   }
 }

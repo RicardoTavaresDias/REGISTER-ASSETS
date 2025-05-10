@@ -14,6 +14,15 @@ async function seed() {
     INNER JOIN unit u ON u.id = a.id_unit;`
   );
 
+  /**
+   * Insert into para cadastrar unidade, equipamento e setor
+   * 
+   * START TRANSACTION;
+   *   INSERT INTO equipment (id_type_equipment, serie) values (1, "BRJ403CW33");
+   *   INSERT INTO asset (id_sector, id_unit, id_equipment) VALUE (63, 41, LAST_INSERT_ID());
+   * COMMIT;
+ */
+
   await prisma.$executeRawUnsafe(
     `INSERT INTO sector (id_glpi, name) VALUES 
     ("686", "ACOLHIMENTO"),

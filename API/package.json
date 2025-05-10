@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch --env-file .env ./src/server.js",
-    "seed" : "node ./prisma/seed.js"
+    "seed" : "node ./prisma/seed.js",
+    "teste": "node ./src/executePrisma.js"
   },
   "keywords": [],
   "author": "",
