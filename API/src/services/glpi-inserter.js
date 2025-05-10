@@ -127,14 +127,26 @@ export class GlpiInserter {
             //document.querySelector(".submit").click()
           }, { sector: item.sector, id: item.idSector })
 
-          await this.page.waitForSelector(`[name="name"]`, { timeout: 10000 })
+           //Submeter formulário
+            await Promise.all([
+              this.page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
+              this.page.click(".submit")
+            ]);
+
+            const errorGlpi = await this.page.evaluate(() => {
+              const exist = document.querySelector("#message_after_redirect_1")
+              return exist ? exist.innerText : null
+            })
+
+            if(errorGlpi){
+              throw new Error(errorGlpi.replaceAll("\n", " "));
+            }
 
           // TESTE
           //this.page.screenshot({ path: `./src/logs/files_puppeteer/${key}_${item.serie}.png` })
+          
         }
       }
-
-      //await this.page.waitForNavigation({timeout: 3000})
       
     }catch(error){
       this.page.browser().close()
@@ -170,25 +182,30 @@ export class GlpiInserter {
           await this.page.evaluate((data) => {
             document.querySelector("[name='name']").value = data.serie
             document.querySelectorAll(`.select2-hidden-accessible`)[3]
-              .innerHTML = `<option value=${"707"} title="${data.sector} - ">${data.sector + " " + data.idSector}</option>`
+              .innerHTML = `<option value=${data.idSector} title="${data.sector} - ">${data.sector}</option>`
             document.querySelector("[name='serial']").value = data.serie
-
-            //document.querySelector(".submit").click()
           }, item )
 
-          await this.page.waitForSelector(`[name="name"]`, { timeout: 10000 })
-          .catch(() => { 
-            throw new Error("Error no glpi, para cadastrar próximo ativo.") 
+           // Submeter formulário
+          await Promise.all([
+            this.page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
+            this.page.click(".submit")
+          ])
+
+          const errorGlpi = await this.page.evaluate(() => {
+            const exist = document.querySelector("#message_after_redirect_1")
+            return exist ? exist.innerText : null
           })
 
+          if(errorGlpi){
+          throw new Error(errorGlpi.replaceAll("\n", " "));
+        }
 
           // TESTE
           //this.page.screenshot({ path: `./src/logs/files_puppeteer/${key}_${item.serie}.png` })
 
         }
       }
-
-      //await this.page.waitForNavigation({timeout: 3000})
       
     }catch(error){
       this.page.browser().close()

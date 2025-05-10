@@ -142,7 +142,7 @@ export class Validatorglpi{
       }else {
         this.updateAssets.push(
           {
-            sector: dataGlpi[1] ? item.sector + " => " + dataGlpi[1] : 
+            sector: dataGlpi[1] ? dataGlpi[1].toLowerCase() + " => " + item.sector.toUpperCase() : 
             (item.sector !== "" && dataGlpi[1] === "") ?
               "n/a => " + item.sector : item.sector, 
             equipment: item.equipment, 
