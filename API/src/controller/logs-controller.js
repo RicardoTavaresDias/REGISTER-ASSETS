@@ -15,7 +15,7 @@ export class LogsController {
    * @returns {Promise<void>}
    */
 
-  async index(request, response){ // ✅
+  async index(request, response){
     const { path }  = Paths({ type: request.params.type })
     const data = await fs.promises.readFile(path)
     
@@ -32,7 +32,7 @@ export class LogsController {
    * @returns {Promise<void>}
    */
 
-  async remove(request, response){ // ✅
+  async remove(request, response){
     const { path }  = Paths({ type: request.params.type })
     await fs.promises.writeFile(path, "")
 

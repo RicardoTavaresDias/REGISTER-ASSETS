@@ -21,7 +21,7 @@ import fs from "node:fs"
  * @returns {Promise<void>} Promessa que resolve após o arquivo ser escrito com sucesso.
  */
 
-export async function manualReviewLogger(dataValidator){ // ✅
+export async function manualReviewLogger(dataValidator){
 
   let output = "\n\nCadastros encontrados no glpi. \n\n"
   output += "+------------------------------------------+-----------------+--------------------+\n"

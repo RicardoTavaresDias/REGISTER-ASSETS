@@ -20,7 +20,7 @@ export class AssetsImportGlpiController {
    * Gera um relatório de equipamentos existentes, não existentes ou com inconsistências.
    */
 
-  async index(request, response){ // ✅
+  async index(request, response){
     const cvsData = new CsvReader().csvData()
 
     const dataEquipment = assetProcessor(cvsData)
@@ -40,7 +40,7 @@ export class AssetsImportGlpiController {
    * @returns {Promise<void>}
    */
 
-  async update(request, response){ // ✅
+  async update(request, response){
     const readerUpdate = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json").catch(() => {
       throw new Error("Não foi encontrado a lista atualização dos setores, realizar verificação cadastros no glpi e na planilha." )
     })
@@ -65,7 +65,7 @@ export class AssetsImportGlpiController {
    * @returns {Promise<void>}
    */
 
-  async create(request, response){ // ✅
+  async create(request, response){
     const readerUnits = await prisma.unit.findMany({ 
       where: {
         name: {

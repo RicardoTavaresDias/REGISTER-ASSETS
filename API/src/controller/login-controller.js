@@ -22,7 +22,7 @@ export class LoginController {
    * @returns {Promise<void>}
    */
 
-  async create(request, response){ // ✅
+  async create(request, response){
     const data = await fs.promises.readFile(env.LOGIN)
     const dataJson = JSON.parse(data)
 
@@ -57,7 +57,7 @@ export class LoginController {
    * @throws {z.ZodError} - Se `user` ou `password` estiverem ausentes.
    */
 
-  async createGlpi(request, response){ // ✅
+  async createGlpi(request, response){
     const userSchema = z.object({
       user: z.string().min(1, { message: "Informe usuario e senha do GLPI." }),
       password: z.string().min(1, { message: "Informe usuario e senha do GLPI." })

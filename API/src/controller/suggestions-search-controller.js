@@ -29,7 +29,7 @@ export class SuggestionsSearch {
    * @throws {400} - Caso o arquivo não contenha dados ou esteja vazio.
    */
 
-   async index(request, response) { // ✅
+   async index(request, response) {
     const page = request.query.page
     const limitPage = request.query.limit
 
@@ -64,7 +64,7 @@ export class SuggestionsSearch {
  * @throws {400} - Se a validação falhar, retorna a primeira mensagem de erro encontrada.
  */
 
-  async create(request, response){ // ✅
+  async create(request, response){
     const suggestionsSchema = z.object({
       id_glpi: z.optional(z.string().min(1, { message: "Este campo é obrigatório. Informe id novo do GLPI." })),
       name: z.string().min(1, { message: "Este campo é obrigatório. Informe setor novo do GLPI." })
@@ -125,7 +125,7 @@ export class SuggestionsSearch {
  * @throws {400} - Se algum item do corpo não contiver `name` válido.
  */
 
-  async remove(request, response){ // ✅
+  async remove(request, response){
     const suggestionsSchema = z.object({
       name: z.string().min(1, { message: "O campo 'name' é obrigatório para remover o item da lista."})
     })

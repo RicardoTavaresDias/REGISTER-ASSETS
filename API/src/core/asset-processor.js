@@ -18,7 +18,7 @@ const prisma = new PrismaClient();
  *
  */
 
-export function assetProcessor(data) { // ✅
+export function assetProcessor(data) {
   const computer = data.filter(
     (value) => value.equipment.toLowerCase() === "CPU".toLowerCase()
   );
@@ -74,7 +74,7 @@ export function assetProcessor(data) { // ✅
  * Equipamentos com número de série "N/A" são removidos do resultado.
  */
 
-export async function mapUpdateSectorId(data) { // ✅
+export async function mapUpdateSectorId(data) {
   const newData = [];
 
   for(const item in data){
