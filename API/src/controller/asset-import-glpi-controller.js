@@ -1,8 +1,8 @@
-import { CsvReader } from "../services/Csv-reader.js"
-import { manualReviewLogger } from "../services/manual-review-logger.js"
-import { Validatorglpi } from "../services/Validator-glpi.js"
-import { assetProcessor, mapUpdateSectorId } from "../services/asset-processor.js"
-import { GlpiInserter } from "../services/glpi-inserter.js"
+import { CsvReader } from "../core/Csv-reader.js"
+import { manualReviewLogger } from "../core/manual-review-logger.js"
+import { Validatorglpi } from "../core/Validator-glpi.js"
+import { assetProcessor, mapUpdateSectorId } from "../core/asset-processor.js"
+import { GlpiInserter } from "../core/glpi-inserter.js"
 import { z } from "zod"
 import { PrismaClient } from '@prisma/client';
 import fs from "node:fs"

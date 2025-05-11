@@ -10,7 +10,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 import { upload } from "../config/multer.js";
-import { LogRegisterAssets } from "../services/log-RegisterAssets.js";
+import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
 
 /**
  * Controller responsável pelo gerenciamento de ativos via upload de arquivos de imagem ou Excel.

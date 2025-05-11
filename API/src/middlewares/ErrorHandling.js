@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import { LogRegisterAssets } from "../services/log-RegisterAssets.js";
+import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
 
 export function ErrorHandling(error, request, response, next) {
   if(error instanceof ZodError){
