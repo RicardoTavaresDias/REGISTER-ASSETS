@@ -43,6 +43,10 @@ export class Validatorglpi{
     return page
   }
 
+  async loginClose(){
+    this.browser.close()
+  }
+
   /**
    * Realiza o login no GLPI utilizando Puppeteer e credenciais criptografadas.
    * 

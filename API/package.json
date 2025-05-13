@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch --env-file .env ./src/server.js",
-    "seed" : "node ./prisma/seed.js",
+    "seed": "node ./prisma/seed.js",
     "teste": "node ./src/services/executePrisma.js"
   },
   "keywords": [],
@@ -14,6 +14,7 @@
   "dependencies": {
     "@prisma/client": "^6.7.0",
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",

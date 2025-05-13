@@ -5,6 +5,7 @@ import { z } from "zod"
 import jwt from "jsonwebtoken";
 import { jwtConfig } from "../config/token.js"
 import CryptoJS from "crypto-js";
+import { Validatorglpi } from "../core/Validator-glpi.js"
 
 /**
  * Controlador responsável pela autenticação de usuários locais
@@ -38,10 +39,14 @@ export class LoginController {
     if(user.includes(request.body.user) && comparePassword){
       const token = jwt.sign({ sub: roleHash }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
 
-      request.headers = {
-        role: roleHash
-      }
-      return response.status(200).json({ token })
+      response.cookie("accessToken", token, {
+        httpOnly: true, 
+        secure: false,
+        sameSite: "Lax",
+        maxAge: 15 * 60 * 1000 // 15m
+      })
+
+      return response.status(200).json({ message: "Login realizado com sucesso." })
     }
     return response.status(401).json({ message: "Usuario e senha incorretos." })        
   }
@@ -63,13 +68,27 @@ export class LoginController {
       password: z.string().min(1, { message: "Informe usuario e senha do GLPI." })
     })
 
-    const user = userSchema.parse(request.body)
-   
-    const tokenGlpi = jwt.sign({ sub: { 
-      user: CryptoJS.AES.encrypt(user.user, jwtConfig.secret).toString(),
-      password: CryptoJS.AES.encrypt(user.password, jwtConfig.secret).toString()
-    } }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
+    const userResult = userSchema.parse(request.body)
+    const user = { 
+      user: CryptoJS.AES.encrypt(userResult.user, jwtConfig.secret).toString(), 
+      password: CryptoJS.AES.encrypt(userResult.password, jwtConfig.secret).toString() 
+    }
 
-    response.status(200).json({ tokenGlpi })
+    const validatorglpi = new Validatorglpi()
+    const page = await validatorglpi.initBrowser()
+    validatorglpi._user(user)
+    await validatorglpi.loginGlpi(page)
+    await validatorglpi.loginClose()
+
+    const tokenGlpi = jwt.sign({ sub: user }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
+    
+    response.cookie("accessTokenGlpi", tokenGlpi, {
+      httpOnly: true, 
+      secure: false,
+      sameSite: "Lax",
+      maxAge: 15 * 60 * 1000 // 15m
+    })
+
+    response.status(200).json({ message: "Login realizado com sucesso." })
   }
 }

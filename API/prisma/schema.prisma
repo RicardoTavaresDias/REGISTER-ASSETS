@@ -22,11 +22,11 @@ model Sector {
 
 model Equipment {
   id Int @id @default(autoincrement())
-  idTypeEquipment Int @map("id_type_equipment")
+  idTypeEquipment Int @unique @map("id_type_equipment")
   serie String
   
   asset Asset[]
-  typeEquipment Type_Equipment @relation(fields: [idTypeEquipment], references: [id])
+  typeEquipment Type_Equipment @relation(fields: [idTypeEquipment], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -38,7 +38,7 @@ model Type_Equipment {
   id Int @id @default(autoincrement())
   name String
 
-  equipment Equipment[]
+  equipment Equipment?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -62,9 +62,9 @@ model Asset {
   idequipment Int @map("id_equipment")
   idunit Int @map("id_unit")
 
-  sector Sector @relation(fields: [idsector], references: [id])
-  equipment Equipment  @relation(fields: [idequipment], references: [id])
-  unit Unit @relation(fields: [idunit], references: [id])
+  sector Sector @relation(fields: [idsector], references: [id], onDelete: Cascade)
+  equipment Equipment  @relation(fields: [idequipment], references: [id], onDelete: Cascade)
+  unit Unit @relation(fields: [idunit], references: [id], onDelete: Cascade)
 
 
   createAt DateTime @default(now()) @map("created_at")

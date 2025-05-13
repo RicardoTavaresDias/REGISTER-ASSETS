@@ -25,7 +25,7 @@ export class AssetsImportGlpiController {
 
     const dataEquipment = assetProcessor(cvsData)
     const validatorglpi = new Validatorglpi(dataEquipment)
-    validatorglpi._user(request.headers)
+    validatorglpi._user(request.user)
     const dataValidator = await validatorglpi.glpiAssets()
 
     manualReviewLogger(dataValidator)

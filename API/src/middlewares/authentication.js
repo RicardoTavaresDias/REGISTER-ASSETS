@@ -3,29 +3,16 @@ import { jwtConfig } from "../config/token.js"
 
 export function authentication(request, response, next){
 
-  const authent = request.headers['authorization'];
+  const token = request.cookies?.accessToken;
   
-  if (!authent) {
+  if (!token) {
     return response.status(401).json({ message: "Realizar autenticação" });
   }
-
-  // Extraindo string adm do authent
-  /*
-    const base64Credentials = authent.split(" ")[1]
-    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii')
-    const stringCredentials = credentials.split(":")[0]
-
-    if(!stringCredentials){
-      return response.status(401).json({ message: "Realizar Autenticação" })
-    }
-  */
-
-  const token = authent.split(" ")[1]
   
   try {
     const role = jwt.verify(token, jwtConfig.secret)
 
-    request.headers = {
+    request.role = {
       role: role.sub
     }
     
@@ -41,18 +28,16 @@ export function authentication(request, response, next){
 
 export function authenticationGlpi(request, response, next){
 
-  const authent = request.headers['authorization']
+  const token = request.cookies?.accessTokenGlpi
   
-  if(!authent){
+  if(!token){
     return response.status(401).json({ message: "Realizar autenticação" });
   }
-
-  const token = authent.split(" ")[1]
 
   try {
     const user = jwt.verify(token, jwtConfig.secret)
   
-    request.headers = user.sub
+    request.user = user.sub
     
     return next()
   }catch(error){
