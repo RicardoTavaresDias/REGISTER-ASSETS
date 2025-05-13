@@ -28,19 +28,25 @@ export class LoginController {
    */
 
   async create(request, response){
+    const userSchema = z.object({
+      user: z.string().min(1, { message: "Informe usuario e senha." }),
+      password: z.string().min(1, { message: "Informe usuario e senha." })
+    })
+    const result = userSchema.parse(request.body)
+    
     const data = await fs.promises.readFile(env.LOGIN)
     const dataJson = JSON.parse(data)
 
     const { user, password, role } = dataJson
 
     const roleHash = await hash(role, 8)
-    const comparePassword = await compare(request.body.password, password)
+    const comparePassword = await compare(result.password, password)
 
-    if(!user.includes(request.body.user)){
+    if(!user.includes(result.user)){
       return response.status(401).json({ message: "Usuario não cadastrado no sistema." })
     }
    
-    if(user.includes(request.body.user) && comparePassword){
+    if(user.includes(result.user) && comparePassword){
       const token = jwt.sign({ sub: roleHash }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
 
       response.cookie("accessToken", token, {
