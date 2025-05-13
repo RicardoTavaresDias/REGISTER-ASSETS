@@ -43,7 +43,17 @@ export class Validatorglpi{
     return page
   }
 
-  async loginClose(){
+    /**
+   * Encerra a instância do navegador controlada pelo Puppeteer.
+   *
+   * Este método fecha o navegador que foi previamente iniciado com `puppeteer.launch()`.
+   * Deve ser chamado ao final do processo para liberar recursos.
+   *
+   * @async
+   * @returns {Promise<void>} Uma Promise que resolve quando o navegador for fechado.
+   */
+
+  async close(){
     this.browser.close()
   }
 
@@ -66,7 +76,7 @@ export class Validatorglpi{
     await page.type("#dropdown_auth1", "DC-SACA")
     await page.click(`[type="submit"]`)
 
-    await page.waitForSelector(".tab_cadrehov", { timeout: 10000 })
+    await page.waitForSelector("#c_logo", { timeout: 10000 })
     .catch(async () => {
         const loginError = await page.evaluate(() => {
         return document.querySelector('[class="center b"]')?.textContent

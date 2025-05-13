@@ -78,7 +78,7 @@ export class LoginController {
     const page = await validatorglpi.initBrowser()
     validatorglpi._user(user)
     await validatorglpi.loginGlpi(page)
-    await validatorglpi.loginClose()
+    await validatorglpi.close()
 
     const tokenGlpi = jwt.sign({ sub: user }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
     

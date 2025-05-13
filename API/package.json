@@ -4,12 +4,14 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch --env-file .env ./src/server.js",
-    "seed": "node ./prisma/seed.js",
     "teste": "node ./src/services/executePrisma.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "ISC", 
+  "prisma": {
+    "seed": "node ./prisma/seed.js", "comentarios": { "execute": "seed: npx prisma db seed | prisma: npx prisma migrate dev" }
+  },
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.7.0",

@@ -17,6 +17,7 @@ CREATE TABLE `equipment` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NULL,
 
+    UNIQUE INDEX `equipment_id_type_equipment_key`(`id_type_equipment`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -53,13 +54,13 @@ CREATE TABLE `asset` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `equipment` ADD CONSTRAINT `equipment_id_type_equipment_fkey` FOREIGN KEY (`id_type_equipment`) REFERENCES `type_equipment`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `equipment` ADD CONSTRAINT `equipment_id_type_equipment_fkey` FOREIGN KEY (`id_type_equipment`) REFERENCES `type_equipment`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `asset` ADD CONSTRAINT `asset_id_sector_fkey` FOREIGN KEY (`id_sector`) REFERENCES `sector`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `asset` ADD CONSTRAINT `asset_id_sector_fkey` FOREIGN KEY (`id_sector`) REFERENCES `sector`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `asset` ADD CONSTRAINT `asset_id_equipment_fkey` FOREIGN KEY (`id_equipment`) REFERENCES `equipment`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `asset` ADD CONSTRAINT `asset_id_equipment_fkey` FOREIGN KEY (`id_equipment`) REFERENCES `equipment`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `asset` ADD CONSTRAINT `asset_id_unit_fkey` FOREIGN KEY (`id_unit`) REFERENCES `unit`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `asset` ADD CONSTRAINT `asset_id_unit_fkey` FOREIGN KEY (`id_unit`) REFERENCES `unit`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
