@@ -1,11 +1,12 @@
 import { CsvReader } from "../core/Csv-reader.js"
-import { manualReviewLogger } from "../core/manual-review-logger.js"
-import { Validatorglpi } from "../core/Validator-glpi.js"
-import { assetProcessor, mapUpdateSectorId } from "../core/asset-processor.js"
-import { GlpiInserter } from "../core/glpi-inserter.js"
+import { manualReviewLogger } from "../core/assetReport.js"
+//import { Validatorglpi } from "../core/Validator-glpi.js"
+import { assetProcessor, mapUpdateSectorId } from "../core/activeDataProcessing.js"
+//import { GlpiInserter } from "../core/glpi-inserter.js"
 import { z } from "zod"
 import { PrismaClient } from '@prisma/client';
 import fs from "node:fs"
+import { GlpiAutomationService } from "../services/glpi/GlpiAutomationService.js"
 
 const prisma = new PrismaClient();
 
@@ -22,13 +23,12 @@ export class AssetsImportGlpiController {
 
   async index(request, response){
     const cvsData = new CsvReader().csvData()
-
     const dataEquipment = assetProcessor(cvsData)
-    const validatorglpi = new Validatorglpi(dataEquipment)
-    validatorglpi._user(request.user)
-    const dataValidator = await validatorglpi.glpiAssets()
 
+    const glpiAutomationService = new GlpiAutomationService(request.user)
+    const dataValidator = await glpiAutomationService.Assets(dataEquipment)
     manualReviewLogger(dataValidator)
+
     response.status(200).json({ message: "Relatório gerado com sucesso." })
   }
 

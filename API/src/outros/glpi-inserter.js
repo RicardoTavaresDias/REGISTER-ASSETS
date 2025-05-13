@@ -1,4 +1,4 @@
-import { Validatorglpi } from "./Validator-glpi.js"
+//import { Validatorglpi } from "./Validator-glpi.js"
 import { listEquipment } from "../lib/listEquipment.js"
 
 /**

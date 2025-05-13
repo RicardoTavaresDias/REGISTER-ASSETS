@@ -5,7 +5,7 @@ import { z } from "zod"
 import jwt from "jsonwebtoken";
 import { jwtConfig } from "../config/token.js"
 import CryptoJS from "crypto-js";
-import { Validatorglpi } from "../core/Validator-glpi.js"
+import { GlpiBrowser } from "../services/glpi/GlpiBrowser.js";
 
 /**
  * Controlador responsável pela autenticação de usuários locais
@@ -15,10 +15,14 @@ import { Validatorglpi } from "../core/Validator-glpi.js"
 export class LoginController {
 
   /**
-   * Realiza a autenticação de um usuário interno do sistema com base em um arquivo JSON.
+   * Autentica um usuário local com base em um arquivo de configuração.
    * 
-   * @param {import('express').Request} request - Requisição HTTP contendo `user` e `password` no corpo.
-   * @param {import('express').Response} response - Resposta com status de sucesso ou falha na autenticação.
+   * Lê um arquivo JSON com as credenciais do usuário (`env.LOGIN`), 
+   * compara as credenciais enviadas com as armazenadas e, se válidas,
+   * emite um token JWT e o define como cookie `accessToken`.
+   *
+   * @param {import("express").Request} request - Requisição HTTP contendo `user` e `password` no corpo.
+   * @param {import("express").Response} response - Resposta HTTP com token JWT ou mensagem de erro.
    * 
    * @returns {Promise<void>}
    */
@@ -51,15 +55,18 @@ export class LoginController {
     return response.status(401).json({ message: "Usuario e senha incorretos." })        
   }
 
-  /**
-   * Gera um token JWT para autenticação em serviços externos, como o GLPI.
+   /**
+   * Realiza login no GLPI utilizando o navegador controlado via Puppeteer.
    * 
-   * @param {import('express').Request} request - Requisição contendo `user` e `password` no corpo.
-   * @param {import('express').Response} response - Resposta com token JWT gerado.
+   * Recebe `user` e `password` no corpo da requisição, valida com Zod,
+   * encripta com AES, e autentica via `GlpiBrowser`. Se bem-sucedido,
+   * define um cookie `accessTokenGlpi` com o token JWT correspondente.
+   *
+   * @param {import("express").Request} request - Requisição HTTP com credenciais do GLPI.
+   * @param {import("express").Response} response - Resposta HTTP com status de login.
    * 
+   * @throws {z.ZodError} - Caso os campos estejam ausentes ou inválidos.
    * @returns {Promise<void>}
-   * 
-   * @throws {z.ZodError} - Se `user` ou `password` estiverem ausentes.
    */
 
   async createGlpi(request, response){
@@ -74,11 +81,10 @@ export class LoginController {
       password: CryptoJS.AES.encrypt(userResult.password, jwtConfig.secret).toString() 
     }
 
-    const validatorglpi = new Validatorglpi()
-    const page = await validatorglpi.initBrowser()
-    validatorglpi._user(user)
-    await validatorglpi.loginGlpi(page)
-    await validatorglpi.close()
+    const glpiBrowser = new GlpiBrowser(user)
+    await glpiBrowser.browser()
+    await glpiBrowser.login()
+    await glpiBrowser.browserClose()
 
     const tokenGlpi = jwt.sign({ sub: user }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
     

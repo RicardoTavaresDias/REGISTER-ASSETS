@@ -92,6 +92,7 @@ export class Validatorglpi{
     })
   }
 
+ /// ############################################################################################################################
   
   /**
    * Acessa a página de um ativo e retorna seus dados do GLPI.
@@ -180,8 +181,8 @@ export class Validatorglpi{
     const dataEquipment = listEquipment(this.data)
 
     try {
-      const page = await this.initBrowser()
-      await this.loginGlpi(page)
+      //const page = await this.initBrowser()
+      //await this.loginGlpi(page)
 
       for(const key in dataEquipment){
         const items = dataEquipment[key]
