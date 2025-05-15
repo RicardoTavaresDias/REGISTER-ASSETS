@@ -22,7 +22,7 @@ model Sector {
 
 model Equipment {
   id Int @id @default(autoincrement())
-  idTypeEquipment Int @unique @map("id_type_equipment")
+  idTypeEquipment Int @map("id_type_equipment")
   serie String
   
   asset Asset[]
@@ -38,7 +38,7 @@ model Type_Equipment {
   id Int @id @default(autoincrement())
   name String
 
-  equipment Equipment?
+  equipment Equipment[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")

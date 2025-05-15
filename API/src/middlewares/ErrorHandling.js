@@ -35,15 +35,15 @@ import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
 
 export function ErrorHandling(error, request, response, next) {
   if(error instanceof ZodError){
-    LogRegisterAssets({ error: error.issues[0].message   + error.stack + "\n" })
+    LogRegisterAssets({ error: " MESSAGE: " + error.issues[0].message + " STACK: " + error.stack + "\n" })
     return response.status(400).json({ message: error.issues[0].message }) 
   }
 
   if(error instanceof AppError){
-    LogRegisterAssets({ error: error.stack + "\n" })
+    LogRegisterAssets({ error: " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" })
     return response.status(error.statusCode).json({ message: error.message })
   }
 
-  LogRegisterAssets({ error: error.message })
-  response.status(500).json({ message: 'Error interno servidor!', error: error.stack + "\n" })
+  LogRegisterAssets({ error: " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" })
+  response.status(500).json({ message: 'Error interno servidor!', error: error?.stack + "\n" })
 }

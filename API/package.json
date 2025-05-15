@@ -8,9 +8,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC", 
+  "license": "ISC",
   "prisma": {
-    "seed": "node ./prisma/seed.js", "comentarios": { "execute": "seed: npx prisma db seed | prisma: npx prisma migrate dev" }
+    "seed": "node ./prisma/seed.js",
+    "comentarios": {
+      "execute": "seed: npx prisma db seed | prisma: npx prisma migrate dev"
+    }
   },
   "description": "",
   "dependencies": {
