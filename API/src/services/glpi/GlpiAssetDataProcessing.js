@@ -36,16 +36,20 @@ export class GlpiAssetDataProcessing {
         if(normalizeText(String(item.sector)) === normalizeText(String(dataGlpi[1]))){
           this.existsAssets.push(
             { 
+              id: String(item?.id),
               sector: item.sector,
+              idSector: item?.id_sector,
               equipment: item.equipment, 
               serie: item.serie 
             }) 
         }else {
           this.updateAssets.push(
             {
+              id: String(item?.id),
               sector: dataGlpi[1] ? dataGlpi[1].toLowerCase() + " => " + item.sector.toUpperCase() : 
               (item.sector !== "" && dataGlpi[1] === "") ?
                 "n/a => " + item.sector : item.sector, 
+              idSector: item?.id_sector,
               equipment: item.equipment, 
               serie: item.serie 
             }
@@ -53,7 +57,7 @@ export class GlpiAssetDataProcessing {
         }
       }else {
         this.doesNotExistsAssets.push(
-          { sector: item.sector, equipment: item.equipment, serie: item.serie }
+          { id: String(item?.id), sector: item.sector, idSector: item?.id_sector, equipment: item.equipment, serie: item.serie }
         )
       }
     }

@@ -53,7 +53,7 @@ export class LoginController {
         httpOnly: true, 
         secure: false,
         sameSite: "Lax",
-        maxAge: 15 * 60 * 1000 // 15m
+        maxAge: 24 * 60 * 60 * 1000 // 1d
       })
 
       return response.status(200).json({ message: "Login realizado com sucesso." })
@@ -98,7 +98,7 @@ export class LoginController {
       httpOnly: true, 
       secure: false,
       sameSite: "Lax",
-      maxAge: 15 * 60 * 1000 // 15m
+      maxAge: 24 * 60 * 60 * 1000 // 1d
     })
 
     response.status(200).json({ message: "Login realizado com sucesso." })

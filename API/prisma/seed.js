@@ -6,7 +6,7 @@ async function seed() {
   // select * from vw_assets
   await prisma.$executeRawUnsafe(
    `CREATE VIEW vw_assets AS
-    SELECT a.id AS asset, s.name AS sector, s.id_glpi AS id_sector, t.name AS equipment, e.serie AS serie, u.name AS unit
+    SELECT a.id, s.name AS sector, s.id_glpi AS id_sector, t.name AS equipment, e.serie AS serie, u.name AS unit
     FROM asset a 
     INNER JOIN sector s ON a.id_sector = s.id 
     INNER JOIN equipment e ON e.id = a.id_equipment

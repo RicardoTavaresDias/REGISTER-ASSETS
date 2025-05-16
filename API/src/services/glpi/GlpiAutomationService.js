@@ -8,7 +8,7 @@ export class GlpiAutomationService extends GlpiBrowser {
     super(user)
   }
 
-  async Assets(data){
+  async assets(data){
     await this.browser()
     await this.login()
     const dataEquipment = listEquipment(data)

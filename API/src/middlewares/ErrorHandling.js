@@ -45,5 +45,5 @@ export function ErrorHandling(error, request, response, next) {
   }
 
   LogRegisterAssets({ error: " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" })
-  response.status(500).json({ message: 'Error interno servidor!', error: error?.stack + "\n" })
+  response.status(500).json({ message: 'Error interno servidor!' })
 }

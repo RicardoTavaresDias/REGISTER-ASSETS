@@ -1,5 +1,5 @@
 import XLSX from "xlsx";
-
+import { randomUUID } from "crypto"
 
 export class CsvReader {
 
@@ -30,12 +30,14 @@ export class CsvReader {
     const dataFormat = data.map((value) => {
       if(value.Equipamento){
       return { 
+              id: randomUUID(),
               sector: value.Setor?.trim() || "", 
               equipment: value.Equipamento?.trim() || "", 
               serie: value.Serie?.trim() || ""
             }
       }
       return {
+        id: " ",
         sector: " ", 
         equipment: " ", 
         serie: " "

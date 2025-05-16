@@ -1,14 +1,12 @@
 import { CsvReader } from "../core/Csv-reader.js"
-import { manualReviewLogger } from "../core/assetReport.js"
+import { AssetReport } from "../core/AssetReport.js"
 //import { Validatorglpi } from "../core/Validator-glpi.js"
 import { assetProcessor, mapUpdateSectorId } from "../core/activeDataProcessing.js"
 //import { GlpiInserter } from "../core/glpi-inserter.js"
 import { z } from "zod"
-import { PrismaClient } from '@prisma/client';
+import { RepositoryAsset } from "../repositories/RepositoryAsset.js"
 import fs from "node:fs"
 import { GlpiAutomationService } from "../services/glpi/GlpiAutomationService.js"
-
-const prisma = new PrismaClient();
 
 /**
  * Controller responsável pelas rotas de importação, atualização e criação de ativos no GLPI.
@@ -16,18 +14,21 @@ const prisma = new PrismaClient();
 
 export class AssetsImportGlpiController {
 
-   /**
-   * Método responsável por validar os ativos lidos do arquivo CSV.
-   * Gera um relatório de equipamentos existentes, não existentes ou com inconsistências.
-   */
-
   async index(request, response){
-    const cvsData = new CsvReader().csvData()
-    const dataEquipment = assetProcessor(cvsData)
+    // PASSO SEGUINTE REALIZAT UPLOAD DO EXCEL
+    const read = await fs.promises.readdir("./src/files")
+    let data = null
 
+    if(read.includes("register_assets.xlsx")){
+      data = new CsvReader().csvData()
+    }else {
+      data = await new RepositoryAsset().searcAssetUnit("UBS/ESF Jardim Selma")
+    }
+
+    const dataEquipment = assetProcessor(data)
     const glpiAutomationService = new GlpiAutomationService(request.user)
-    const dataValidator = await glpiAutomationService.Assets(dataEquipment)
-    manualReviewLogger(dataValidator)
+    const dataValidator = await glpiAutomationService.assets(dataEquipment)
+    await new AssetReport().manualReviewLogger(dataValidator)
 
     response.status(200).json({ message: "Relatório gerado com sucesso." })
   }

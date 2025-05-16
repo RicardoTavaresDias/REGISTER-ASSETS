@@ -1,66 +1,103 @@
 import fs from "node:fs"
+import { AppError } from "../utils/AppError.js"
+import { pagination } from "../utils/pagination.js"
 
-/**
- * Gera um relatório de ativos classificados em três grupos:
- * 
- * 1. Ativos encontrados no GLPI.
- * 2. Ativos pendentes que precisam ser cadastrados no GLPI.
- * 3. Ativos que precisam ter o setor atualizado no GLPI.
- *
- * O relatório é formatado em texto tabular e salvo no arquivo:
- * `./src/files/pendentes-para-cadastro.txt`
- *
- * @param {Object} dataValidator - Objeto contendo listas de classificação dos ativos.
- * @param {Array<{ sector: string, equipment: string, serie: string }>} dataValidator.existsAssets 
- *   Lista de ativos que foram encontrados no GLPI.
- * @param {Array<{ sector: string, equipment: string, serie: string }>} dataValidator.doesNotExistsAssets 
- *   Lista de ativos ainda não cadastrados no GLPI.
- * @param {Array<{ sector: string, equipment: string, serie: string }>} dataValidator.updateAssets 
- *   Lista de ativos cujo setor precisa ser atualizado no GLPI.
- *
- * @returns {Promise<void>} Promessa que resolve após o arquivo ser escrito com sucesso.
- */
+export class AssetReport {
+  async manualReviewLogger(dataValidator){
 
-export async function manualReviewLogger(dataValidator){
-
-  let output = "\n\nCadastros encontrados no glpi. \n\n"
-  output += "+------------------------------------------+-----------------+--------------------+\n"
-  output += "|                  SETOR                   |   EQUIPAMENTO   |     N° SERIE       |\n"
-  output += "+------------------------------------------+-----------------+--------------------+\n"
-
-  for(const item of dataValidator.existsAssets){
-    output += `| ${item?.sector?.padEnd(40, " ")} | ${item?.equipment?.padEnd(15, " ")} | ${item?.serie?.padEnd(18, " ")} |\n`
+    let output = "\n\nCadastros encontrados no glpi. \n\n"
     output += "+------------------------------------------+-----------------+--------------------+\n"
-  }
+    output += "|                  SETOR                   |   EQUIPAMENTO   |     N° SERIE       |\n"
+    output += "+------------------------------------------+-----------------+--------------------+\n"
+
+    for(const item of dataValidator.existsAssets){
+      output += `| ${item?.sector?.padEnd(40, " ")} | ${item?.equipment?.padEnd(15, " ")} | ${item?.serie?.padEnd(18, " ")} |\n`
+      output += "+------------------------------------------+-----------------+--------------------+\n"
+    }
 
 
-  output += "\n\nCadastros pedentes para ser cadastrado no GLPI. \n\n"
-  output += "+--------------------------------+-----------------+--------------------+\n"
-  output += "|              SETOR             |   EQUIPAMENTO   |     N° SERIE       |\n"
-  output += "+--------------------------------+-----------------+--------------------+\n"
-
-  for(const item of dataValidator.doesNotExistsAssets ){
-    output += `| ${item?.sector?.padEnd(30, " ")} | ${item?.equipment?.padEnd(15, " ")} | ${item?.serie?.padEnd(18, " ")} |\n`
+    output += "\n\nCadastros pedentes para ser cadastrado no GLPI. \n\n"
     output += "+--------------------------------+-----------------+--------------------+\n"
-  }
+    output += "|              SETOR             |   EQUIPAMENTO   |     N° SERIE       |\n"
+    output += "+--------------------------------+-----------------+--------------------+\n"
+
+    for(const item of dataValidator.doesNotExistsAssets ){
+      output += `| ${item?.sector?.padEnd(30, " ")} | ${item?.equipment?.padEnd(15, " ")} | ${item?.serie?.padEnd(18, " ")} |\n`
+      output += "+--------------------------------+-----------------+--------------------+\n"
+    }
 
 
-  output += "\n\nCadastros para atualizar setor no GLPI . \n"
-  output += "SETOR DO GLPI => SETOR DA PLANILHA. \n\n"
-  output += "+------------------------------------------+-----------------+--------------------+\n"
-  output += "|                  SETOR                   |   EQUIPAMENTO   |     N° SERIE       |\n"
-  output += "+------------------------------------------+-----------------+--------------------+\n"
-
-  for(const item of dataValidator.updateAssets ){
-    output += `| ${item?.sector?.padEnd(40, " ")} | ${item?.equipment?.padEnd(15, " ")} | ${item?.serie?.padEnd(18, " ")} |\n`
+    output += "\n\nCadastros para atualizar setor no GLPI . \n"
+    output += "SETOR DO GLPI => SETOR DA PLANILHA. \n\n"
     output += "+------------------------------------------+-----------------+--------------------+\n"
+    output += "|                  SETOR                   |   EQUIPAMENTO   |     N° SERIE       |\n"
+    output += "+------------------------------------------+-----------------+--------------------+\n"
+
+    for(const item of dataValidator.updateAssets ){
+      output += `| ${item?.sector?.padEnd(40, " ")} | ${item?.equipment?.padEnd(15, " ")} | ${item?.serie?.padEnd(18, " ")} |\n`
+      output += "+------------------------------------------+-----------------+--------------------+\n"
+    }
+
+    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", JSON.stringify({
+      existsAssets: dataValidator.existsAssets,
+      doesNotExistsAssets: dataValidator.doesNotExistsAssets,
+      updateAssets: dataValidator.updateAssets
+    }, null, 2))
+
+    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.txt", output)
+
+    return {
+        existsAssets: dataValidator.existsAssets,
+        doesNotExistsAssets: dataValidator.doesNotExistsAssets,
+        updateAssets: dataValidator.updateAssets
+      }
   }
 
-  await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", JSON.stringify({
-     updateAssets: dataValidator.updateAssets,
-     doesNotExistsAssets: dataValidator.doesNotExistsAssets,
-     updateAssets: dataValidator.updateAssets
-  }, null, 2))
+  async indexPaginationReport({ typeReport, page, limit }){
+    const readFile = await fs.promises.readdir("./src/files")
+    if(!readFile.includes("pendentes-para-cadastro.json")){
+      throw new AppError("Relatório não gerado.", 400)
+    }
 
-  await fs.promises.writeFile("./src/files/pendentes-para-cadastro.txt", output)
+    const data = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json")
+    const dataJson = JSON.parse(data)
+
+    if(!dataJson[typeReport].length){
+      throw new AppError("Não tem registro.", 400)
+    }
+
+    const paginationDataJson = pagination(page, limit, dataJson[typeReport])
+    
+    return paginationDataJson
+  }
+
+  async removeReport({ typeReport, id }){
+    const readFile = await fs.promises.readdir("./src/files")
+    if(!readFile.includes("pendentes-para-cadastro.json")){
+      throw new AppError("Relatório não gerado.", 400)
+    }
+    
+    const data = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json")
+    const dataJson = JSON.parse(data)
+    
+    let restDataJson = null
+
+    if(typeReport === "existsAssets"){
+      const { existsAssets, ...rest } = dataJson
+      restDataJson = rest
+    }else if(typeReport === "doesNotExistsAssets"){
+      const { doesNotExistsAssets, ...rest } = dataJson
+      restDataJson = rest
+    }else {
+      const { updateAssets, ...rest } = dataJson
+      restDataJson = rest
+    }
+    
+    const RemoveItem = dataJson[typeReport].filter(value => !(value.id === id))
+
+    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", 
+      JSON.stringify({ [typeReport]: RemoveItem, ...restDataJson }, null, 4))
+    
+    return    
+  }
 }

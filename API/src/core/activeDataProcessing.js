@@ -20,7 +20,9 @@ const prisma = new PrismaClient();
 
 export function assetProcessor(data) {
   const computer = data.filter(
-    (value) => value.equipment.toLowerCase() === "CPU".toLowerCase()
+    (value) => value.equipment.toLowerCase().includes("CPU".toLowerCase()) ? 
+      value.equipment.toLowerCase() === "CPU".toLowerCase() :
+      value.equipment.toLowerCase() === "computador".toLowerCase()
   );
 
   const monitor = data.filter(
@@ -33,7 +35,10 @@ export function assetProcessor(data) {
 
   const others = data.filter(
     (value) =>
-      value.equipment.toLowerCase() !== "cpu".toLowerCase() &&
+      value.equipment.toLowerCase().includes("CPU".toLowerCase()) ? 
+        value.equipment.toLowerCase() !== "CPU".toLowerCase() :
+        value.equipment.toLowerCase() !== "computador".toLowerCase() &&
+
       value.equipment.toLowerCase() !== "monitor".toLowerCase() &&
       value.equipment.toLowerCase() !== "impressora".toLowerCase()
   );
