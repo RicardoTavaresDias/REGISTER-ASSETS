@@ -26,12 +26,12 @@ export class RepositoryAsset extends Repository {
    * @returns {Promise<void>} Retorna uma promessa resolvida ao final da criação.
    */
 
-  async createAssets(registerUnit, registerTypeEquipment, registerSector, serie){
+  async createAssets(value){
 
     const [ unit, type_Equipment, sector ] = await Promise.all([
-      this.searchByName({ tableDb: "unit", value: registerUnit }),
-      this.searchByName({ tableDb: "type_Equipment", value: registerTypeEquipment }),
-      this.searchByName({ tableDb: "sector", value: registerSector })
+      this.searchByName({ tableDb: "unit", value: value.unit }),
+      this.searchByName({ tableDb: "type_Equipment", value: value.equipment }),
+      this.searchByName({ tableDb: "sector", value: value.sector })
     ])
 
     if(!unit || !type_Equipment || !sector){
@@ -41,7 +41,7 @@ export class RepositoryAsset extends Repository {
      await this.prisma.$transaction(async (tx) => {
       const equipment = await tx.equipment.create({
         data: {
-          serie: serie,
+          serie: value.serie,
           typeEquipment: {
             connect: { id: type_Equipment.id }
           }
@@ -72,8 +72,24 @@ export class RepositoryAsset extends Repository {
    * @returns {Promise<Array<Object>>} Retorna uma lista de ativos encontrados para a unidade informada.
    */
 
-  async searcAsstUnit(unit){
+  async searcAssetUnit(unit){
     return await this.prisma.$queryRaw
       `SELECT * FROM vw_assets WHERE unit = ${unit}`
+  }
+
+    /**
+   * Busca todos os registros da view `vw_assets` sem filtros.
+   * 
+   * Utiliza `prisma.$queryRaw` para consultar diretamente a view no banco.
+   * 
+   * @returns {Promise<Array<Object>>} Lista completa de ativos da view.
+   * 
+   * @example
+   * const todosAtivos = await repository.searchByAsset();
+   */
+
+  async searchByAsset(){
+    return await this.prisma.$queryRaw
+      `SELECT * FROM vw_assets`
   }
 }

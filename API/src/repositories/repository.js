@@ -43,37 +43,4 @@ export class Repository {
       }
     })
   }
-
-  /**
-   * Busca todos os ativos da view `vw_assets` filtrando pelo nome da unidade.
-   * 
-   * Utiliza consulta direta com `prisma.$queryRaw`.
-   * 
-   * @param {string} value - Nome da unidade a ser filtrada.
-   * @returns {Promise<Array<Object>>} Lista de ativos encontrados na view.
-   * 
-   * @example
-   * const ativos = await repository.searchVw_assetsUnit("Hospital Central");
-   */
-
-  async searchVw_assetsUnit(value){
-    return await this.prisma.$queryRaw
-      `SELECT * FROM vw_assets WHERE unit = ${value}`
-  }
-
-   /**
-   * Busca todos os registros da view `vw_assets` sem filtros.
-   * 
-   * Utiliza `prisma.$queryRaw` para consultar diretamente a view no banco.
-   * 
-   * @returns {Promise<Array<Object>>} Lista completa de ativos da view.
-   * 
-   * @example
-   * const todosAtivos = await repository.searchVw_assets();
-   */
-
-  async searchVw_assets(){
-    return await this.prisma.$queryRaw
-      `SELECT * FROM vw_assets`
-  }
 }

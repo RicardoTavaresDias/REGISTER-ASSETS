@@ -74,18 +74,18 @@ export class RegisterAssetsController {
    */
 
   async create(request, response) {
-    const { unit, equipment, sector, serie } = await new Validation().assets(request.body)
+    const returnValidation = await new Validation().assets(request.body)
     LogRegisterAssets({ message: request.body })
 
-    const existsRegisterSerie = await new RepositoryAsset().searchVw_assetsUnit(unit)
+    const existsRegisterSerie = await new RepositoryAsset().searcAssetUnit(returnValidation.unit)
     if(existsRegisterSerie.find(value => value.serie.includes(request.body.serie))){
       return response.status(400).json({ message: "Número de serie já existe na unidade." })
     }
 
-    await new RepositoryAsset().createAssets(unit, equipment, sector, serie)
+    await new RepositoryAsset().createAssets(returnValidation)
     
-    response.status(200).json({
-      message: `SN: e Setor cadastrado com sucesso, na planilha Excel!`,
+    response.status(201).json({
+      message: "Cadastro salvo com sucesso.",
     })
   }
 
@@ -101,10 +101,10 @@ export class RegisterAssetsController {
 
   async index (request, response){
     const unit = await new Validation().unit(request.body)
-    const resultUnit = await new RepositoryAsset().searcAsstUnit(unit)
+    const resultUnit = await new RepositoryAsset().searcAssetUnit(unit)
 
     if(!resultUnit.length){
-      response.status(200).json({ message: "Nenhum ativo encontrado." })
+      response.status(400).json({ message: "Nenhum ativo encontrado." })
     }
 
     response.status(200).json(resultUnit)
