@@ -1,6 +1,6 @@
 import { AssetReport } from "../core/AssetReport.js"
 
-export class ReportPaginationController {
+export class ReportController {
   async getExistsAssets(request, response){
     const resultPagination = await new AssetReport()
       .indexPaginationReport({
