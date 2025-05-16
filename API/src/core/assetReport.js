@@ -72,6 +72,36 @@ export class AssetReport {
   }
 
   async removeReport({ typeReport, id }){
+    const data = await this.processingData({ typeReport, id })
+    
+    const RemoveItem = data.dataJson[typeReport].filter(value => !(value.id === id))
+
+    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", 
+      JSON.stringify({ [typeReport]: RemoveItem, ...data.restDataJson }, null, 4))
+    
+    return    
+  }
+
+  async updateReport({ typeReport, id, updates }){
+    const data = await this.processingData({ typeReport, id })
+
+    const updateItem = data.dataJson[typeReport].map(value => {
+      if(value.id === id){
+        return {
+          ...value,
+          ...updates
+        }
+      }
+      return value
+    })
+
+    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", 
+      JSON.stringify({ [typeReport]: updateItem, ...data.restDataJson }, null, 4))
+    
+    return  
+  }
+
+  async processingData(element){
     const readFile = await fs.promises.readdir("./src/files")
     if(!readFile.includes("pendentes-para-cadastro.json")){
       throw new AppError("Relatório não gerado.", 400)
@@ -82,22 +112,17 @@ export class AssetReport {
     
     let restDataJson = null
 
-    if(typeReport === "existsAssets"){
+    if(element.typeReport === "existsAssets"){
       const { existsAssets, ...rest } = dataJson
       restDataJson = rest
-    }else if(typeReport === "doesNotExistsAssets"){
+    }else if(element.typeReport === "doesNotExistsAssets"){
       const { doesNotExistsAssets, ...rest } = dataJson
       restDataJson = rest
     }else {
       const { updateAssets, ...rest } = dataJson
       restDataJson = rest
     }
-    
-    const RemoveItem = dataJson[typeReport].filter(value => !(value.id === id))
 
-    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", 
-      JSON.stringify({ [typeReport]: RemoveItem, ...restDataJson }, null, 4))
-    
-    return    
+    return { restDataJson, dataJson } 
   }
 }

@@ -60,4 +60,16 @@ export class Validation {
     const { unit } = bodySchema.parse(requestBody)
     return unit
   }
+
+  report(requestBody){
+    const reportSchema = z.object({
+      serie: z.string().optional(),
+      sector: z.string().optional(),
+      equipment: z.string().optional()
+    }).strict({ message: "Somente valores sector, serie e equipment." })
+
+    const dataSchema = reportSchema.parse(requestBody)
+
+    return dataSchema
+  }
 }

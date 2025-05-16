@@ -15,14 +15,14 @@ import { GlpiAutomationService } from "../services/glpi/GlpiAutomationService.js
 export class AssetsImportGlpiController {
 
   async index(request, response){
-    // PASSO SEGUINTE REALIZAT UPLOAD DO EXCEL
+    // PASSO SEGUINTE REALIZAR UPLOAD DO EXCEL
     const read = await fs.promises.readdir("./src/files")
     let data = null
 
     if(read.includes("register_assets.xlsx")){
       data = new CsvReader().csvData()
     }else {
-      data = await new RepositoryAsset().searcAssetUnit("UBS/ESF Jardim Selma")
+      data = await new RepositoryAsset().searcAssetUnit("UBS/ESF Jardim Selma") // VALIDAR UNIT NO REQUESTE BODY E PASSAR O VALOR NA CLASSE
     }
 
     const dataEquipment = assetProcessor(data)
