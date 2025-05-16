@@ -1,15 +1,28 @@
 import Tesseract from "tesseract.js";
 import multer from "multer";
-import { z } from "zod"
 import { RepositoryAsset } from "../repositories/RepositoryAsset.js"
-import { Repository } from "../repositories/Repository.js"
+import { Validation } from "../model/Validation.js"
 
 import { upload } from "../config/multer.js";
 import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
 
+/**
+ * Controller responsável por lidar com requisições relacionadas ao cadastro e consulta de ativos.
+ */
+
 export class RegisterAssetsController {
 
-  postFile(request, response) {
+  /**
+   * Manipula o upload de um arquivo de imagem contendo número de série (SN).
+   * Realiza OCR com Tesseract.js e tenta extrair palavras que iniciam com "BR" como indicativo de SN.
+   * 
+   * @param {import("express").Request} request - Objeto da requisição HTTP.
+   * @param {import("express").Response} response - Objeto da resposta HTTP.
+   * 
+   * @returns {Promise<void>} Retorna uma resposta HTTP com os dados extraídos ou mensagens de erro.
+   */
+
+  file(request, response) {
     try {
       upload.single("file")(request, response, async (error) => {
         if (error instanceof multer.MulterError) {
@@ -46,40 +59,49 @@ export class RegisterAssetsController {
     }
   }
 
-  async postAssets(request, response) {
-      const mapUnits = await new Repository().searchAll("unit")
+    /**
+   * Cria um novo registro de ativo no banco de dados.
+   * Valida os dados recebidos com a classe `Validation` e os utiliza para criar:
+   * - Unidade
+   * - Setor
+   * - Equipamento (com número de série)
+   * 
+   * @param {import("express").Request} request - Objeto da requisição HTTP contendo os dados no `body`.
+   * @param {import("express").Response} response - Objeto da resposta HTTP.
+   * 
+   * @returns {Promise<void>} Envia uma resposta de sucesso após cadastro no banco de dados.
+   */
 
-      const bodySchema = z.object({
-        serie: z.string().optional(),
-        equipment: z.string().optional(),
-        sector: z.string().optional(),
-        unit: z.string().refine(value => mapUnits.map(element => element.name).includes(value), {
-          message: "Unidade inválida"
-        })
-      })
-
-      const { serie, equipment, sector, unit } = bodySchema.parse(request.body)
-      LogRegisterAssets({ message: request.body })
-      await new RepositoryAsset().createAssts(unit, equipment, sector, serie)
-      
-      response.status(200).json({
-         message: `SN: e Setor cadastrado com sucesso, na planilha Excel!`,
-      })
+  async create(request, response) {
+    const { unit, equipment, sector, serie } = await new Validation().assets(request.body)
+    LogRegisterAssets({ message: request.body })
+    await new RepositoryAsset().createAssets(unit, equipment, sector, serie)
+    
+    response.status(200).json({
+      message: `SN: e Setor cadastrado com sucesso, na planilha Excel!`,
+    })
   }
 
-  // async indexAssets (request, response){
-  //    const mapUnits = await new RepositoryAssets().searchAll("unit")
+   /**
+   * Lista ativos de uma unidade específica.
+   * Valida o nome da unidade, consulta os ativos correspondentes e retorna os resultados.
+   * 
+   * @param {import("express").Request} request - Objeto da requisição HTTP com `{ unit }` no corpo.
+   * @param {import("express").Response} response - Objeto da resposta HTTP.
+   * 
+   * @returns {Promise<void>} Retorna a lista de ativos ou uma mensagem caso não haja resultados.
+   */
 
-  //    const bodySchema = z.object({
-  //       unit: z.string().refine(value => mapUnits.map(element => element.name).includes(value), {
-  //         message: "Unidade inválida"
-  //       })
-  //     })
+  async index (request, response){
+    const unit = await new Validation().unit(request.body)
+    const resultUnit = await new RepositoryAsset().searcAsstUnit(unit)
 
-  //     const { unit } = bodySchema.parse(request.body)
-  //     const resultUnit = await new Asset().searcAsstUnit(unit)
-  //     response.status(200).json(resultUnit)
-  // }
+    if(!resultUnit.length){
+      response.status(200).json({ message: "Nenhum ativo encontrado." })
+    }
+
+    response.status(200).json(resultUnit)
+  }
 
   // async downloadAssets(request, response){
   //   try {

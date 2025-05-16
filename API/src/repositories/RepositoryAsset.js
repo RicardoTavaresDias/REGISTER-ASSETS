@@ -1,8 +1,32 @@
 import { AppError } from "../utils/AppError.js"
 import { Repository } from "./Repository.js"
 
+/**
+ * Classe responsável por operações específicas relacionadas a ativos (assets),
+ * estendendo funcionalidades genéricas da classe Repository.
+ */
+
 export class RepositoryAsset extends Repository {
-  async createAssts(registerUnit, registerTypeEquipment, registerSector, serie){
+
+  /**
+   * Cria registros de equipamento e ativo associados à unidade, tipo de equipamento e setor informados.
+   * 
+   * Este método realiza as seguintes etapas dentro de uma transação:
+   * 1. Valida a existência da unidade, tipo de equipamento e setor na base de dados.
+   * 2. Cria um equipamento com a série informada.
+   * 3. Cria um ativo associando o equipamento criado à unidade e setor.
+   * 
+   * @param {string} registerUnit - Nome da unidade onde o ativo será registrado.
+   * @param {string} registerTypeEquipment - Tipo de equipamento a ser registrado.
+   * @param {string} registerSector - Nome do setor ao qual o ativo pertence.
+   * @param {string} serie - Número de série do equipamento.
+   * 
+   * @throws {AppError} Lança erro caso a unidade, tipo de equipamento ou setor não existam na base de dados.
+   * 
+   * @returns {Promise<void>} Retorna uma promessa resolvida ao final da criação.
+   */
+
+  async createAssets(registerUnit, registerTypeEquipment, registerSector, serie){
 
     const [ unit, type_Equipment, sector ] = await Promise.all([
       this.searchUnic({ tableDb: "unit", value: registerUnit }),
@@ -39,6 +63,14 @@ export class RepositoryAsset extends Repository {
       })
     })
   }
+
+  /**
+   * Realiza uma busca de ativos com base no nome da unidade, utilizando a view `vw_assets`.
+   * 
+   * @param {string} unit - Nome da unidade a ser consultada.
+   * 
+   * @returns {Promise<Array<Object>>} Retorna uma lista de ativos encontrados para a unidade informada.
+   */
 
   async searcAsstUnit(unit){
     return await this.prisma.$queryRaw
