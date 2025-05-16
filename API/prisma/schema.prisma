@@ -71,3 +71,20 @@ model Asset {
   updateAt DateTime? @updatedAt @map("updated_at")
   @@map("asset")
 }
+
+
+enum Role {
+  member
+  admin
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  user String
+  password String
+  role Role @default(member)
+  
+  createAt DateTime @default(now()) @map("created_at")
+  updateAt DateTime? @updatedAt @map("updated_at")
+  @@map("user")
+}

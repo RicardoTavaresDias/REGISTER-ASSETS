@@ -110,24 +110,35 @@ export class RegisterAssetsController {
     response.status(200).json(resultUnit)
   }
 
-  // async downloadAssets(request, response){
-  //   try {
 
 
-  //     response.download(pathDonload, (error) => {
-  //       if(error){
-  //         console.log("Erro no download:", error)
-  //         LogRegisterAssets({ error: error })
-  //         return response.status(404).json({ message: "File not found" })
-  //       }
-  //     })
-  //   } catch(error){
-  //     console.log(error)
-  //     LogRegisterAssets({ error: error })
-  //     response.status(422).json({
-  //         message: "Error ao acessar/ler o arquivo .xlsx",
-  //         error: error.message,
-  //     });
-  //   }
-  // }
+
+
+
+  
+  async upload(request, response){
+    response.status(200).json({ message: "Upload ok" })
+  }
+
+  async download(request, response){
+    response.status(200).json({ message: "Download ok" })
+    // try {
+
+
+    //   response.download(pathDonload, (error) => {
+    //     if(error){
+    //       console.log("Erro no download:", error)
+    //       LogRegisterAssets({ error: error })
+    //       return response.status(404).json({ message: "File not found" })
+    //     }
+    //   })
+    // } catch(error){
+    //   console.log(error)
+    //   LogRegisterAssets({ error: error })
+    //   response.status(422).json({
+    //       message: "Error ao acessar/ler o arquivo .xlsx",
+    //       error: error.message,
+    //   });
+    // }
+  }
 }

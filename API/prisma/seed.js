@@ -12,7 +12,11 @@ async function seed() {
     INNER JOIN equipment e ON e.id = a.id_equipment
     INNER JOIN type_equipment t ON t.id = e.id_type_equipment
     INNER JOIN unit u ON u.id = a.id_unit;`
-  );
+  )
+
+  await prisma.$executeRaw(
+    `INSERT INTO user (user, password, role) values ("admin", "$2b$08$WhSejL3Pc9uZ7LnxrsJMQuQq77EVAdvpLTajli7zcBGzDK3ReYitG");`
+  )
 
   /**
    * Insert into para cadastrar unidade, equipamento e setor
