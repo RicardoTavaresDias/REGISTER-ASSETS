@@ -33,14 +33,47 @@ export class Repository {
    * @returns {Promise<Object|null>} Retorna o primeiro registro encontrado com o nome correspondente ou `null` se não encontrar.
    * 
    * @example
-   * const unit = await repository.searchUnic({ tableDb: "unit", value: "Hospital Central" });
+   * const unit = await repository.searchByName({ tableDb: "unit", value: "Hospital Central" });
    */
 
-  async searchUnic({ tableDb, value }){
+  async searchByName({ tableDb, value }){
     return await this.prisma[tableDb].findFirst({
       where: {
         name: value
       }
     })
+  }
+
+  /**
+   * Busca todos os ativos da view `vw_assets` filtrando pelo nome da unidade.
+   * 
+   * Utiliza consulta direta com `prisma.$queryRaw`.
+   * 
+   * @param {string} value - Nome da unidade a ser filtrada.
+   * @returns {Promise<Array<Object>>} Lista de ativos encontrados na view.
+   * 
+   * @example
+   * const ativos = await repository.searchVw_assetsUnit("Hospital Central");
+   */
+
+  async searchVw_assetsUnit(value){
+    return await this.prisma.$queryRaw
+      `SELECT * FROM vw_assets WHERE unit = ${value}`
+  }
+
+   /**
+   * Busca todos os registros da view `vw_assets` sem filtros.
+   * 
+   * Utiliza `prisma.$queryRaw` para consultar diretamente a view no banco.
+   * 
+   * @returns {Promise<Array<Object>>} Lista completa de ativos da view.
+   * 
+   * @example
+   * const todosAtivos = await repository.searchVw_assets();
+   */
+
+  async searchVw_assets(){
+    return await this.prisma.$queryRaw
+      `SELECT * FROM vw_assets`
   }
 }

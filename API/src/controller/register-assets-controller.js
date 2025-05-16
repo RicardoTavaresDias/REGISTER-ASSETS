@@ -60,21 +60,28 @@ export class RegisterAssetsController {
   }
 
     /**
-   * Cria um novo registro de ativo no banco de dados.
-   * Valida os dados recebidos com a classe `Validation` e os utiliza para criar:
+   * Cadastra um novo ativo no banco de dados.
+   * Valida os dados recebidos e verifica se o número de série já existe.
+   * Em caso de duplicata na mesma unidade, retorna erro. Caso contrário, registra:
    * - Unidade
    * - Setor
-   * - Equipamento (com número de série)
+   * - Equipamento (com série)
    * 
-   * @param {import("express").Request} request - Objeto da requisição HTTP contendo os dados no `body`.
-   * @param {import("express").Response} response - Objeto da resposta HTTP.
+   * @param {import("express").Request} request - Requisição com { unit, equipment, sector, serie }.
+   * @param {import("express").Response} response - Resposta HTTP.
    * 
-   * @returns {Promise<void>} Envia uma resposta de sucesso após cadastro no banco de dados.
+   * @returns {Promise<void>} Confirma o cadastro ou informa erro.
    */
 
   async create(request, response) {
     const { unit, equipment, sector, serie } = await new Validation().assets(request.body)
     LogRegisterAssets({ message: request.body })
+
+    const existsRegisterSerie = await new RepositoryAsset().searchVw_assetsUnit(unit)
+    if(existsRegisterSerie.find(value => value.serie.includes(request.body.serie))){
+      return response.status(400).json({ message: "Número de serie já existe na unidade." })
+    }
+
     await new RepositoryAsset().createAssets(unit, equipment, sector, serie)
     
     response.status(200).json({

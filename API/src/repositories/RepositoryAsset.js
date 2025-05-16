@@ -29,9 +29,9 @@ export class RepositoryAsset extends Repository {
   async createAssets(registerUnit, registerTypeEquipment, registerSector, serie){
 
     const [ unit, type_Equipment, sector ] = await Promise.all([
-      this.searchUnic({ tableDb: "unit", value: registerUnit }),
-      this.searchUnic({ tableDb: "type_Equipment", value: registerTypeEquipment }),
-      this.searchUnic({ tableDb: "sector", value: registerSector })
+      this.searchByName({ tableDb: "unit", value: registerUnit }),
+      this.searchByName({ tableDb: "type_Equipment", value: registerTypeEquipment }),
+      this.searchByName({ tableDb: "sector", value: registerSector })
     ])
 
     if(!unit || !type_Equipment || !sector){
