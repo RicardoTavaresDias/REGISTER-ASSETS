@@ -1,8 +1,6 @@
 import { CsvReader } from "../core/Csv-reader.js"
 import { AssetReport } from "../core/AssetReport.js"
-//import { Validatorglpi } from "../core/Validator-glpi.js"
 import { assetProcessor, mapUpdateSectorId } from "../core/activeDataProcessing.js"
-//import { GlpiInserter } from "../core/glpi-inserter.js"
 import { z } from "zod"
 import { RepositoryAsset } from "../repositories/RepositoryAsset.js"
 import fs from "node:fs"
@@ -15,8 +13,28 @@ import { Validation } from "../model/Validation.js"
 
 export class AssetsImportGlpiController {
 
+  /**
+ * Gera um relatório de validação de ativos com base em dados de um arquivo Excel ou dados enviados no corpo da requisição.
+ * 
+ * Funcionalidade:
+ * - Verifica se o arquivo `register_assets.xlsx` está presente no diretório `./tmp`.
+ *   - Se presente, os dados são lidos via `CsvReader().csvData()`.
+ *   - Caso contrário, valida a unidade enviada no `request.body` e busca os dados no repositório (`RepositoryAsset().searcAssetUnit`).
+ * - Os dados brutos são processados pelo utilitário `assetProcessor`, padronizando a estrutura dos equipamentos.
+ * - Com os dados processados, o serviço de automação do GLPI (`GlpiAutomationService`) é utilizado para validar os ativos no GLPI.
+ * - O resultado da validação é registrado em arquivos `.txt` e `.json` usando `AssetReport().manualReviewLogger`.
+ * 
+ * @param {Object} request - Objeto da requisição HTTP.
+ * @param {Object} request.body - Dados enviados pelo cliente (caso não exista arquivo Excel).
+ * @param {Object} request.user - Informações do usuário autenticado, usadas pelo `GlpiAutomationService`.
+ * @param {Object} response - Objeto da resposta HTTP.
+ * 
+ * @returns {Object} Retorna uma resposta HTTP com status 200 e mensagem de sucesso.
+ * 
+ * @throws {Error} Caso ocorra erro na leitura do diretório, validação de dados, comunicação com o GLPI ou geração de relatório.
+ */
+
   async index(request, response){
-    // PASSO SEGUINTE REALIZAR UPLOAD DO EXCEL
     const read = await fs.promises.readdir("./tmp")
     let data = null
 
@@ -25,7 +43,7 @@ export class AssetsImportGlpiController {
     }else {
       const validationUnit = new Validation()
       const unit = await validationUnit.unit(request.body)
-      data = await new RepositoryAsset().searcAssetUnit(unit) // VALIDAR UNIT NO REQUESTE BODY E PASSAR O VALOR NA CLASSE
+      data = await new RepositoryAsset().searcAssetUnit(unit)
     }
 
     const dataEquipment = assetProcessor(data)
@@ -35,6 +53,17 @@ export class AssetsImportGlpiController {
 
     response.status(200).json({ message: "Relatório gerado com sucesso." })
   }
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    * Atualiza o setor de ativos já cadastrados no GLPI com base em um arquivo JSON previamente gerado.
