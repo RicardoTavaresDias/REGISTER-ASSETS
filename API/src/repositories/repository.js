@@ -43,4 +43,12 @@ export class Repository {
       }
     })
   }
+
+  async user(value){
+    return await this.prisma.user.findFirst({
+      where: {
+        user: value
+      }
+    })
+  }
 }

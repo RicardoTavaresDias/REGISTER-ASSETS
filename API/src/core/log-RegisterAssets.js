@@ -52,11 +52,11 @@ export async function LogRegisterAssets({ error, message }){
       const result = await prisma[sources[key].envPath].findFirst({
         where: {
           name: {
-            endsWith: normalizeText(message[sources[key].itemKey])
+            endsWith: message[sources[key].itemKey]
           }
         }
       })
-       
+
       if(!result){
         registerLog({ 
           body: sources[key].itemKey, 

@@ -38,13 +38,13 @@ export class AssetReport {
       output += "+------------------------------------------+-----------------+--------------------+\n"
     }
 
-    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", JSON.stringify({
+    await fs.promises.writeFile("./tmp/pendentes-para-cadastro.json", JSON.stringify({
       existsAssets: dataValidator.existsAssets,
       doesNotExistsAssets: dataValidator.doesNotExistsAssets,
       updateAssets: dataValidator.updateAssets
     }, null, 2))
 
-    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.txt", output)
+    await fs.promises.writeFile("./tmp/pendentes-para-cadastro.txt", output)
 
     return {
         existsAssets: dataValidator.existsAssets,
@@ -54,12 +54,12 @@ export class AssetReport {
   }
 
   async indexPaginationReport({ typeReport, page, limit }){
-    const readFile = await fs.promises.readdir("./src/files")
+    const readFile = await fs.promises.readdir("./tmp")
     if(!readFile.includes("pendentes-para-cadastro.json")){
       throw new AppError("Relatório não gerado.", 400)
     }
 
-    const data = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json")
+    const data = await fs.promises.readFile("./tmp/pendentes-para-cadastro.json")
     const dataJson = JSON.parse(data)
 
     if(!dataJson[typeReport].length){
@@ -76,7 +76,7 @@ export class AssetReport {
     
     const RemoveItem = data.dataJson[typeReport].filter(value => !(value.id === id))
 
-    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", 
+    await fs.promises.writeFile("./tmp/pendentes-para-cadastro.json", 
       JSON.stringify({ [typeReport]: RemoveItem, ...data.restDataJson }, null, 4))
     
     return    
@@ -95,19 +95,19 @@ export class AssetReport {
       return value
     })
 
-    await fs.promises.writeFile("./src/files/pendentes-para-cadastro.json", 
+    await fs.promises.writeFile("./tmp/pendentes-para-cadastro.json", 
       JSON.stringify({ [typeReport]: updateItem, ...data.restDataJson }, null, 4))
     
     return  
   }
 
   async processingData(element){
-    const readFile = await fs.promises.readdir("./src/files")
+    const readFile = await fs.promises.readdir("./tmp")
     if(!readFile.includes("pendentes-para-cadastro.json")){
       throw new AppError("Relatório não gerado.", 400)
     }
     
-    const data = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json")
+    const data = await fs.promises.readFile("./tmp/pendentes-para-cadastro.json")
     const dataJson = JSON.parse(data)
     
     let restDataJson = null

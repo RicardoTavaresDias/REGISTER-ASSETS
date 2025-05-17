@@ -72,4 +72,14 @@ export class Validation {
 
     return dataSchema
   }
+
+  user(requestBody){
+    const userSchema = z.object({
+      user: z.string().min(1, { message: "Informe usuario e senha." }),
+      password: z.string().min(1, { message: "Informe usuario e senha." })
+    })
+    const result = userSchema.parse(requestBody)
+
+    return result
+  }
 }

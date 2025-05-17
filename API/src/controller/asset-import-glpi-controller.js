@@ -16,7 +16,7 @@ export class AssetsImportGlpiController {
 
   async index(request, response){
     // PASSO SEGUINTE REALIZAR UPLOAD DO EXCEL
-    const read = await fs.promises.readdir("./src/files")
+    const read = await fs.promises.readdir("./tmp")
     let data = null
 
     if(read.includes("register_assets.xlsx")){
@@ -42,7 +42,7 @@ export class AssetsImportGlpiController {
    */
 
   async update(request, response){
-    const readerUpdate = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json").catch(() => {
+    const readerUpdate = await fs.promises.readFile("./tmp/pendentes-para-cadastro.json").catch(() => {
       throw new Error("Não foi encontrado a lista atualização dos setores, realizar verificação cadastros no glpi e na planilha." )
     })
   
@@ -88,7 +88,7 @@ export class AssetsImportGlpiController {
 
     const { units } = unitsSchema.parse(request.body)
 
-    const readerCreate = await fs.promises.readFile("./src/files/pendentes-para-cadastro.json").catch(() => {
+    const readerCreate = await fs.promises.readFile("./tmp/pendentes-para-cadastro.json").catch(() => {
       throw new Error("Não foi encontrado a lista atualização dos setores, realizar verificação cadastros no glpi e na planilha." )
     })
 
