@@ -13,7 +13,7 @@ import fs from "node:fs"
  * @type {import('multer').Multer}
  */
 
-export const upload = multer({
+export const uploadImage = multer({
 
   storage: multer.diskStorage({
     destination: (request, file, callback) => {
@@ -36,9 +36,7 @@ export const upload = multer({
     const filter = [ 
       "image/png", 
       "image/jpg", 
-      "image/jpeg", 
-      "application/vnd.ms-excel", // .xls
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx
+      "image/jpeg"
     ]
     if(filter.includes(file.mimetype)){
       callback(null, true)

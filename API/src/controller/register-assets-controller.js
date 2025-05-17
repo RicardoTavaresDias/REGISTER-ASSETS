@@ -3,7 +3,7 @@ import multer from "multer";
 import { RepositoryAsset } from "../repositories/RepositoryAsset.js"
 import { Validation } from "../model/Validation.js"
 
-import { upload } from "../config/multer.js";
+import { uploadImage } from "../config/multer.js";
 import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
 
 /**
@@ -24,7 +24,7 @@ export class RegisterAssetsController {
 
   file(request, response) {
     try {
-      upload.single("file")(request, response, async (error) => {
+      uploadImage.single("file")(request, response, async (error) => {
         if (error instanceof multer.MulterError) {
           LogRegisterAssets({ error: error.message })
           return response.status(422).json({ message: error.message });      
@@ -112,7 +112,7 @@ export class RegisterAssetsController {
 
 
 
-
+// Parte que será definido no final do processo
 
 
   
