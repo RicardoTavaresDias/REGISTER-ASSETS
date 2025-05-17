@@ -21,10 +21,10 @@ export class GlpiAssetDataProcessing {
       const indexNumberLocationPosition = tableBaseHtml.indexOf(searchLocationTable)
 
       const existsGlpi = [
-        document.querySelectorAll('.tab_bg_2 td')[indexNumberSeriePosition]?.textContent.replace("\t", ""), 
-        document.querySelectorAll('.tab_bg_2 td')[indexNumberLocationPosition]?.textContent
+        document.querySelectorAll('.tab_bg_2 td')[indexNumberSeriePosition]?.textContent.replace("\t", "").trim(), 
+        document.querySelectorAll('.tab_bg_2 td')[indexNumberLocationPosition]?.textContent.trim()
       ]
-      
+ 
       return existsGlpi
     })
 
@@ -32,7 +32,7 @@ export class GlpiAssetDataProcessing {
   }
 
   validateAssetsInGlpi(dataGlpi, item){
-      if(dataGlpi[0] === item.serie){
+      if(dataGlpi[0].toLowerCase() === item.serie.toLowerCase()){
         if(normalizeText(String(item.sector)) === normalizeText(String(dataGlpi[1]))){
           this.existsAssets.push(
             { 
