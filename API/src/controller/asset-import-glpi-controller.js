@@ -59,6 +59,9 @@ export class AssetsImportGlpiController {
 
 
 
+  // PARTE 2 PARA ELABORAR ATUALIZAR GLPI E CADASTRAR GLPI.
+
+
 
 
 

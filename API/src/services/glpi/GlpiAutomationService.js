@@ -75,5 +75,9 @@ export class GlpiAutomationService extends GlpiBrowser {
   }
 
 
+
+   // PARTE 2 PARA ELABORAR ATUALIZAR GLPI E CADASTRAR GLPI.
+
+
 }
 
