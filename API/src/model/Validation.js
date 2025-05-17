@@ -61,6 +61,20 @@ export class Validation {
     return unit
   }
 
+  /**
+ * Valida e extrai dados permitidos para atualização de relatório de ativos.
+ *
+ * Aceita apenas os campos: `serie`, `sector`, e `equipment`, todos opcionais.
+ * Caso o `requestBody` contenha outros campos, uma exceção será lançada.
+ *
+ * @param {Object} requestBody - Objeto com dados a serem validados.
+ * @param {string} [requestBody.serie] - Número de série do ativo (opcional).
+ * @param {string} [requestBody.sector] - Nome do setor (opcional).
+ * @param {string} [requestBody.equipment] - Tipo de equipamento (opcional).
+ * @returns {Object} Objeto validado contendo apenas os campos permitidos.
+ * @throws {ZodError} Lança erro se houver campos inválidos ou tipos incorretos.
+ */
+
   report(requestBody){
     const reportSchema = z.object({
       serie: z.string().optional(),
@@ -72,6 +86,18 @@ export class Validation {
 
     return dataSchema
   }
+
+  /**
+ * Valida dados de autenticação do usuário.
+ *
+ * Ambos os campos `user` e `password` são obrigatórios e devem ser strings não vazias.
+ *
+ * @param {Object} requestBody - Objeto contendo credenciais de login.
+ * @param {string} requestBody.user - Nome de usuário.
+ * @param {string} requestBody.password - Senha do usuário.
+ * @returns {Object} Objeto validado contendo `user` e `password`.
+ * @throws {ZodError} Lança erro se os campos estiverem ausentes ou vazios.
+ */
 
   user(requestBody){
     const userSchema = z.object({

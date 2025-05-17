@@ -1,5 +1,4 @@
 import { compare, hash } from "bcrypt"
-import { z } from "zod"
 import jwt from "jsonwebtoken";
 import { jwtConfig } from "../config/token.js"
 import CryptoJS from "crypto-js";
@@ -13,6 +12,14 @@ import { Validation } from "../model/Validation.js";
  */
 
 export class LoginController {
+
+/**
+   * Realiza o login tradicional no sistema.
+   * 
+   * @param {import('express').Request} request - Requisição HTTP com os dados do usuário.
+   * @param {import('express').Response} response - Resposta HTTP para o cliente.
+   * @returns {Promise<Response>} Retorna um cookie com token JWT e status HTTP.
+   */
 
   async create(request, response){
     const validation = new Validation()
@@ -45,6 +52,13 @@ export class LoginController {
     return response.status(401).json({ message: "Usuario e senha incorretos." })        
   }
 
+  /**
+   * Realiza login no sistema GLPI usando automação com navegador.
+   * 
+   * @param {import('express').Request} request - Requisição HTTP com os dados do usuário.
+   * @param {import('express').Response} response - Resposta HTTP para o cliente.
+   * @returns {Promise<Response>} Retorna um cookie com token JWT e status HTTP.
+   */
 
   async createGlpi(request, response){
     const validation = new Validation()

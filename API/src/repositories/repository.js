@@ -44,6 +44,21 @@ export class Repository {
     })
   }
 
+  /**
+ * Busca o primeiro usuário no banco de dados com base no nome de usuário fornecido.
+ *
+ * Utiliza o ORM Prisma para consultar a tabela `user` e retorna o primeiro resultado correspondente.
+ *
+ * @param {string} value - Nome de usuário a ser buscado.
+ * @returns {Promise<Object|null>} Retorna um objeto de usuário se encontrado, ou `null` se não existir.
+ * 
+ * @example
+ * const user = await repository.user("admin");
+ * if (user) {
+ *   console.log("Usuário encontrado:", user);
+ * }
+ */
+
   async user(value){
     return await this.prisma.user.findFirst({
       where: {

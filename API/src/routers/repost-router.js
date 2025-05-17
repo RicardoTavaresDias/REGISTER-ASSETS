@@ -6,8 +6,8 @@ const reportController = new ReportController()
 
 // Items Existente
 reportRouter.get("/existsAssets", reportController.getExistsAssets)
-//reportRouter.delete("/existsAssets/:id", reportController.removeExistsAssets)
-//reportRouter.patch("/existsAssets/:id", reportController.updateExistsAssets)
+reportRouter.delete("/existsAssets/:id", reportController.removeExistsAssets)
+reportRouter.patch("/existsAssets/:id", reportController.updateExistsAssets)
 
 // Items não Existente
 reportRouter.get("/doesNotExistsAssets", reportController.getDoesNotExistsAssets)

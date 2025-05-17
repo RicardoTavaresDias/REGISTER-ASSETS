@@ -33,7 +33,13 @@ export const upload = multer({
   }),
 
   fileFilter: (request, file, callback) => {
-    const filter = [ "image/png", "image/jpg", "image/jpeg" ]
+    const filter = [ 
+      "image/png", 
+      "image/jpg", 
+      "image/jpeg", 
+      "application/vnd.ms-excel", // .xls
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx
+    ]
     if(filter.includes(file.mimetype)){
       callback(null, true)
     }else {

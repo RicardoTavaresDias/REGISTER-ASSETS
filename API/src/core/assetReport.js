@@ -2,7 +2,22 @@ import fs from "node:fs"
 import { AppError } from "../utils/AppError.js"
 import { pagination } from "../utils/pagination.js"
 
+/**
+ * Classe responsável por gerenciar e manipular os relatórios de ativos validados (existentes, inexistentes e atualizações).
+ */
+
 export class AssetReport {
+
+ /**
+   * Gera logs dos ativos validados (existentes, pendentes e para atualização) e escreve arquivos `.json` e `.txt` com o conteúdo.
+   * 
+   * @param {Object} dataValidator - Objeto contendo os dados validados.
+   * @param {Array} dataValidator.existsAssets - Ativos que já existem no GLPI.
+   * @param {Array} dataValidator.doesNotExistsAssets - Ativos que ainda não existem no GLPI.
+   * @param {Array} dataValidator.updateAssets - Ativos que precisam de atualização de setor.
+   * @returns {Promise<Object>} Objeto com os mesmos dados salvos nos arquivos.
+   */
+
   async manualReviewLogger(dataValidator){
 
     let output = "\n\nCadastros encontrados no glpi. \n\n"
@@ -53,6 +68,17 @@ export class AssetReport {
       }
   }
 
+  /**
+   * Retorna os ativos de um tipo específico com paginação.
+   * 
+   * @param {Object} params
+   * @param {string} params.typeReport - Tipo do relatório: `existsAssets`, `doesNotExistsAssets`, `updateAssets`.
+   * @param {number|string} params.page - Página atual.
+   * @param {number|string} params.limit - Limite de itens por página.
+   * @returns {Promise<Object>} Dados paginados.
+   * @throws {AppError} Se o relatório não tiver sido gerado ou não houver registros.
+   */
+
   async indexPaginationReport({ typeReport, page, limit }){
     const readFile = await fs.promises.readdir("./tmp")
     if(!readFile.includes("pendentes-para-cadastro.json")){
@@ -71,6 +97,15 @@ export class AssetReport {
     return paginationDataJson
   }
 
+  /**
+   * Remove um ativo de um tipo específico de relatório, baseado no ID.
+   * 
+   * @param {Object} params
+   * @param {string} params.typeReport - Tipo do relatório.
+   * @param {string} params.id - ID do item a ser removido.
+   * @returns {Promise<void>}
+   */
+
   async removeReport({ typeReport, id }){
     const data = await this.processingData({ typeReport, id })
     
@@ -81,6 +116,16 @@ export class AssetReport {
     
     return    
   }
+
+  /**
+   * Atualiza um ativo de um tipo de relatório pelo ID, aplicando os novos dados.
+   * 
+   * @param {Object} params
+   * @param {string} params.typeReport - Tipo do relatório.
+   * @param {string} params.id - ID do item a ser atualizado.
+   * @param {Object} params.updates - Objeto com os dados a serem atualizados.
+   * @returns {Promise<void>}
+   */
 
   async updateReport({ typeReport, id, updates }){
     const data = await this.processingData({ typeReport, id })
@@ -100,6 +145,16 @@ export class AssetReport {
     
     return  
   }
+
+    /**
+   * Lê o arquivo de relatório e separa os dados do tipo de relatório solicitado dos demais.
+   * 
+   * @param {Object} element
+   * @param {string} element.typeReport - Tipo de relatório.
+   * @param {string} element.id - ID do item (opcional, usado em update/remove).
+   * @returns {Promise<{ restDataJson: Object, dataJson: Object }>} Dados processados.
+   * @throws {AppError} Se o arquivo de relatório não existir.
+   */
 
   async processingData(element){
     const readFile = await fs.promises.readdir("./tmp")

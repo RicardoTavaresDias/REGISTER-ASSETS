@@ -19,11 +19,18 @@ export class CsvReader {
   }
 
   /**
-   * Lê o arquivo `register_assets.xlsx` e extrai os dados formatados.
-   * Ignora as 11 primeiras linhas e retorna objetos com `sector`, `equipment` e `serie`.
-   *
-   * @returns {Array<{ sector: string, equipment: string, serie: string }>}
-   */
+ * Lê dados de um CSV e formata cada linha em um objeto estruturado com `id`, `sector`, `equipment` e `serie`.
+ * 
+ * - Utiliza o método interno `_ReadCsv()` para carregar os dados brutos do arquivo.
+ * - Cada entrada com campo `Equipamento` presente é formatada e recebe um `UUID` único.
+ * - Entradas vazias ou incompletas são descartadas após o filtro.
+ * 
+ * @returns {Array<Object>} Lista de objetos formatados com as propriedades:
+ * - `id`: string (UUID gerado)
+ * - `sector`: string (valor do campo "Setor" no CSV)
+ * - `equipment`: string (valor do campo "Equipamento" no CSV)
+ * - `serie`: string (valor do campo "Serie" no CSV)
+ */
 
   csvData(){
     const data = this._ReadCsv()
