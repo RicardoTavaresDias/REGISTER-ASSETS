@@ -18,29 +18,43 @@ export class CsvReader {
     return data
   }
 
-  /**
- * Lê dados de um CSV e formata cada linha em um objeto estruturado com `id`, `sector`, `equipment` e `serie`.
+/**
+ * Lê e formata os dados de um arquivo CSV, transformando cada linha em um objeto estruturado.
  * 
- * - Utiliza o método interno `_ReadCsv()` para carregar os dados brutos do arquivo.
- * - Cada entrada com campo `Equipamento` presente é formatada e recebe um `UUID` único.
- * - Entradas vazias ou incompletas são descartadas após o filtro.
+ * Funcionalidades:
+ * - Utiliza o método interno `_ReadCsv()` para obter os dados brutos do CSV.
+ * - Converte registros com o campo `Equipamento` igual a "Desktop" (case-insensitive) para "CPU".
+ * - Formata os valores dos campos `Setor`, `Equipamento` e `Serie` com `trim()` (caso sejam strings).
+ * - Gera um `UUID` único para cada item válido.
+ * - Registros com todos os campos (`sector`, `equipment`, `serie`) vazios são descartados.
  * 
- * @returns {Array<Object>} Lista de objetos formatados com as propriedades:
- * - `id`: string (UUID gerado)
- * - `sector`: string (valor do campo "Setor" no CSV)
- * - `equipment`: string (valor do campo "Equipamento" no CSV)
- * - `serie`: string (valor do campo "Serie" no CSV)
+ * @returns {Array<Object>} Array de objetos com estrutura padronizada contendo:
+ *  - `id` {string} UUID único para o registro.
+ *  - `sector` {string} Valor tratado do campo "Setor" (ou string vazia).
+ *  - `equipment` {string} Valor tratado do campo "Equipamento" (ou string vazia).
+ *  - `serie` {string} Valor tratado do campo "Serie" (ou string vazia).
  */
 
   csvData(){
     const data = this._ReadCsv()
-    const dataFormat = data.map((value) => {
+
+    const validateDataComputer = data.map(value => {
+      if(value.Equipamento.toLowerCase() === "desktop".toLowerCase()){
+        return {
+          ...value,
+          Equipamento: "CPU"
+        }
+      }
+      return value
+    })
+
+    const dataFormat = validateDataComputer.map((value) => {
       if(value.Equipamento){
       return { 
               id: randomUUID(),
-              sector: value.Setor?.trim() || "", 
-              equipment: value.Equipamento?.trim() || "", 
-              serie: value.Serie?.trim() || ""
+              sector: typeof value.Setor === 'string' ? value.Setor.trim() : "", 
+              equipment: typeof value.Equipamento === 'string' ? value.Equipamento.trim() : "", 
+              serie: typeof value.Serie === 'string' ? value.Serie.trim() : ""
             }
       }
       return {

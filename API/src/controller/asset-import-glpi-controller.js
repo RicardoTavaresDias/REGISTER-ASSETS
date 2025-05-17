@@ -7,6 +7,7 @@ import { z } from "zod"
 import { RepositoryAsset } from "../repositories/RepositoryAsset.js"
 import fs from "node:fs"
 import { GlpiAutomationService } from "../services/glpi/GlpiAutomationService.js"
+import { Validation } from "../model/Validation.js"
 
 /**
  * Controller responsável pelas rotas de importação, atualização e criação de ativos no GLPI.
@@ -22,7 +23,9 @@ export class AssetsImportGlpiController {
     if(read.includes("register_assets.xlsx")){
       data = new CsvReader().csvData()
     }else {
-      data = await new RepositoryAsset().searcAssetUnit("UBS/ESF Jardim Selma") // VALIDAR UNIT NO REQUESTE BODY E PASSAR O VALOR NA CLASSE
+      const validationUnit = new Validation()
+      const unit = await validationUnit.unit(request.body)
+      data = await new RepositoryAsset().searcAssetUnit(unit) // VALIDAR UNIT NO REQUESTE BODY E PASSAR O VALOR NA CLASSE
     }
 
     const dataEquipment = assetProcessor(data)

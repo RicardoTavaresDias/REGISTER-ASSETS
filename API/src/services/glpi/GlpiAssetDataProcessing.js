@@ -27,7 +27,7 @@ export class GlpiAssetDataProcessing {
       
       return existsGlpi
     })
-    
+
     return dataGlpi
   }
 

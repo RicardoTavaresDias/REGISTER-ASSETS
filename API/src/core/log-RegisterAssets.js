@@ -2,7 +2,6 @@ import fs from 'node:fs'
 import path from 'path'
 import dayjs from 'dayjs'
 import { env } from "../config/env.js"
-import { normalizeText } from '../lib/normalizeText.js'
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
