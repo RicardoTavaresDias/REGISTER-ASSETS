@@ -39,6 +39,10 @@ export class CsvReader {
     const data = this._ReadCsv()
 
     const validateDataComputer = data.map(value => {
+      if(!value.Setor || !value.Equipamento){
+        return ""
+      }
+
       if(value.Equipamento.toLowerCase() === "desktop".toLowerCase()){
         return {
           ...value,
@@ -46,7 +50,7 @@ export class CsvReader {
         }
       }
       return value
-    })
+    }).filter(value => !(value === ""))
 
     const dataFormat = validateDataComputer.map((value) => {
       if(value.Equipamento){
@@ -63,8 +67,9 @@ export class CsvReader {
         equipment: " ", 
         serie: " "
       }
-  }).filter(value => value.sector !== " " || value.equipment !== " " || value.serie !== " ")
-
-    return dataFormat 
+    })
+    
+    const filterRemoveNull = dataFormat.filter(value => !(value.serie === ""))
+    return filterRemoveNull
   }
 }
