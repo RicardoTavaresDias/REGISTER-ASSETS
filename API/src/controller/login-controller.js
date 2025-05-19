@@ -26,7 +26,7 @@ export class LoginController {
     const result = validation.user(request.body)
     
     const repository = new Repository()
-    const dataJson = await repository.user(result.user)
+    const dataJson = await repository.search.user(result.user)
 
     const { user, password, role } = dataJson
 

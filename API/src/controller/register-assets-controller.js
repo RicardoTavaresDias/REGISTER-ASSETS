@@ -1,10 +1,10 @@
 import Tesseract from "tesseract.js";
 import multer from "multer";
-import { RepositoryAsset } from "../repositories/RepositoryAsset.js"
+import { Repository } from "../repositories/Repository.js"
 import { Validation } from "../model/Validation.js"
 
 import { uploadImage } from "../config/multer.js";
-import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
+import { logRegisterAssets } from "../core/log-RegisterAssets.js";
 
 /**
  * Controller responsável por lidar com requisições relacionadas ao cadastro e consulta de ativos.
@@ -26,15 +26,15 @@ export class RegisterAssetsController {
     try {
       uploadImage.single("file")(request, response, async (error) => {
         if (error instanceof multer.MulterError) {
-          LogRegisterAssets({ error: error.message })
+          logRegisterAssets(error.message)
           return response.status(422).json({ message: error.message });      
         } else if (error) {
-          LogRegisterAssets({ error: error.message })
+          logRegisterAssets(error.message)
           return response.status(500).json({ message: error.message });
         }
 
         if (request.errorMessage) {
-          LogRegisterAssets({ error: request.errorMessage })
+          logRegisterAssets(error.message)
           return response.status(422).json({ message: request.errorMessage }); 
         }
 
@@ -55,7 +55,7 @@ export class RegisterAssetsController {
       });
     } catch (error) {
       console.log(error);
-      LogRegisterAssets({ error: error })
+      logRegisterAssets(error)
     }
   }
 
@@ -76,12 +76,13 @@ export class RegisterAssetsController {
   async create(request, response) {
     const returnValidation = await new Validation().assets(request.body)
 
-    const existsRegisterSerie = await new RepositoryAsset().searcAssetUnit(returnValidation.unit)
+    const repository = new Repository()
+    const existsRegisterSerie = await repository.search.searcAssetUnit(returnValidation.unit)
     if(existsRegisterSerie.find(value => value.serie === request.body.serie)){
       return response.status(400).json({ message: "Número de serie já existe na unidade." })
     }
 
-    await new RepositoryAsset().createAssets(returnValidation)
+    await repository.create.createAssets(returnValidation)
     
     response.status(201).json({
       message: "Cadastro salvo com sucesso.",
@@ -100,7 +101,8 @@ export class RegisterAssetsController {
 
   async index (request, response){
     const unit = await new Validation().unit(request.body)
-    const resultUnit = await new RepositoryAsset().searcAssetUnit(unit)
+    const repository = new Repository()
+    const resultUnit = await repository.search.searcAssetUnit(unit)
 
     if(!resultUnit.length){
       response.status(400).json({ message: "Nenhum ativo encontrado." })

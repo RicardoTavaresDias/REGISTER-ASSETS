@@ -2,83 +2,31 @@ import fs from 'node:fs'
 import path from 'path'
 import dayjs from 'dayjs'
 import { env } from "../config/env.js"
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
 
 /**
- * Registra um log de erro ou de item não encontrado nas sugestões.
+ * Registra mensagens de erro em um arquivo de log.
+ * 
+ * Cada entrada é gravada com data e hora no formato `DD-MM-YYYYTHH:mm:ss`.
+ * O caminho do arquivo de log é definido pela variável de ambiente `env.LOGERROR`.
  *
- * @param {Object} params Parâmetros da função.
- * @param {string} [params.error] Mensagem de erro a ser registrada.
- * @param {Object} [params.message] Objeto com os nomes dos elementos para verificação.
- * @param {string} [params.message.EQUIPAMENTO] Nome do equipamento (opcional).
- * @param {string} [params.message.SETOR] Nome do setor (opcional).
+ * @async
+ * @function logRegisterAssets
+ * @param {string|Error} err - Mensagem ou objeto de erro a ser registrado no log.
+ * 
+ * @returns {Promise<void>} 
+ *
+ * @example
+ * try {
+ *   // alguma operação que pode falhar
+ * } catch (err) {
+ *   await logRegisterAssets(err)
+ * }
  */
 
-/**
- * @param {object} params Parâmetros da função.
- * @param {'error' | 'equipment' | 'sector'} params.body Tipo do log (define qual arquivo será usado).
- * @param {string} params.value Conteúdo a ser escrito no log.
- */
-
-export async function LogRegisterAssets({ error, message }){
-  if(error){
-    return registerLog({ body: 'error', value: error })
-  }
-
-  const sources = {
-    EQUIPAMENTO: {
-      envPath: "type_Equipment",
-      itemKey: "equipment",
-      messageKey: "equipment",
-    },
-    SETOR: {
-      envPath: "type_Sector",
-      itemKey: "sector",
-      messageKey: "sector",
-    },
-    // SN: {
-    //   envPath: env.UNITS,
-    //   itemKey: "units",
-    //   messageKey: "SN",
-    // }
-  }
-
-  // Verifica o campo e ve se tem no JSON suggestions
-  for(const key in sources){
-    if(sources[key]){
-      const result = await prisma[sources[key].envPath].findFirst({
-        where: {
-          name: {
-            endsWith: message[sources[key].itemKey]
-          }
-        }
-      })
-
-      if(!result){
-        registerLog({ 
-          body: sources[key].itemKey, 
-          value: message[sources[key].messageKey] 
-        })
-      }
-    }
-  }
-}
-
-
-const LOG_PATHS = {
-  error: env.LOGERROR,
-  equipment: env.LOGEQUIPMENT,
-  sector: env.LOGSECTOR,
-  units: env.LOGUNITS
-}
-
-// Cria arquivo log em .txt
-function registerLog({ body, value }){
-  const logPath = path.resolve(LOG_PATHS[body])
+export async function logRegisterAssets(err){
+  const logPath = path.resolve(env.LOGERROR)
   const date = `${dayjs().format("DD-MM-YYYY")}T${dayjs().format("HH:mm:ss")}`
-  const message = `[${date}] - ${value}\n`
+  const message = `[${date}] - ${err}\n`
 
   fs.appendFile(logPath, message, (error) => {
     if(error) console.error('Erro ao escrever log:', error);

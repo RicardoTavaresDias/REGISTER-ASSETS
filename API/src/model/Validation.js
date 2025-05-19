@@ -1,29 +1,26 @@
 import { z } from "zod"
 import { Repository } from "../repositories/Repository.js"
-import { RepositoryAsset } from "../repositories/RepositoryAsset.js"
+import { AppError } from "../utils/AppError.js"
 
 /**
- * Classe responsável por validar os dados enviados para operações relacionadas a ativos (assets) e unidades (units).
+ * Classe responsável pela validação de dados de entrada da API.
+ * Utiliza a biblioteca `zod` para garantir que os dados estejam no formato esperado.
  */
 
 export class Validation {
 
-   /**
-   * Valida os dados de um ativo, garantindo que a unidade informada exista no sistema.
-   * 
-   * @param {Object} requestBody - Objeto contendo os dados a serem validados.
-   * @param {string} [requestBody.serie] - (Opcional) Número de série do ativo.
-   * @param {string} [requestBody.equipment] - (Opcional) Nome ou tipo do equipamento.
-   * @param {string} [requestBody.sector] - (Opcional) Nome do setor associado ao ativo.
-   * @param {string} requestBody.unit - Nome da unidade onde o ativo está localizado. Deve existir no sistema.
-   * 
-   * @returns {Promise<Object>} Retorna o objeto validado contendo os campos fornecidos.
-   * 
-   * @throws {ZodError} Lança erro se algum dos campos não seguir o esquema definido ou se a unidade for inválida.
+  /**
+   * Valida os dados enviados para cadastro de ativos.
+   * Verifica se os campos obrigatórios estão preenchidos e se a unidade informada existe no banco.
+   *
+   * @param {Object} requestBody - Corpo da requisição contendo os dados do ativo.
+   * @returns {Promise<Object>} Objeto validado contendo os campos: `serie`, `equipment`, `sector` e `unit`.
+   * @throws {ZodError} Se a validação falhar.
    */
 
   async assets(requestBody){
-    const mapUnits = await new Repository().searchAll("unit")
+    const repository = new Repository()
+    const mapUnits = await repository.search.searchAll("unit")
     const bodySchema = z.object({
       serie: z.string({ message: "Informe o número de série." }).min(1, { message: "Preencher o campo número de série." }),
       equipment: z.string({ message: "Informe um equipamento." }).min(1, { message: "Preencher o campo equipamento." }),
@@ -38,18 +35,16 @@ export class Validation {
   }
 
   /**
-   * Valida se a unidade fornecida existe no sistema.
-   * 
-   * @param {Object} requestBody - Objeto contendo a unidade a ser validada.
-   * @param {string} requestBody.unit - Nome da unidade que será verificada.
-   * 
-   * @returns {Promise<string>} Retorna o nome da unidade validado.
-   * 
-   * @throws {ZodError} Lança erro se a unidade não for válida.
+   * Valida se a unidade informada existe no banco de dados.
+   *
+   * @param {Object} requestBody - Corpo da requisição contendo o nome da unidade.
+   * @returns {Promise<string>} Nome da unidade validado.
+   * @throws {ZodError} Se a unidade for inválida ou estiver ausente.
    */
 
   async unit(requestBody){
-    const mapUnits = await new RepositoryAsset().searchAll("unit")
+    const repository = new Repository()
+    const mapUnits = await repository.search.searchAll("unit")
     const bodySchema = z.object({
       unit: z.string({ message: "Informe o unidade." })
         .refine(value => mapUnits.map(element => element.name).includes(value), {
@@ -62,18 +57,13 @@ export class Validation {
   }
 
   /**
- * Valida e extrai dados permitidos para atualização de relatório de ativos.
- *
- * Aceita apenas os campos: `serie`, `sector`, e `equipment`, todos opcionais.
- * Caso o `requestBody` contenha outros campos, uma exceção será lançada.
- *
- * @param {Object} requestBody - Objeto com dados a serem validados.
- * @param {string} [requestBody.serie] - Número de série do ativo (opcional).
- * @param {string} [requestBody.sector] - Nome do setor (opcional).
- * @param {string} [requestBody.equipment] - Tipo de equipamento (opcional).
- * @returns {Object} Objeto validado contendo apenas os campos permitidos.
- * @throws {ZodError} Lança erro se houver campos inválidos ou tipos incorretos.
- */
+   * Valida os filtros de relatório.
+   * Apenas os campos `serie`, `sector` e `equipment` são permitidos e opcionais.
+   *
+   * @param {Object} requestBody - Dados do filtro.
+   * @returns {Object} Objeto com os campos filtrados.
+   * @throws {ZodError} Se forem informados campos não permitidos.
+   */
 
   report(requestBody){
     const reportSchema = z.object({
@@ -88,16 +78,12 @@ export class Validation {
   }
 
   /**
- * Valida dados de autenticação do usuário.
- *
- * Ambos os campos `user` e `password` são obrigatórios e devem ser strings não vazias.
- *
- * @param {Object} requestBody - Objeto contendo credenciais de login.
- * @param {string} requestBody.user - Nome de usuário.
- * @param {string} requestBody.password - Senha do usuário.
- * @returns {Object} Objeto validado contendo `user` e `password`.
- * @throws {ZodError} Lança erro se os campos estiverem ausentes ou vazios.
- */
+   * Valida as credenciais do usuário.
+   *
+   * @param {Object} requestBody - Deve conter os campos `user` e `password`.
+   * @returns {Object} Objeto com `user` e `password`.
+   * @throws {ZodError} Se algum campo estiver ausente ou vazio.
+   */
 
   user(requestBody){
     const userSchema = z.object({
@@ -107,5 +93,84 @@ export class Validation {
     const result = userSchema.parse(requestBody)
 
     return result
+  }
+
+  /**
+   * Valida sugestões enviadas para cadastro de equipamentos, setores ou unidades.
+   * 
+   * Para `sector`, o campo `id_glpi` é obrigatório. Para os demais tipos, apenas `name` é obrigatório.
+   *
+   * @param {Object} params
+   * @param {Array<Object>} params.requestBody - Lista de sugestões.
+   * @param {string} params.requestParms - Tipo de sugestão: "equipment", "sector" ou "unit".
+   * @returns {Array<Object>} Sugestões validadas.
+   * @throws {AppError} Se a validação falhar.
+   */
+
+  suggestions({ requestBody, requestParms }){
+    
+    const suggestionsSchema = z.object({
+      id_glpi: z.optional(z.string().min(1, { message: "Este campo é obrigatório. Informe id novo do GLPI." })),
+      name: z.string().min(1, { message: "Este campo é obrigatório. Informe setor novo do GLPI." })
+    }).superRefine((value, contexo) => { 
+      if(requestParms === "sector"){
+        if(!value.id_glpi){
+          contexo.addIssue({
+            path: ['id_glpi'],
+            message: "Informe id do setor."
+          })
+        }
+      }
+    })
+
+    const suggestionsArraySchema = z.array(suggestionsSchema)
+    const resultSchema = suggestionsArraySchema.safeParse(requestBody)
+
+    if(!resultSchema.success){
+      throw new AppError(resultSchema.error.issues[0].message, 400)
+    }
+
+    return resultSchema.data
+  }
+
+   /**
+   * Valida o parâmetro `type` recebido na URL.
+   * Aceita apenas os valores: `"equipment"`, `"sector"` ou `"unit"`.
+   *
+   * @param {Object} requestParms - Objeto contendo o campo `type`.
+   * @returns {Object} Parâmetro validado.
+   * @throws {ZodError} Se o tipo for inválido.
+   */
+
+  validationType(requestParms){
+    const paramsSchema = z.object({
+      type: z.enum(["equipment", "sector", "unit"])
+    })
+
+    const params = paramsSchema.parse(requestParms)
+    return params
+  }
+
+  /**
+   * Valida nomes de itens que serão removidos da base de sugestões.
+   * 
+   * @param {Array<Object>} requestBody - Lista com objetos contendo o campo `name`.
+   * @returns {Array<Object>} Nomes validados.
+   * @throws {AppError} Se algum item não tiver o campo `name`.
+   */
+
+  validationByName(requestBody){
+    const suggestionsSchema = z.object({
+      name: z.string().min(1, { message: "O campo 'name' é obrigatório para remover o item da lista."})
+    })
+
+    const suggestionsArraySchema = z.array(suggestionsSchema)
+    const resultSchema = suggestionsArraySchema.safeParse(requestBody)
+
+    if(!resultSchema.success){
+      throw new AppError(resultSchema.error.issues[0].message, 400)
+    }
+
+    return resultSchema.data
   }
 }

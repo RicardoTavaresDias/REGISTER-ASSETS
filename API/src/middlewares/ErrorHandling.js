@@ -1,6 +1,6 @@
 import { AppError } from "../utils/AppError.js";
 import { ZodError } from "zod";
-import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
+import { logRegisterAssets } from "../core/log-RegisterAssets.js";
 
 /**
  * Middleware global de tratamento de erros para a aplicação Express.
@@ -23,7 +23,7 @@ import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
  *    - Qualquer erro que não seja Zod ou AppError.
  *    - Retorna HTTP 500 (Internal Server Error) com mensagem genérica.
  * 
- * Todos os erros são registrados no sistema usando `LogRegisterAssets`.
+ * Todos os erros são registrados no sistema usando `logRegisterAssets`.
  *
  * @param {Error} error - Instância do erro lançado.
  * @param {import("express").Request} request - Objeto da requisição HTTP.
@@ -35,15 +35,15 @@ import { LogRegisterAssets } from "../core/log-RegisterAssets.js";
 
 export function ErrorHandling(error, request, response, next) {
   if(error instanceof ZodError){
-    LogRegisterAssets({ error: " MESSAGE: " + error.issues[0].message + " STACK: " + error.stack + "\n" })
+    logRegisterAssets( " MESSAGE: " + error.issues[0].message + " STACK: " + error.stack + "\n" )
     return response.status(400).json({ message: error.issues[0].message }) 
   }
 
   if(error instanceof AppError){
-    LogRegisterAssets({ error: " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" })
+    logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
     return response.status(error.statusCode).json({ message: error.message })
   }
 
-  LogRegisterAssets({ error: " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" })
+  logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
   response.status(500).json({ message: 'Error interno servidor!' })
 }

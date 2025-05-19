@@ -10,4 +10,4 @@ suggestionsRouter.get('/:type', suggestionsSearch.index)
 
 suggestionsRouter.use(authentication)
 suggestionsRouter.post('/:type', userAcess(["admin"]), suggestionsSearch.create)
-suggestionsRouter.delete('/:type', userAcess(["admin"]), suggestionsSearch.remove)
+suggestionsRouter.delete('/:type/:id', userAcess(["admin"]), suggestionsSearch.remove)

@@ -1,14 +1,32 @@
-import { AppError } from "../utils/AppError.js"
-import { Repository } from "./Repository.js"
+import { AppError } from '../utils/AppError.js';
 
-/**
- * Classe responsável por operações específicas relacionadas a ativos (assets),
- * estendendo funcionalidades genéricas da classe Repository.
- */
+export class RepositoryCreate {
+  constructor(prisma){
+    this.prisma = prisma
+  }
 
-export class RepositoryAsset extends Repository {
+   /**
+   * Cria múltiplos registros em uma tabela.
+   * 
+   * @param {Object} params
+   * @param {string} params.tableDb - Nome da tabela.
+   * @param {Array<Object>} params.data - Dados a serem inseridos.
+   * @returns {Promise<Object>} Resultado da operação `createMany`.
+   * 
+   * @throws {AppError} Caso ocorra erro no cadastro.
+   */
 
-  /**
+  async createAll({ tableDb, data }){
+    try {
+      return await this.prisma[tableDb].createMany({
+        data: data
+      })
+    }catch(error){
+      throw new AppError("Não foi possível realizar o cadastro. Verifique os dados informados e tente novamente.", 400);
+    }
+  }
+
+    /**
  * Cria um novo asset no banco de dados, associando unidade, setor e equipamento.
  * 
  * - Se a unidade informada não for encontrada, lança um erro.
@@ -88,37 +106,5 @@ export class RepositoryAsset extends Repository {
       })
       throw new AppError("Erro ao criar asset no banco de dados.", 500)
     }
-
-  }
-
-
-
-  /**
-   * Realiza uma busca de ativos com base no nome da unidade, utilizando a view `vw_assets`.
-   * 
-   * @param {string} unit - Nome da unidade a ser consultada.
-   * 
-   * @returns {Promise<Array<Object>>} Retorna uma lista de ativos encontrados para a unidade informada.
-   */
-
-  async searcAssetUnit(unit){
-    return await this.prisma.$queryRaw
-      `SELECT * FROM vw_assets WHERE unit = ${unit}`
-  }
-
-    /**
-   * Busca todos os registros da view `vw_assets` sem filtros.
-   * 
-   * Utiliza `prisma.$queryRaw` para consultar diretamente a view no banco.
-   * 
-   * @returns {Promise<Array<Object>>} Lista completa de ativos da view.
-   * 
-   * @example
-   * const todosAtivos = await repository.searchByAsset();
-   */
-
-  async searchByAsset(){
-    return await this.prisma.$queryRaw
-      `SELECT * FROM vw_assets`
   }
 }

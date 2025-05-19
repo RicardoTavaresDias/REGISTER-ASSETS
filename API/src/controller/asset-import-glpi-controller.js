@@ -2,7 +2,7 @@ import { CsvReader } from "../core/Csv-reader.js"
 import { AssetReport } from "../core/AssetReport.js"
 import { assetProcessor, mapUpdateSectorId } from "../core/activeDataProcessing.js"
 import { z } from "zod"
-import { RepositoryAsset } from "../repositories/RepositoryAsset.js"
+import { Repository } from "../repositories/Repository.js"
 import fs from "node:fs"
 import { GlpiAutomationService } from "../services/glpi/GlpiAutomationService.js"
 import { Validation } from "../model/Validation.js"
@@ -19,7 +19,7 @@ export class AssetsImportGlpiController {
  * Funcionalidade:
  * - Verifica se o arquivo `register_assets.xlsx` está presente no diretório `./tmp`.
  *   - Se presente, os dados são lidos via `CsvReader().csvData()`.
- *   - Caso contrário, valida a unidade enviada no `request.body` e busca os dados no repositório (`RepositoryAsset().searcAssetUnit`).
+ *   - Caso contrário, valida a unidade enviada no `request.body` e busca os dados no repositório (`Repository().search.searcAssetUnit`).
  * - Os dados brutos são processados pelo utilitário `assetProcessor`, padronizando a estrutura dos equipamentos.
  * - Com os dados processados, o serviço de automação do GLPI (`GlpiAutomationService`) é utilizado para validar os ativos no GLPI.
  * - O resultado da validação é registrado em arquivos `.txt` e `.json` usando `AssetReport().manualReviewLogger`.
@@ -43,7 +43,8 @@ export class AssetsImportGlpiController {
     }else {
       const validationUnit = new Validation()
       const unit = await validationUnit.unit(request.body)
-      data = await new RepositoryAsset().searcAssetUnit(unit)
+      const repository = new Repository()
+      data = await new repository.search.searcAssetUnit(unit)
     }
 
     const dataEquipment = assetProcessor(data.filter(value => !(value.equipment === null) && !(value.sector === null)))

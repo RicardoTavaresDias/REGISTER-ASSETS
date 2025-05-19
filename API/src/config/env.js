@@ -4,9 +4,6 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   XLSX: z.string(),
   LOGERROR: z.string(),
-  LOGEQUIPMENT: z.string(),
-  LOGSECTOR: z.string(),
-  LOGUNITS: z.string(),
   LOGIN: z.string(),
   GLPIINITIAL: z.string(),
   JWTSECRET: z.string()
