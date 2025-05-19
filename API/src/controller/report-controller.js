@@ -150,4 +150,23 @@ export class ReportController {
 
     response.status(200).json({ message: "Dados atualizado com sucesso." })
   }
+
+ /**
+   * Lista os ativos que devem ser atualizados Manualmente, com paginação.
+   * 
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @returns {Promise<void>}
+   */
+
+  async getManualRegister(request, response){
+    const resultPagination = await new AssetReport()
+      .indexPaginationReport({
+        typeReport: "manualRegistration",
+        page: request.query.page,
+        limit: request.query.limit
+      })
+
+    response.status(200).json(resultPagination)
+  }
 }

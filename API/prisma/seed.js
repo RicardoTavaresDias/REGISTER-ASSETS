@@ -5,30 +5,34 @@ async function seed() {
 
   // select * from vw_assets
   await prisma.$executeRawUnsafe(
-   `CREATE VIEW vw_assets AS
-    SELECT a.id, s.name AS sector, s.id_glpi AS id_sector, t.name AS equipment, e.serie AS serie, u.name AS unit
-    FROM asset a 
-    INNER JOIN sector s ON a.id_sector = s.id 
-    INNER JOIN equipment e ON e.id = a.id_equipment
-    INNER JOIN type_equipment t ON t.id = e.id_type_equipment
-    INNER JOIN unit u ON u.id = a.id_unit;`
+   `CREATE VIEW vw_assets as
+      SELECT
+      a.id,
+      ts.name as sector,
+      ts.id_glpi as id_sector,
+      COALESCE(ts.name, lsi.name) as sector_log,
+      te.name as equipment, 
+      COALESCE(te.name, lei.name) as equipment_log,
+      e.serie,
+      u.name as unit
+      from asset a
+      LEFT JOIN sector s on s.id = a.id_sector 
+      LEFT JOIN type_sector ts on ts.id = s.id_type_sector
+      LEFT JOIN log_sector_invalid lsi on lsi.id = s.id_log_sector_invalid
+
+      LEFT JOIN equipment e on e.id = a.id_equipment
+      LEFT JOIN type_equipment te on te.id = e.id_type_equipment
+      LEFT JOIN log_equipment_invalid lei on lei.id = e.id_log_equipment_invalid
+
+      INNER join unit u on u.id = a.id_unit`
   )
 
   await prisma.$executeRaw
     `INSERT INTO user (user, password) values ("admin", "$2b$08$WhSejL3Pc9uZ7LnxrsJMQuQq77EVAdvpLTajli7zcBGzDK3ReYitG");`
  
 
-  /**
-   * Insert into para cadastrar unidade, equipamento e setor
-   * 
-   * START TRANSACTION;
-   *   INSERT INTO equipment (id_type_equipment, serie) values (1, "BRJ403CW33");
-   *   INSERT INTO asset (id_sector, id_unit, id_equipment) VALUE (63, 41, LAST_INSERT_ID());
-   * COMMIT;
- */
-
   await prisma.$executeRawUnsafe(
-    `INSERT INTO sector (id_glpi, name) VALUES 
+    `INSERT INTO type_sector (id_glpi, name) VALUES 
     ("686", "ACOLHIMENTO"),
     ("687", "ADMINISTRAÇÃO"),
     ("711", "ALMOXARIFADO"),

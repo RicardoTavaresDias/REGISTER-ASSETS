@@ -9,16 +9,27 @@ import { pagination } from "../utils/pagination.js"
 export class AssetReport {
 
  /**
-   * Gera logs dos ativos validados (existentes, pendentes e para atualização) e escreve arquivos `.json` e `.txt` com o conteúdo.
-   * 
-   * @param {Object} dataValidator - Objeto contendo os dados validados.
-   * @param {Array} dataValidator.existsAssets - Ativos que já existem no GLPI.
-   * @param {Array} dataValidator.doesNotExistsAssets - Ativos que ainda não existem no GLPI.
-   * @param {Array} dataValidator.updateAssets - Ativos que precisam de atualização de setor.
-   * @returns {Promise<Object>} Objeto com os mesmos dados salvos nos arquivos.
-   */
+ * Gera logs dos ativos validados (existentes, pendentes, para atualização e para cadastro manual),
+ * formatando em arquivos `.json` e `.txt` com as informações estruturadas.
+ *
+ * Os arquivos são salvos no diretório `./tmp` com os nomes:
+ * - `pendentes-para-cadastro.json`: Contém os dados em formato estruturado.
+ * - `pendentes-para-cadastro.txt`: Contém os dados em formato de tabela legível.
+ *
+ * @async
+ * @param {Object} params - Parâmetros da função.
+ * @param {Object} params.dataValidator - Objeto contendo os resultados da validação dos ativos.
+ * @param {Array<Object>} params.dataValidator.existsAssets - Ativos que já existem no GLPI.
+ * @param {Array<Object>} params.dataValidator.doesNotExistsAssets - Ativos que ainda não existem no GLPI.
+ * @param {Array<Object>} params.dataValidator.updateAssets - Ativos que precisam de atualização de setor no GLPI.
+ * @param {Array<Object>} params.manualRegistration - Ativos que devem ser cadastrados manualmente no GLPI.
+ *
+ * @returns {Promise<Object>} Retorna um objeto com os mesmos dados salvos nos arquivos.
+ *
+ * @throws {Error} Caso ocorra erro ao escrever os arquivos.
+ */
 
-  async manualReviewLogger(dataValidator){
+  async manualReviewLogger({dataValidator, manualRegistration }){
 
     let output = "\n\nCadastros encontrados no glpi. \n\n"
     output += "+------------------------------------------+-----------------+--------------------+\n"
@@ -53,10 +64,28 @@ export class AssetReport {
       output += "+------------------------------------------+-----------------+--------------------+\n"
     }
 
+    output += "\n\nRealizar cadastro manual no GLPI. \n\n"
+    output += "+--------------------------------+-----------------+--------------------+\n"
+    output += "|              SETOR             |   EQUIPAMENTO   |     N° SERIE       |\n"
+    output += "+--------------------------------+-----------------+--------------------+\n"
+
+    for(const item of manualRegistration ){
+      output += `| ${
+        item.sector === null ? 
+        item?.sector_log?.padEnd(30, " ") :
+        item?.sector_log?.padEnd(30, " ")
+      } | ${item.equipment === null ?
+            item.equipment_log.padEnd(15, " ") :
+            item.equipment_log.padEnd(15, " ")
+          } | ${item?.serie?.padEnd(18, " ")} |\n`
+      output += "+--------------------------------+-----------------+--------------------+\n"
+    }
+
     await fs.promises.writeFile("./tmp/pendentes-para-cadastro.json", JSON.stringify({
       existsAssets: dataValidator.existsAssets,
       doesNotExistsAssets: dataValidator.doesNotExistsAssets,
-      updateAssets: dataValidator.updateAssets
+      updateAssets: dataValidator.updateAssets,
+      manualRegistration:  manualRegistration
     }, null, 2))
 
     await fs.promises.writeFile("./tmp/pendentes-para-cadastro.txt", output)
@@ -64,7 +93,8 @@ export class AssetReport {
     return {
         existsAssets: dataValidator.existsAssets,
         doesNotExistsAssets: dataValidator.doesNotExistsAssets,
-        updateAssets: dataValidator.updateAssets
+        updateAssets: dataValidator.updateAssets,
+        manualRegistration:  manualRegistration
       }
   }
 

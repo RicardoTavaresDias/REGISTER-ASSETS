@@ -34,7 +34,7 @@ export async function LogRegisterAssets({ error, message }){
       messageKey: "equipment",
     },
     SETOR: {
-      envPath: "sector",
+      envPath: "type_Sector",
       itemKey: "sector",
       messageKey: "sector",
     },

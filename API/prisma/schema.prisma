@@ -9,10 +9,12 @@ datasource db {
 
 model Sector {
   id Int @id @default(autoincrement())
-  name String
-  id_glpi String
+  idTypeSector Int? @map("id_type_sector")
+  idLogSectorInvalid Int? @map("id_log_sector_invalid")
 
   asset Asset[]
+  typeSector Type_Sector? @relation(fields: [idTypeSector], references: [id], onDelete: Cascade)
+  logSectorInvalid Log_Sector_invalid? @relation(fields: [idLogSectorInvalid], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -20,13 +22,40 @@ model Sector {
   @@map("sector")
 }
 
+model Type_Sector {
+  id Int @id @default(autoincrement())
+  name String
+  idglpi String @map("id_glpi")
+
+  sector Sector[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("type_sector")
+}
+
+model Log_Sector_invalid {
+  id Int @id @default(autoincrement())
+  name String
+
+  sector Sector[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("log_sector_invalid")
+}
+
 model Equipment {
   id Int @id @default(autoincrement())
-  idTypeEquipment Int @map("id_type_equipment")
+  idTypeEquipment Int? @map("id_type_equipment")
   serie String
+  idLogEquipmentInvalid Int? @map("id_log_equipment_invalid")
   
   asset Asset[]
-  typeEquipment Type_Equipment @relation(fields: [idTypeEquipment], references: [id], onDelete: Cascade)
+  typeEquipment Type_Equipment? @relation(fields: [idTypeEquipment], references: [id], onDelete: Cascade)
+  logEquipmentInvalid Log_Equipment_invalid? @relation(fields: [idLogEquipmentInvalid], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
@@ -43,6 +72,18 @@ model Type_Equipment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   @@map("type_equipment")
+}
+
+model Log_Equipment_invalid {
+  id Int @id @default(autoincrement())
+  name String
+
+  equipment Equipment[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("log_equipment_invalid")
 }
 
 model Unit {

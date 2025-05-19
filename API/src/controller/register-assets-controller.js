@@ -75,10 +75,9 @@ export class RegisterAssetsController {
 
   async create(request, response) {
     const returnValidation = await new Validation().assets(request.body)
-    LogRegisterAssets({ message: request.body })
 
     const existsRegisterSerie = await new RepositoryAsset().searcAssetUnit(returnValidation.unit)
-    if(existsRegisterSerie.find(value => value.serie.includes(request.body.serie))){
+    if(existsRegisterSerie.find(value => value.serie === request.body.serie)){
       return response.status(400).json({ message: "Número de serie já existe na unidade." })
     }
 
@@ -111,6 +110,10 @@ export class RegisterAssetsController {
   }
 
 
+
+
+
+  
 
 // Parte que será definido no final do processo
 

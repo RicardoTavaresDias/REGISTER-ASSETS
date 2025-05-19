@@ -18,3 +18,7 @@ reportRouter.patch("/doesNotExistsAssets/:id", reportController.updateDoesNotExi
 reportRouter.get("/updateAssets", reportController.getUpdateAssets)
 reportRouter.delete("/updateAssets/:id", reportController.removeUpdateAssets)
 reportRouter.patch("/updateAssets/:id", reportController.updateAssets)
+
+
+// Items registrar manualmente
+reportRouter.get("/manualRegistesAssents", reportController.getManualRegister)

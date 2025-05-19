@@ -46,10 +46,17 @@ export class AssetsImportGlpiController {
       data = await new RepositoryAsset().searcAssetUnit(unit)
     }
 
-    const dataEquipment = assetProcessor(data)
+    const dataEquipment = assetProcessor(data.filter(value => !(value.equipment === null) && !(value.sector === null)))
     const glpiAutomationService = new GlpiAutomationService(request.user)
     const dataValidator = await glpiAutomationService.assets(dataEquipment)
-    await new AssetReport().manualReviewLogger(dataValidator)
+    await new AssetReport().manualReviewLogger(
+      { 
+        dataValidator: dataValidator, 
+        manualRegistration: data.filter(value => (value.equipment === null) || (value.sector === null))
+      }
+    )
+
+    
 
     response.status(200).json({ message: "Relatório gerado com sucesso." })
   }

@@ -9,60 +9,89 @@ import { Repository } from "./Repository.js"
 export class RepositoryAsset extends Repository {
 
   /**
-   * Cria registros de equipamento e ativo associados à unidade, tipo de equipamento e setor informados.
-   * 
-   * Este método realiza as seguintes etapas dentro de uma transação:
-   * 1. Valida a existência da unidade, tipo de equipamento e setor na base de dados.
-   * 2. Cria um equipamento com a série informada.
-   * 3. Cria um ativo associando o equipamento criado à unidade e setor.
-   * 
-   * @param {string} registerUnit - Nome da unidade onde o ativo será registrado.
-   * @param {string} registerTypeEquipment - Tipo de equipamento a ser registrado.
-   * @param {string} registerSector - Nome do setor ao qual o ativo pertence.
-   * @param {string} serie - Número de série do equipamento.
-   * 
-   * @throws {AppError} Lança erro caso a unidade, tipo de equipamento ou setor não existam na base de dados.
-   * 
-   * @returns {Promise<void>} Retorna uma promessa resolvida ao final da criação.
-   */
+ * Cria um novo asset no banco de dados, associando unidade, setor e equipamento.
+ * 
+ * - Se a unidade informada não for encontrada, lança um erro.
+ * - Se o tipo de setor ou tipo de equipamento não existirem, cria registros em suas respectivas tabelas de log.
+ * 
+ * @async
+ * @param {Object} value - Objeto com os dados para criação do asset.
+ * @param {string} value.unit - Nome da unidade.
+ * @param {string} value.sector - Nome do setor.
+ * @param {string} value.equipment - Nome do tipo de equipamento.
+ * @param {string} value.serie - Número de série do equipamento.
+ * 
+ * @throws {AppError} Lança erro caso a unidade não seja encontrada ou ocorra falha na criação do asset.
+ * 
+ * @returns {Promise<void>} Não retorna valor, apenas realiza a inserção no banco de dados.
+ */
 
   async createAssets(value){
 
-    const [ unit, type_Equipment, sector ] = await Promise.all([
+    const [ unit, type_Equipment, type_Sector ] = await Promise.all([
       this.searchByName({ tableDb: "unit", value: value.unit }),
       this.searchByName({ tableDb: "type_Equipment", value: value.equipment }),
-      this.searchByName({ tableDb: "sector", value: value.sector })
+      this.searchByName({ tableDb: "type_Sector", value: value.sector })
     ])
 
-    if(!unit || !type_Equipment || !sector){
-      throw new AppError("Setor e Equipamento não encontrado na base de dados.", 400);
+    if(!unit){
+      throw new AppError("Não encontrado unidade na base de dados.", 400);
     }
 
-     await this.prisma.$transaction(async (tx) => {
-      const equipment = await tx.equipment.create({
+    try{
+      await this.prisma.asset.create({
         data: {
-          serie: value.serie,
-          typeEquipment: {
-            connect: { id: type_Equipment.id }
-          }
-        },
-      });
-
-      await tx.asset.create({
-        data: {
-          sector: {
-            connect: { id: sector.id }
-          },
+          // cadastrando id unit no assent, que contem na lista unit
           unit: {
             connect: { id: unit.id }
           },
+
+          // cadastro do sector
+          sector: {
+            // existir sector na lista type_sector,  gera id e cadastra no sector
+            create: type_Sector ? {
+              idTypeSector: type_Sector.id,
+            } : {
+              // Não existe, cadastra o log_type_sector e gera id
+              logSectorInvalid: {
+                create: {
+                  name: value.sector
+                }
+              }
+            }
+          },
+
+          // cadastro do equipment
           equipment: {
-            connect: { id: equipment.id }
+            // existir equipment na lista type_equipment,  gera id e cadastra no equipment
+            create: type_Equipment ? {
+              serie: value.serie,
+              idTypeEquipment: type_Equipment.id
+            } : {
+                  // Não existe, cadastra o log_type_equipment e gera id
+                  serie: value.serie,
+                  logEquipmentInvalid: {
+                    create: {
+                      name: value.equipment
+                    }
+                  }
+            }
           }
-        },
+        }
       })
-    })
+      
+    }catch(error){
+      console.error('[Erro ao criar asset]', {
+        message: error.message,
+        stack: error.stack,
+        prismaError: error
+      })
+      throw new AppError("Erro ao criar asset no banco de dados.", 500)
+    }
+
   }
+
+
 
   /**
    * Realiza uma busca de ativos com base no nome da unidade, utilizando a view `vw_assets`.
