@@ -1,5 +1,12 @@
 import { AppError } from '../utils/AppError.js';
 
+/**
+ * Classe responsável por operações de criação no banco de dados.
+ * 
+ * Utiliza o cliente Prisma para criar múltiplos registros em tabelas genéricas
+ * e cadastrar ativos (assets) com suas respectivas relações.
+ */
+
 export class RepositoryCreate {
   constructor(prisma){
     this.prisma = prisma
@@ -26,23 +33,23 @@ export class RepositoryCreate {
     }
   }
 
-    /**
- * Cria um novo asset no banco de dados, associando unidade, setor e equipamento.
- * 
- * - Se a unidade informada não for encontrada, lança um erro.
- * - Se o tipo de setor ou tipo de equipamento não existirem, cria registros em suas respectivas tabelas de log.
- * 
- * @async
- * @param {Object} value - Objeto com os dados para criação do asset.
- * @param {string} value.unit - Nome da unidade.
- * @param {string} value.sector - Nome do setor.
- * @param {string} value.equipment - Nome do tipo de equipamento.
- * @param {string} value.serie - Número de série do equipamento.
- * 
- * @throws {AppError} Lança erro caso a unidade não seja encontrada ou ocorra falha na criação do asset.
- * 
- * @returns {Promise<void>} Não retorna valor, apenas realiza a inserção no banco de dados.
- */
+     /**
+   * Cria um novo asset no banco de dados, associando unidade, setor e equipamento.
+   * 
+   * - Se a unidade informada não for encontrada, lança um erro.
+   * - Se o tipo de setor ou tipo de equipamento não existirem, os dados são registrados
+   *   em tabelas de log (`logSectorInvalid` ou `logEquipmentInvalid`) para análise posterior.
+   * 
+   * @param {Object} value - Objeto com os dados para criação do asset.
+   * @param {string} value.unit - Nome da unidade a ser associada.
+   * @param {string} value.sector - Nome do setor do ativo.
+   * @param {string} value.equipment - Tipo de equipamento (ex: computador, monitor).
+   * @param {string} value.serie - Número de série do equipamento.
+   * 
+   * @returns {Promise<void>} Esta função não retorna valor, apenas realiza inserção.
+   * 
+   * @throws {AppError} Se a unidade não for encontrada ou houver falha na criação.
+   */
 
   async createAssets(value){
 

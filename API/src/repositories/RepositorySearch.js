@@ -1,17 +1,22 @@
 
+/**
+ * Classe responsável por operações de busca no banco de dados.
+ * 
+ * Contém métodos para consultar registros por nome, listar todos os registros,
+ * realizar buscas específicas em views SQL e consultar usuários.
+ */
+
 export class RepositorySearch {
   constructor(prisma){
     this.prisma = prisma
   }
 
-   /**
-   * Retorna todos os registros de uma tabela específica.
+  /**
+   * Busca todos os registros de uma tabela.
    * 
-   * @param {string} tableDb - Nome da tabela conforme definida no Prisma schema.
-   * @returns {Promise<Array<Object>>} Lista de registros encontrados.
+   * @param {string} tableDb - Nome da tabela.
    * 
-   * @example
-   * const setores = await repository.searchAll("type_Sector");
+   * @returns {Promise<Array<Object>>} Lista de todos os registros encontrados.
    */
 
   async searchAll(tableDb){
@@ -19,15 +24,13 @@ export class RepositorySearch {
   }
 
   /**
-   * Busca o primeiro registro com base no campo `name`.
+   * Busca o primeiro registro em uma tabela pelo campo `name`.
    * 
    * @param {Object} params
    * @param {string} params.tableDb - Nome da tabela.
-   * @param {string} params.value - Valor exato do nome a buscar.
-   * @returns {Promise<Object|null>} Registro encontrado ou `null` se não existir.
+   * @param {string} params.value - Valor a ser comparado no campo `name`.
    * 
-   * @example
-   * const setor = await repository.searchByName({ tableDb: "type_Sector", value: "Financeiro" });
+   * @returns {Promise<Object|null>} Registro encontrado ou `null` se não existir.
    */
 
   async searchByName({ tableDb, value }){
@@ -38,16 +41,14 @@ export class RepositorySearch {
     })
   }
 
-/**
-   * Busca todos os registros que tenham um nome presente na lista fornecida.
+   /**
+   * Busca todos os registros em uma tabela cujo campo `name` esteja incluído em uma lista de valores.
    * 
    * @param {Object} params
    * @param {string} params.tableDb - Nome da tabela.
-   * @param {string[]} params.value - Lista de nomes a buscar.
-   * @returns {Promise<Array<Object>>} Registros encontrados.
+   * @param {Array<string>} params.value - Lista de nomes a serem buscados.
    * 
-   * @example
-   * const setores = await repository.searchByNameAll({ tableDb: "type_Sector", value: ["TI", "RH"] });
+   * @returns {Promise<Array<Object>>} Lista de registros encontrados.
    */
   
   async searchByNameAll({ tableDb, value }){
@@ -60,14 +61,12 @@ export class RepositorySearch {
     })
   }
 
-   /**
+  /**
    * Busca um usuário pelo campo `user`.
    * 
-   * @param {string} value - Nome de usuário.
-   * @returns {Promise<Object|null>} Usuário encontrado ou `null`.
+   * @param {string} value - Nome de usuário a ser buscado.
    * 
-   * @example
-   * const user = await repository.user("admin");
+   * @returns {Promise<Object|null>} Registro do usuário ou `null` se não existir.
    */
 
   async user(value){
@@ -79,11 +78,11 @@ export class RepositorySearch {
   }
 
   /**
-   * Realiza uma busca de ativos com base no nome da unidade, utilizando a view `vw_assets`.
+   * Busca ativos (assets) na view `vw_assets` filtrando pelo nome da unidade.
    * 
-   * @param {string} unit - Nome da unidade a ser consultada.
+   * @param {string} unit - Nome da unidade a ser filtrada.
    * 
-   * @returns {Promise<Array<Object>>} Retorna uma lista de ativos encontrados para a unidade informada.
+   * @returns {Promise<Array<Object>>} Lista de ativos da unidade informada.
    */
 
   async searcAssetUnit(unit){
@@ -91,15 +90,10 @@ export class RepositorySearch {
       `SELECT * FROM vw_assets WHERE unit = ${unit}`
   }
 
-    /**
-   * Busca todos os registros da view `vw_assets` sem filtros.
+   /**
+   * Busca todos os ativos presentes na view `vw_assets`.
    * 
-   * Utiliza `prisma.$queryRaw` para consultar diretamente a view no banco.
-   * 
-   * @returns {Promise<Array<Object>>} Lista completa de ativos da view.
-   * 
-   * @example
-   * const todosAtivos = await repository.searchByAsset();
+   * @returns {Promise<Array<Object>>} Lista de todos os ativos.
    */
 
   async searchByAsset(){

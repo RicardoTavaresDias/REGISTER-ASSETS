@@ -1,18 +1,31 @@
 import { AppError } from '../utils/AppError.js';
 
+/**
+ * Classe responsável por operações de remoção no banco de dados.
+ * 
+ * Oferece métodos para remover registros por ID ou limpar completamente
+ * uma tabela utilizando Prisma.
+ */
+
 export class RepositoryRemove {
   constructor(prisma){
     this.prisma = prisma
   }
 
-  /**
-   * Remove todo o conteúdo de uma tabela.
-   * Inclui `deleteMany` e execução direta de `DELETE FROM`.
+ /**
+   * Remove todos os registros de uma tabela.
    * 
-   * @param {string} tableDb - Nome da tabela.
-   * @returns {Promise<void>}
+   * Este método executa duas operações:
+   * 1. `deleteMany()` via Prisma, para deletar com segurança.
+   * 2. `DELETE FROM ...` com `executeRawUnsafe` para garantir a limpeza total.
+   * 
+   * ⚠️ Cuidado: o uso de `executeRawUnsafe` pode introduzir riscos de **SQL Injection**
+   * se `tableDb` não for validado corretamente. Use apenas com nomes de tabelas confiáveis.
+   * 
+   * @param {string} tableDb - Nome da tabela a ser limpa.
+   * 
+   * @returns {Promise<void>} Não retorna valor, apenas executa a remoção.
    */
-
 
   async removeAllContent(tableDb){
     await this.prisma[tableDb].deleteMany()
@@ -21,17 +34,15 @@ export class RepositoryRemove {
   }
 
    /**
-   * Remove um único registro com base no ID.
+   * Remove um registro específico por ID.
    * 
    * @param {Object} params
    * @param {string} params.tableDb - Nome da tabela.
-   * @param {number} params.id - ID do registro a ser removido.
-   * @returns {Promise<Object>} Registro removido.
+   * @param {number|string} params.id - Identificador do registro a ser removido.
    * 
-   * @throws {AppError} Se ocorrer falha na exclusão.
+   * @returns {Promise<Object>} Objeto removido do banco de dados.
    * 
-   * @example
-   * await repository.removeId({ tableDb: "type_Equipment", id: 1 });
+   * @throws {AppError} Se houver erro na remoção (ex: ID inválido ou inexistente).
    */
 
   async removeId({ tableDb, id }){
