@@ -13,7 +13,7 @@ export class CsvReader {
     const file = XLSX.readFile("./tmp/register_assets.xlsx")
     const SheetName = file.SheetNames[0]
     const sheet = file.Sheets[SheetName]
-    const data = XLSX.utils.sheet_to_json(sheet, { range: 11, header: ["Setor", "Equipamento", "Modelo", "Patrimonio", "F", "Serie"] })
+    const data = XLSX.utils.sheet_to_json(sheet, { range: 11, header: ["Setor", "Equipamento", "C", "D", "E", "Serie"] })
 
     return data
   }
