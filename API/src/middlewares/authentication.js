@@ -2,16 +2,22 @@ import jwt from "jsonwebtoken";
 import { jwtConfig } from "../config/token.js"
 
 /**
- * Middleware de autenticação para usuários locais.
+ * Middleware responsável por autenticar usuários com base no token JWT armazenado em cookies.
  * 
- * Verifica se o token JWT (`accessToken`) está presente nos cookies.
- * Se válido, adiciona a propriedade `request.role` com o valor do `sub` (hash do papel/role).
- *
- * @param {import("express").Request} request - Requisição HTTP com cookies.
- * @param {import("express").Response} response - Resposta HTTP.
- * @param {Function} next - Próxima função da cadeia de middlewares.
+ * Este middleware deve ser aplicado em rotas protegidas para garantir que apenas usuários autenticados tenham acesso.
  * 
- * @returns {void}
+ * Verifica:
+ * - Se o token JWT existe no cookie `accessToken`.
+ * - Se o token é válido e não expirado.
+ * 
+ * Em caso de sucesso, o identificador do usuário (extraído de `sub`) é adicionado à requisição (`request.user`).
+ * Caso contrário, responde com erro 401 e mensagem apropriada.
+ * 
+ * @param {import('express').Request} request - Objeto de requisição HTTP.
+ * @param {import('express').Response} response - Objeto de resposta HTTP.
+ * @param {Function} next - Função que chama o próximo middleware.
+ * 
+ * @returns {Response|void} Continua para a próxima função se autenticado ou retorna erro 401.
  */
 
 export function authentication(request, response, next){
@@ -22,41 +28,7 @@ export function authentication(request, response, next){
   
   try {
     const role = jwt.verify(token, jwtConfig.secret)
-    request.role = {
-      role: role.sub
-    }
-    
-    return next()
-  }catch(error){
-    if(error.name === "TokenExpiredError"){
-      return response.status(401).json({ message: "Token expirado, realizar login." })
-    }
-    return response.status(401).json({ message: "Token inválido." })
-  }
-}
-
-/**
- * Middleware de autenticação para usuários autenticados no GLPI.
- * 
- * Verifica se o token JWT (`accessTokenGlpi`) está presente nos cookies.
- * Se válido, adiciona a propriedade `request.user` com os dados encriptados do usuário GLPI.
- *
- * @param {import("express").Request} request - Requisição HTTP com cookies.
- * @param {import("express").Response} response - Resposta HTTP.
- * @param {Function} next - Próxima função da cadeia de middlewares.
- * 
- * @returns {void}
- */
-
-export function authenticationGlpi(request, response, next){
-  const token = request.cookies?.accessTokenGlpi
-  if(!token){
-    return response.status(401).json({ message: "Realizar autenticação" });
-  }
-
-  try {
-    const user = jwt.verify(token, jwtConfig.secret)
-    request.user = user.sub
+    request.user = role.sub
     
     return next()
   }catch(error){

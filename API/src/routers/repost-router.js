@@ -1,8 +1,12 @@
 import { Router } from "express"
 import { ReportController } from "../controller/report-controller.js"
+import { authentication } from "../middlewares/authentication.js"
+import { userAcess } from "../middlewares/userAcess.js"
 
 export const reportRouter = new Router()
 const reportController = new ReportController()
+
+reportRouter.use(authentication)
 
 // Items Existente
 reportRouter.get("/existsAssets", reportController.getExistsAssets)

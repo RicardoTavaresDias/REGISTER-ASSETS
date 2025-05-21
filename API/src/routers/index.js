@@ -8,7 +8,7 @@ import { Router } from 'express'
 
 export const routers = Router()
 
-routers.use("/", assetsRouter)
+routers.use("/assets", assetsRouter)
 routers.use("/suggestions", suggestionsRouter)
 routers.use("/log", logsRouter)
 routers.use("/login", loginRouter)

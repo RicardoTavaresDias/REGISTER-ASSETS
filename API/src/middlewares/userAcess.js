@@ -10,11 +10,11 @@ import { compare } from "bcrypt"
 export function userAcess(role){
   return async (request, response, next) => {
 
-    if(!request.role){
+    if(!request.user){
       return response.status(401).json({ message: 'Não autorizado' })
     }
 
-    if(!await compare(role[0], request.role.role)){
+    if(!await compare(role[0], request.user.role)){
       return response.status(401).json({ message: 'Não autorizado' })
     }
 
