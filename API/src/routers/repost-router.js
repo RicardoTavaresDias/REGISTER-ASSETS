@@ -6,7 +6,7 @@ import { userAcess } from "../middlewares/userAcess.js"
 export const reportRouter = new Router()
 const reportController = new ReportController()
 
-reportRouter.use(authentication)
+reportRouter.use(authentication, userAcess(["member"]))
 
 // Items Existente
 reportRouter.get("/existsAssets", reportController.getExistsAssets)

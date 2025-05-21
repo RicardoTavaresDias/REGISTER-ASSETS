@@ -38,7 +38,7 @@ export class LoginController {
     }
    
     if(user.includes(result.user) && comparePassword){
-      const token = jwt.sign({ sub: { role: roleHash }}, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
+      const token = jwt.sign({ sub: { user: user, role: roleHash }}, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
 
       response.cookie("accessToken", token, {
         httpOnly: true, 
@@ -65,7 +65,7 @@ export class LoginController {
     const userResult = validation.user(request.body)
 
     const user = { 
-      user: CryptoJS.AES.encrypt(userResult.user, jwtConfig.secret).toString(), 
+      user: userResult.user, 
       password: CryptoJS.AES.encrypt(userResult.password, jwtConfig.secret).toString(), 
       role: await hash("member", 8)
     }

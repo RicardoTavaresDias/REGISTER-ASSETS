@@ -16,7 +16,7 @@ export class ReportController {
    */
 
   async getExistsAssets(request, response){
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     const resultPagination = await assetReport
       .indexPaginationReport({
         typeReport: "existsAssets",
@@ -36,7 +36,7 @@ export class ReportController {
    */
 
   async removeExistsAssets(request, response){
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     await assetReport.removeReport({ typeReport: "existsAssets", id: request.params.id })
     
     response.status(200).json({ message: "Item removido com sucesso." })
@@ -54,7 +54,7 @@ export class ReportController {
     const validation = new Validation()
     const responseSchema = validation.report(request.body)
 
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     assetReport.updateReport({ typeReport: "existsAssets", id: request.params.id, updates: responseSchema })
 
     response.status(200).json({ message: "Dados atualizado com sucesso." })
@@ -69,7 +69,7 @@ export class ReportController {
    */
 
   async getDoesNotExistsAssets(request, response){
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     const resultPagination = await assetReport
       .indexPaginationReport({
         typeReport: "doesNotExistsAssets",
@@ -89,7 +89,7 @@ export class ReportController {
    */
 
   async removeDoesNotExistsAssets(request, response){
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     await assetReport.removeReport({ typeReport: "doesNotExistsAssets", id: request.params.id })
     
     response.status(200).json({ message: "Item removido com sucesso." })
@@ -107,7 +107,7 @@ export class ReportController {
     const validation = new Validation()
     const responseSchema = validation.report(request.body)
 
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     assetReport.updateReport({ typeReport: "doesNotExistsAssets", id: request.params.id, updates: responseSchema })
 
     response.status(200).json({ message: "Dados atualizado com sucesso." })
@@ -122,7 +122,7 @@ export class ReportController {
    */
 
   async getUpdateAssets(request, response){
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     const resultPagination = await assetReport
       .indexPaginationReport({
         typeReport: "updateAssets",
@@ -142,7 +142,7 @@ export class ReportController {
    */
 
   async removeUpdateAssets(request, response){
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     await assetReport.removeReport({ typeReport: "updateAssets", id: request.params.id })
     
     response.status(200).json({ message: "Item removido com sucesso." })
@@ -160,7 +160,7 @@ export class ReportController {
     const validation = new Validation()
     const responseSchema = validation.report(request.body)
 
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     assetReport.updateReport({ typeReport: "updateAssets", id: request.params.id, updates: responseSchema })
 
     response.status(200).json({ message: "Dados atualizado com sucesso." })
@@ -175,7 +175,7 @@ export class ReportController {
    */
 
   async getManualRegister(request, response){
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     const resultPagination = await assetReport
       .indexPaginationReport({
         typeReport: "manualRegistration",

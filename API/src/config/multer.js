@@ -1,7 +1,5 @@
 import multer from "multer"
 import fs from "node:fs"
-import CryptoJS from "crypto-js"
-import { jwtConfig } from "../config/token.js"
 
 /**
  * Middleware de upload de imagens (.jpg, .jpeg, .png).
@@ -76,9 +74,7 @@ export const uploadXlsx = multer({
     },
 
     filename: (request, file, callback) => {
-      callback(null, `${
-        CryptoJS.AES.decrypt(request.user.user, jwtConfig.secret).toString(CryptoJS.enc.Utf8)
-        }&register_assets.${file.originalname.split('.')[1]}`
+      callback(null, `${request.user.user}&register_assets.${file.originalname.split('.')[1]}`
       )
     }
   }),

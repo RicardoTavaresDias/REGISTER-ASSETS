@@ -6,6 +6,6 @@ import { authentication } from "../middlewares/authentication.js"
 export const logsRouter = Router()
 const logsController = new LogsController()
 
-logsRouter.use(authentication)
-logsRouter.get("/:type", userAcess(["admin"]), logsController.index)
-logsRouter.delete("/:type", userAcess(["admin"]), logsController.remove)
+logsRouter.use(authentication, userAcess(["admin"]))
+logsRouter.get("/:type", logsController.index)
+logsRouter.delete("/:type", logsController.remove)

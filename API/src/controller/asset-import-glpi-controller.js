@@ -1,5 +1,3 @@
-import CryptoJS from "crypto-js"
-import { jwtConfig } from "../config/token.js"
 import { CsvReader } from "../core/Csv-reader.js"
 import { AssetReport } from "../core/AssetReport.js"
 import { assetProcessor, mapUpdateSectorId } from "../core/activeDataProcessing.js"
@@ -33,13 +31,12 @@ export class AssetsImportGlpiController {
  */
 
   async index(request, response){
-    const nameFile = CryptoJS.AES.decrypt(request.user.user, jwtConfig.secret).toString(CryptoJS.enc.Utf8)
     const read = await fs.promises.readdir("./tmp")
     let data = null
 
-    const existFile = read.includes(`${nameFile}&register_assets.xlsx`)
+    const existFile = read.includes(`${request.user.user}&register_assets.xlsx`)
     if(existFile){
-      const csvReader = new CsvReader(nameFile)
+      const csvReader = new CsvReader(request.user.user)
       data = csvReader.csvData()
     }else {
       const validationUnit = new Validation()
@@ -52,7 +49,7 @@ export class AssetsImportGlpiController {
     const glpiAutomationService = new GlpiAutomationService(request.user)
     const dataValidator = await glpiAutomationService.assets(dataEquipment)
     
-    const assetReport = new AssetReport()
+    const assetReport = new AssetReport(request.user.user)
     assetReport.manualReviewLogger(
       { 
         dataValidator: dataValidator, 
@@ -60,7 +57,7 @@ export class AssetsImportGlpiController {
       }
     ).then(() => {
       if(existFile){
-        return fs.unlinkSync(`./tmp/${nameFile}&register_assets.xlsx`)
+        return fs.unlinkSync(`./tmp/${request.user.user}&register_assets.xlsx`)
       }
       return
     })
