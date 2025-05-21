@@ -115,14 +115,14 @@ export class AssetReport {
   async indexPaginationReport({ typeReport, page, limit }){
     const readFile = await fs.promises.readdir("./tmp")
     if(!readFile.includes(`${this.user}&pendentes-para-cadastro.json`)){
-      throw new Error("O relatório não pôde ser gerado. Verifique se os dados estão corretos e tente novamente.")
+      throw new Error("O relatório ainda não foi gerado.")
     }
 
     const data = await fs.promises.readFile(`./tmp/${this.user}&pendentes-para-cadastro.json`)
     const dataJson = JSON.parse(data)
 
     if(!dataJson[typeReport].length){
-      throw new Error("O relatório não pôde ser gerado. Verifique se os dados estão corretos e tente novamente.")
+      throw new Error("Nenhum registro encontrado.")
     }
 
     const paginationDataJson = pagination(page, limit, dataJson[typeReport])
@@ -203,7 +203,7 @@ export class AssetReport {
   async processingData(element){
     const readFile = await fs.promises.readdir("./tmp")
     if(!readFile.includes(`${this.user}&pendentes-para-cadastro.json`)){
-      throw new Error("O relatório não pôde ser gerado. Verifique se os dados estão corretos e tente novamente.")
+      throw new Error("O relatório ainda não foi gerado.")
     }
     
     const data = await fs.promises.readFile(`./tmp/${this.user}&pendentes-para-cadastro.json`)

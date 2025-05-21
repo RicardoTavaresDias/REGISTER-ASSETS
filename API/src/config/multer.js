@@ -1,5 +1,6 @@
 import multer from "multer"
 import fs from "node:fs"
+import { encryption } from "../lib/security.js"
 
 /**
  * Middleware de upload de imagens (.jpg, .jpeg, .png).

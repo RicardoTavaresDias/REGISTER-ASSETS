@@ -56,7 +56,7 @@ export class GlpiBrowser {
 
   async login(){
     await this.page.goto(env.GLPIINITIAL, { timeout: 35000 })
-    await this.page.type("#login_name", this.user.user)
+    await this.page.type("#login_name", decryption(this.user.user))
     await this.page.type("#login_password", decryption(this.user.password))
     await this.page.type("#dropdown_auth1", "DC-SACA")
     await this.page.click(`[type="submit"]`)

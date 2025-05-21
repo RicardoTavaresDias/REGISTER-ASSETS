@@ -65,7 +65,7 @@ export class LoginController {
     const userResult = validation.user(request.body)
 
     const user = { 
-      user: userResult.user, 
+      user: encryption(userResult.user), 
       password: encryption(userResult.password), 
       role: await hash("member", 8)
     }
