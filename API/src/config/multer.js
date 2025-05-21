@@ -21,7 +21,7 @@ export const uploadImage = multer({
         }
         callback(null, 'tmp')
       } catch(error){
-        callback(new Error("File server not found"), null)
+        callback(new Error("Servidor de arquivos indisponível no momento. Verifique sua conexão ou tente novamente mais tarde."), null)
       }
     },
 
@@ -40,7 +40,7 @@ export const uploadImage = multer({
     if(filter.includes(file.mimetype)){
       callback(null, true)
     }else {
-      request.errorMessage = "Invalid file type only jpg, jpeg and png."
+      request.errorMessage = "Formato de imagem não suportado. Envie arquivos nos formatos JPG, JPEG ou PNG."
       callback(null, false)
     }
   }, 
@@ -69,7 +69,7 @@ export const uploadXlsx = multer({
         }
         callback(null, 'tmp')
       } catch(error){
-        callback(new Error("File server not found"), null)
+        callback(new Error("Servidor de arquivos indisponível no momento. Verifique sua conexão ou tente novamente mais tarde."), null)
       }
     },
 
@@ -81,13 +81,15 @@ export const uploadXlsx = multer({
 
   fileFilter: (request, file, callback) => {
     const filter = [ 
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+      "application/vnd.ms-excel", // .xls
+      "text/csv", // .csv
     ]
 
     if(filter.includes(file.mimetype)){
       callback(null, true)
     }else {
-      request.errorMessage = "Invalid file type only xlsx."
+      request.errorMessage = "Formato de imagem não suportado. Envie arquivos nos formatos xlsx."
       callback(null, false)
     }
   }, 

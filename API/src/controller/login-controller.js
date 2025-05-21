@@ -1,7 +1,7 @@
 import { compare, hash } from "bcrypt"
 import jwt from "jsonwebtoken";
 import { jwtConfig } from "../config/token.js"
-import CryptoJS from "crypto-js";
+import { encryption } from "../lib/security.js"
 import { GlpiBrowser } from "../services/glpi/GlpiBrowser.js";
 import { Repository } from "../repositories/Repository.js"
 import { Validation } from "../model/Validation.js";
@@ -66,7 +66,7 @@ export class LoginController {
 
     const user = { 
       user: userResult.user, 
-      password: CryptoJS.AES.encrypt(userResult.password, jwtConfig.secret).toString(), 
+      password: encryption(userResult.password), 
       role: await hash("member", 8)
     }
 

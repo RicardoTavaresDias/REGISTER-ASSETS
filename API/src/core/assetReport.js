@@ -115,14 +115,14 @@ export class AssetReport {
   async indexPaginationReport({ typeReport, page, limit }){
     const readFile = await fs.promises.readdir("./tmp")
     if(!readFile.includes(`${this.user}&pendentes-para-cadastro.json`)){
-      throw new AppError("Relatório não gerado.", 400)
+      throw new Error("O relatório não pôde ser gerado. Verifique se os dados estão corretos e tente novamente.")
     }
 
     const data = await fs.promises.readFile(`./tmp/${this.user}&pendentes-para-cadastro.json`)
     const dataJson = JSON.parse(data)
 
     if(!dataJson[typeReport].length){
-      throw new AppError("Não tem registro.", 400)
+      throw new Error("O relatório não pôde ser gerado. Verifique se os dados estão corretos e tente novamente.")
     }
 
     const paginationDataJson = pagination(page, limit, dataJson[typeReport])
@@ -141,12 +141,16 @@ export class AssetReport {
 
   async removeReport({ typeReport, id }){
     const data = await this.processingData({ typeReport, id })
-    
+   
+    if(!data.dataJson[typeReport].some(value => value.id === id)){
+      throw new Error("Item não encontrado. Verifique o ID informado.")
+    }
+
     const RemoveItem = data.dataJson[typeReport].filter(value => !(value.id === id))
 
     await fs.promises.writeFile(`./tmp/${this.user}&pendentes-para-cadastro.json`, 
       JSON.stringify({ [typeReport]: RemoveItem, ...data.restDataJson }, null, 4))
-    
+
     return    
   }
 
@@ -163,8 +167,11 @@ export class AssetReport {
   async updateReport({ typeReport, id, updates }){
     const data = await this.processingData({ typeReport, id })
 
+    let found = false
+
     const updateItem = data.dataJson[typeReport].map(value => {
       if(value.id === id){
+        found = true
         return {
           ...value,
           ...updates
@@ -173,10 +180,14 @@ export class AssetReport {
       return value
     })
 
+    if(!updateItem.length || !found){
+      throw new Error("Item não encontrado. Verifique o ID informado.")
+    }
+
     await fs.promises.writeFile(`./tmp/${this.user}&pendentes-para-cadastro.json`, 
       JSON.stringify({ [typeReport]: updateItem, ...data.restDataJson }, null, 4))
+
     
-    return  
   }
 
     /**
@@ -192,7 +203,7 @@ export class AssetReport {
   async processingData(element){
     const readFile = await fs.promises.readdir("./tmp")
     if(!readFile.includes(`${this.user}&pendentes-para-cadastro.json`)){
-      throw new AppError("Relatório não gerado.", 400)
+      throw new Error("O relatório não pôde ser gerado. Verifique se os dados estão corretos e tente novamente.")
     }
     
     const data = await fs.promises.readFile(`./tmp/${this.user}&pendentes-para-cadastro.json`)

@@ -39,6 +39,10 @@ export function ErrorHandling(error, request, response, next) {
     return response.status(400).json({ message: error.issues[0].message }) 
   }
 
+  if(error instanceof Error){
+    return response.status(400).json({ message: error.message })
+  }
+
   if(error instanceof AppError){
     logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
     return response.status(error.statusCode).json({ message: error.message })
