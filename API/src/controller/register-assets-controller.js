@@ -3,23 +3,21 @@ import multer from "multer";
 import { Repository } from "../repositories/Repository.js"
 import { Validation } from "../model/Validation.js"
 
-import { uploadImage } from "../config/multer.js";
+import { uploadImage, uploadXlsx } from "../config/multer.js";
 import { logRegisterAssets } from "../core/log-RegisterAssets.js";
 
 /**
- * Controller responsável por lidar com requisições relacionadas ao cadastro e consulta de ativos.
+ * Controller responsável por upload, leitura e cadastro de ativos.
  */
 
 export class RegisterAssetsController {
 
-  /**
-   * Manipula o upload de um arquivo de imagem contendo número de série (SN).
-   * Realiza OCR com Tesseract.js e tenta extrair palavras que iniciam com "BR" como indicativo de SN.
-   * 
-   * @param {import("express").Request} request - Objeto da requisição HTTP.
-   * @param {import("express").Response} response - Objeto da resposta HTTP.
-   * 
-   * @returns {Promise<void>} Retorna uma resposta HTTP com os dados extraídos ou mensagens de erro.
+/**
+   * Realiza upload de imagem e extrai número de série (SN) via OCR com Tesseract.js.
+   *
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @returns {Promise<void>}
    */
 
   file(request, response) {
@@ -34,13 +32,13 @@ export class RegisterAssetsController {
         }
 
         if (request.errorMessage) {
-          logRegisterAssets(error.message)
+          logRegisterAssets(request.errorMessage)
           return response.status(422).json({ message: request.errorMessage }); 
         }
 
         const result = await Tesseract.recognize(
-          `./tmp/${request.file.filename}`,
-          "por"
+        `./tmp/${request.file.filename}`,
+        "por"
         );
 
         return response.status(200).json({
@@ -51,26 +49,21 @@ export class RegisterAssetsController {
             // Extrai no texto somente palavra que começa BR
             result.data.text.match(/\bBR\w*/i) &&
             result.data.text.match(/\bBR\w*/i)[0],
-        });
-      });
+        })
+      })
     } catch (error) {
       console.log(error);
       logRegisterAssets(error)
     }
   }
 
-    /**
-   * Cadastra um novo ativo no banco de dados.
-   * Valida os dados recebidos e verifica se o número de série já existe.
-   * Em caso de duplicata na mesma unidade, retorna erro. Caso contrário, registra:
-   * - Unidade
-   * - Setor
-   * - Equipamento (com série)
-   * 
-   * @param {import("express").Request} request - Requisição com { unit, equipment, sector, serie }.
-   * @param {import("express").Response} response - Resposta HTTP.
-   * 
-   * @returns {Promise<void>} Confirma o cadastro ou informa erro.
+/**
+   * Cadastra um novo ativo após validação dos dados.
+   * Retorna erro se o número de série já existir na unidade.
+   *
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @returns {Promise<void>}
    */
 
   async create(request, response) {
@@ -89,14 +82,13 @@ export class RegisterAssetsController {
     })
   }
 
-   /**
-   * Lista ativos de uma unidade específica.
-   * Valida o nome da unidade, consulta os ativos correspondentes e retorna os resultados.
-   * 
-   * @param {import("express").Request} request - Objeto da requisição HTTP com `{ unit }` no corpo.
-   * @param {import("express").Response} response - Objeto da resposta HTTP.
-   * 
-   * @returns {Promise<void>} Retorna a lista de ativos ou uma mensagem caso não haja resultados.
+  /**
+   * Lista ativos de uma unidade após validar o nome.
+   * Retorna erro se nenhum ativo for encontrado.
+   *
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @returns {Promise<void>}
    */
 
   async index (request, response){
@@ -111,19 +103,46 @@ export class RegisterAssetsController {
     response.status(200).json(resultUnit)
   }
 
+  /**
+   * Realiza upload de arquivo `.xlsx` com validação via multer.
+   * Registra erros e responde conforme o resultado do upload.
+   *
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @returns {Promise<void>}
+   */
+
+  async upload(request, response){
+    try {
+      uploadXlsx.single("file")(request, response, async (error) => {
+        if (error instanceof multer.MulterError) {
+            logRegisterAssets(error.message)
+            return response.status(422).json({ message: error.message });      
+          } else if (error) {
+            logRegisterAssets(error.message)
+            return response.status(500).json({ message: error.message });
+          }
+
+          if (request.errorMessage) {
+            logRegisterAssets(request.errorMessage)
+            return response.status(422).json({ message: request.errorMessage }); 
+          }
+
+          response.status(201).json({ message: "Arquivo gravado com sucesso." })          
+      })
+    }catch(error){
+      console.log(error);
+      logRegisterAssets(error)
+    }
+  }
 
 
 
-
-  
 
 // Parte que será definido no final do processo
 
 
-  
-  async upload(request, response){
-    response.status(200).json({ message: "Upload ok" })
-  }
+
 
   async download(request, response){
     response.status(200).json({ message: "Download ok" })

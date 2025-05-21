@@ -2,15 +2,26 @@ import XLSX from "xlsx";
 import { randomUUID } from "crypto"
 
 export class CsvReader {
+  constructor(fileName){
+    this.fileName = fileName
+  }
 
-  /**
-   * Lê o arquivo `register_assets.xlsx` e extrai os dados crus da planilha.
-   * 
-   * @returns {Array<Object>} Array de objetos com as colunas definidas no cabeçalho.
+    /**
+   * Lê o arquivo Excel `register_assets.xlsx` e extrai os dados brutos da planilha.
+   *
+   * Funcionalidade:
+   * - Utiliza a biblioteca `xlsx` para abrir o arquivo na pasta `./tmp`, baseado no nome de arquivo `this.fileName`.
+   * - Lê a primeira planilha do arquivo.
+   * - Converte os dados a partir da linha 12 (índice base 0: `range: 11`), ignorando as linhas anteriores.
+   * - Define manualmente os nomes das colunas: `"Setor"`, `"Equipamento"`, `"C"`, `"D"`, `"E"` e `"Serie"`.
+   *
+   * @returns {Array<Object>} Um array de objetos representando os dados das linhas da planilha, com chaves baseadas no cabeçalho definido.
+   *
+   * @throws {Error} Pode lançar erro caso o arquivo não exista, esteja corrompido ou não tenha estrutura esperada.
    */
 
   _ReadCsv(){
-    const file = XLSX.readFile("./tmp/register_assets.xlsx")
+    const file = XLSX.readFile(`./tmp/${this.fileName}&register_assets.xlsx`)
     const SheetName = file.SheetNames[0]
     const sheet = file.Sheets[SheetName]
     const data = XLSX.utils.sheet_to_json(sheet, { range: 11, header: ["Setor", "Equipamento", "C", "D", "E", "Serie"] })

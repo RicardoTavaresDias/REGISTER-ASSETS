@@ -1,3 +1,5 @@
+import CryptoJS from "crypto-js"
+import { jwtConfig } from "../config/token.js"
 import { CsvReader } from "../core/Csv-reader.js"
 import { AssetReport } from "../core/AssetReport.js"
 import { assetProcessor, mapUpdateSectorId } from "../core/activeDataProcessing.js"
@@ -13,51 +15,55 @@ import { Validation } from "../model/Validation.js"
 
 export class AssetsImportGlpiController {
 
-  /**
- * Gera um relatório de validação de ativos com base em dados de um arquivo Excel ou dados enviados no corpo da requisição.
- * 
- * Funcionalidade:
- * - Verifica se o arquivo `register_assets.xlsx` está presente no diretório `./tmp`.
- *   - Se presente, os dados são lidos via `CsvReader().csvData()`.
- *   - Caso contrário, valida a unidade enviada no `request.body` e busca os dados no repositório (`Repository().search.searcAssetUnit`).
- * - Os dados brutos são processados pelo utilitário `assetProcessor`, padronizando a estrutura dos equipamentos.
- * - Com os dados processados, o serviço de automação do GLPI (`GlpiAutomationService`) é utilizado para validar os ativos no GLPI.
- * - O resultado da validação é registrado em arquivos `.txt` e `.json` usando `AssetReport().manualReviewLogger`.
- * 
- * @param {Object} request - Objeto da requisição HTTP.
- * @param {Object} request.body - Dados enviados pelo cliente (caso não exista arquivo Excel).
- * @param {Object} request.user - Informações do usuário autenticado, usadas pelo `GlpiAutomationService`.
- * @param {Object} response - Objeto da resposta HTTP.
- * 
- * @returns {Object} Retorna uma resposta HTTP com status 200 e mensagem de sucesso.
- * 
- * @throws {Error} Caso ocorra erro na leitura do diretório, validação de dados, comunicação com o GLPI ou geração de relatório.
+/**
+ * Gera um relatório de validação de ativos a partir de um arquivo Excel ou dados da requisição.
+ *
+ * - Descriptografa o nome do usuário para localizar o arquivo `register_assets.xlsx` em `./tmp`.
+ * - Se o arquivo existir, os dados são lidos com `CsvReader`; caso contrário, são buscados via repositório.
+ * - Os dados válidos (com `equipment` e `sector`) são processados e enviados para validação no GLPI.
+ * - Gera um relatório com `AssetReport`, incluindo também os registros inválidos.
+ * - Remove o arquivo após o uso, se aplicável.
+ *
+ * @async
+ * @param {Object} request - Requisição com dados ou arquivo.
+ * @param {Object} response - Resposta HTTP.
+ * @returns {Promise<void>} Resposta com status 200 em caso de sucesso.
+ *
+ * @throws {Error} Em caso de falha na leitura, validação ou comunicação com o GLPI.
  */
 
   async index(request, response){
+    const nameFile = CryptoJS.AES.decrypt(request.user.user, jwtConfig.secret).toString(CryptoJS.enc.Utf8)
     const read = await fs.promises.readdir("./tmp")
     let data = null
 
-    if(read.includes("register_assets.xlsx")){
-      data = new CsvReader().csvData()
+    const existFile = read.includes(`${nameFile}&register_assets.xlsx`)
+    if(existFile){
+      const csvReader = new CsvReader(nameFile)
+      data = csvReader.csvData()
     }else {
       const validationUnit = new Validation()
       const unit = await validationUnit.unit(request.body)
       const repository = new Repository()
-      data = await new repository.search.searcAssetUnit(unit)
+      data = await repository.search.searcAssetUnit(unit)
     }
 
     const dataEquipment = assetProcessor(data.filter(value => !(value.equipment === null) && !(value.sector === null)))
     const glpiAutomationService = new GlpiAutomationService(request.user)
     const dataValidator = await glpiAutomationService.assets(dataEquipment)
-    await new AssetReport().manualReviewLogger(
+    
+    const assetReport = new AssetReport()
+    assetReport.manualReviewLogger(
       { 
         dataValidator: dataValidator, 
         manualRegistration: data.filter(value => (value.equipment === null) || (value.sector === null))
       }
-    )
-
-    
+    ).then(() => {
+      if(existFile){
+        return fs.unlinkSync(`./tmp/${nameFile}&register_assets.xlsx`)
+      }
+      return
+    })
 
     response.status(200).json({ message: "Relatório gerado com sucesso." })
   }
