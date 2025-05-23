@@ -71,10 +71,11 @@ export class AssetsImportGlpiController {
 
   // PARTE 2 PARA ELABORAR ATUALIZAR GLPI E CADASTRAR GLPI.
 
+  update(request, response){
+    response.status(201).json({ message: "ok" })
+  }
 
-
-
-
-
-
+  create(request, response){
+    response.status(201).json({ message: "ok" })
+  }
 }
