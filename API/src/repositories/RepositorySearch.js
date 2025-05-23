@@ -62,6 +62,23 @@ export class RepositorySearch {
   }
 
   /**
+ * Busca setores cujo nome começa com o valor informado.
+ *
+ * @param {string} value - Texto para buscar o início do nome do setor.
+ * @returns {Promise<Array>} Lista de setores encontrados.
+ */
+
+  async searchBySector(value){
+    return await this.prisma.type_Sector.findMany({
+      where: {
+        name: {
+          startsWith: value
+        }
+      }
+    })
+  }
+
+  /**
    * Busca um usuário pelo campo `user`.
    * 
    * @param {string} value - Nome de usuário a ser buscado.

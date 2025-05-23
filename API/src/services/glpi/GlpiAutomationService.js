@@ -74,6 +74,80 @@ export class GlpiAutomationService extends GlpiBrowser {
     } 
   }
 
+  /**
+   * Automatiza a atualização dos ativos no GLPI via browser automatizado.
+   *
+   * Para cada equipamento na lista:
+   * - Navega até a página do ativo usando o número de série.
+   * - Aguarda o carregamento dos elementos da página necessários.
+   * - Atualiza o setor do ativo com o valor fornecido.
+   * - Submete o formulário de atualização.
+   * 
+   * Caso o número de série não seja encontrado, a página não carregue corretamente,
+   * ou o GLPI retorne algum erro após o envio, lança uma `AppError` com mensagem e código HTTP.
+   * 
+   * O navegador é fechado ao final da operação, independentemente de sucesso ou erro.
+   *
+   * @param {Array} dataUpdate - Lista de ativos para atualização.
+   * @throws {AppError} Erro ao localizar ativo, carregar página ou falha na atualização no GLPI.
+   */
+
+  async Update(dataUpdate){
+    await this.browser()
+    await this.login()
+    const dataEquipment = listEquipment(dataUpdate)
+
+    try {
+      for(const key in dataEquipment){
+        const items = dataEquipment[key]
+        for(const item of items.data){
+          
+          await this.page.goto(items.path + item.serie + items.base, { timeout: 35000 })
+
+          await this.page.waitForSelector(".tab_bg_2 td a", { timeout: 10000 })
+          .catch(() => { 
+            throw new AppError("Número de serie não encontrado no glpi, verifica o número de serie corretamente para atualização.", 400) 
+          })
+
+          await this.page.evaluate(() => {
+            document.querySelectorAll('.tab_bg_2 td a')[0].click()
+          })
+
+          await this.page.waitForSelector(`[name="name"]`, { timeout: 10000 })
+          .catch(() => { 
+            throw new AppError("Pagina de ativos no glpi não foi carregado corretamente, tente novamente.", 400) 
+          })
+
+          await this.page.evaluate((item) => {
+            document.querySelectorAll(`.select2-hidden-accessible`)[3]
+              .innerHTML = `<option value=${item.id} title="${item.sector} - ">${item.sector}</option>`
+
+            //document.querySelector(".submit").click()
+          }, { sector: item.sector, id: item.idSector })
+
+          //Submeter formulário
+          await Promise.all([
+            this.page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
+            //this.page.click(".submit")
+          ]);
+
+          const errorGlpi = await this.page.evaluate(() => {
+            const exist = document.querySelector("#message_after_redirect_1")
+            return exist ? exist.innerText : null
+          })
+
+          if(errorGlpi){
+            throw new AppError(errorGlpi.replaceAll("\n", " "), 400);
+          }
+        }
+      }
+      
+    }catch(error){
+      throw new AppError(error.message, 500)
+    }finally{
+      this.browserClose()
+    }
+  }
 
 
    // PARTE 2 PARA ELABORAR ATUALIZAR GLPI E CADASTRAR GLPI.

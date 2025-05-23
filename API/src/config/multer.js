@@ -75,7 +75,7 @@ export const uploadXlsx = multer({
     },
 
     filename: (request, file, callback) => {
-      callback(null, `${request.user.user}&register_assets.${file.originalname.split('.')[1]}`
+      callback(null, `${request.user.user}&register_assets.${file.originalname.trim().split('.')[1]}`
       )
     }
   }),

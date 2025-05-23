@@ -1,7 +1,5 @@
 import { normalizeText } from "../lib/normalizeText.js";
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Repository } from "../repositories/Repository.js";
 
 /**
  *
@@ -80,36 +78,24 @@ export function assetProcessor(data) {
  */
 
 export async function mapUpdateSectorId(data) {
-  const newData = [];
+  const repository = new Repository()
+  const newData = []
 
   for(const item in data){
     for(const key of data[item]){
-
       if(key.sector.includes("=>")){
-        const resultDatabase = await prisma.sector.findMany({
-          where: {
-            name: {
-              startsWith: normalizeText(key.sector.split("=>")[1].trim())
-            }
-          }
-        })
+        const resultDatabase = await repository.search.searchBySector(normalizeText(key.sector.split("=>")[1].trim()))
         newData.push({
-          sector: resultDatabase.map(value => value.name)[0],
-          idSector: resultDatabase.map(value => value.id_glpi)[0],
+          sector: resultDatabase.length > 0 ? resultDatabase.map(value => value.name)[0] : key.sector.split("=>")[0].trim(),
+          idSector: resultDatabase.length > 0 ? resultDatabase.map(value => value.idglpi)[0] : null,
           equipment: key.equipment,
           serie: key.serie
         })
       }else {
-        const resultDatabase = await prisma.sector.findMany({
-          where: {
-            name: {
-              startsWith: normalizeText(key.sector)
-            }
-          }
-        })
+        const resultDatabase = await repository.search.searchBySector(normalizeText(key.sector))
         newData.push({
-            sector: resultDatabase.map(value => value.name)[0],
-            idSector: resultDatabase.map(value => value.id_glpi)[0],
+            sector: resultDatabase.length > 0 ? resultDatabase.map(value => value.name)[0] : key.sector.split("=>")[0].trim(),
+            idSector: resultDatabase.length > 0 ? resultDatabase.map(value => value.idglpi)[0] : null,
             equipment: key.equipment,
             serie: key.serie
         })
@@ -118,4 +104,33 @@ export async function mapUpdateSectorId(data) {
   }
 
   return assetProcessor(newData.filter(value => !(value.serie.toLowerCase() === "N/A".toLocaleLowerCase())))
+}
+
+/**
+ * Classifica ativos em dois grupos:
+ * - `manual`: sem `idSector` (necessitam revisão).
+ * - `existId`: com `idSector` (prontos para uso).
+ *
+ * @param {Object} items - Ativos organizados por tipo (computer, monitor, etc).
+ * @returns {{ manual: Array<Object>, existId: Array<Object> }}
+ */
+
+export function existIdSector(items){
+  const manual = []
+  const existId = []
+
+  for(const key in items){
+    for(const item of items[key]){
+      if(item.idSector === null){
+        manual.push(item)
+      }else {
+        existId.push(item)
+      }
+    }
+  }
+
+  return {
+    manual,
+    existId
+  }
 }

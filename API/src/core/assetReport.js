@@ -190,7 +190,7 @@ export class AssetReport {
     
   }
 
-    /**
+  /**
    * Lê o arquivo de relatório e separa os dados do tipo de relatório solicitado dos demais.
    * 
    * @param {Object} element
@@ -224,4 +224,5 @@ export class AssetReport {
 
     return { restDataJson, dataJson } 
   }
+
 }

@@ -1,10 +1,11 @@
 import fs from "node:fs"
 import { CsvReader } from "../core/Csv-reader.js"
 import { AssetReport } from "../core/AssetReport.js"
-import { assetProcessor } from "../core/activeDataProcessing.js"
+import { assetProcessor, mapUpdateSectorId, existIdSector } from "../core/activeDataProcessing.js"
 import { Repository } from "../repositories/Repository.js"
 import { GlpiAutomationService } from "../services/glpi/GlpiAutomationService.js"
 import { Validation } from "../model/Validation.js"
+import { updateImportFile } from "../utils/fileJson.js"
 
 /**
  * Controller responsável pelas rotas de importação, atualização e criação de ativos no GLPI.
@@ -64,6 +65,46 @@ export class AssetsImportGlpiController {
     response.status(200).json({ message: "Relatório gerado com sucesso." })
   }
 
+    /**
+   * Atualiza ativos no GLPI com base no arquivo de pendências gerado anteriormente.
+   *
+   * - Lê o arquivo JSON com ativos a atualizar.
+   * - Processa e mapeia os setores com IDs válidos.
+   * - Separa ativos em dois grupos: com e sem `idSector`.
+   * - Atualiza os ativos válidos no GLPI.
+   * - Atualiza o arquivo de pendências com os setores que precisam de registro manual.
+   *
+   * @param {Object} request - Requisição contendo o usuário.
+   * @param {Object} response - Resposta HTTP.
+   *
+   * @returns {Promise<void>} Envia uma resposta 202 em caso de sucesso.
+   *
+   * @throws {Error} Se o arquivo de pendências não for encontrado.
+   */
+
+  async update(request, response){
+    const readerUpdate = await fs.promises.readFile(`./tmp/${request.user.user}&pendentes-para-cadastro.json`).catch(() => {
+      throw new Error("Não foi encontrado a lista atualização dos setores, realizar verificação cadastros no glpi e na planilha." )
+    })
+
+    const readerUpdateJson = JSON.parse(readerUpdate)
+    const dataEquipment = assetProcessor(readerUpdateJson.updateAssets)
+    const sectorUpdate = await mapUpdateSectorId(dataEquipment)
+
+    const { manual, existId } = existIdSector(sectorUpdate)
+
+    const glpiAutomationService = new GlpiAutomationService(request.user)
+    await glpiAutomationService.Update(assetProcessor(existId))
+
+    await updateImportFile({ manual, update: existId, user: request.user.user })
+
+    response.status(202).json(
+      {
+         message: `Atualização realizado com sucesso ${existId.length} ativos, cadastros que devem ser atualizado manualmente, devido não ter setor no glpi ${manual.length} ativos`, 
+         manualSector: manual
+      }
+    )
+  }
 
 
 
@@ -71,11 +112,8 @@ export class AssetsImportGlpiController {
 
   // PARTE 2 PARA ELABORAR ATUALIZAR GLPI E CADASTRAR GLPI.
 
-  update(request, response){
-    response.status(201).json({ message: "ok" })
-  }
-
   create(request, response){
     response.status(201).json({ message: "ok" })
-  }
+  } 
 }
+
