@@ -4,7 +4,7 @@ import { AssetReport } from "../core/AssetReport.js"
 import { assetProcessor, mapUpdateSectorId, existIdSector } from "../core/activeDataProcessing.js"
 import { Repository } from "../repositories/Repository.js"
 import { GlpiAutomationService } from "../services/glpi/GlpiAutomationService.js"
-import { Validation } from "../model/Validation.js"
+import { Validation } from "../validation/Validation.js"
 import { updateImportFile } from "../utils/fileJson.js"
 
 /**

@@ -1,5 +1,5 @@
 import { AssetReport } from "../core/AssetReport.js"
-import { Validation } from "../model/Validation.js"
+import { Validation } from "../validation/Validation.js"
 
 /**
  * Controller responsável por gerenciar os relatórios de ativos: existentes.

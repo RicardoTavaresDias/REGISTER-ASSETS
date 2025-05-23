@@ -4,7 +4,7 @@ import { jwtConfig } from "../config/token.js"
 import { encryption } from "../lib/security.js"
 import { GlpiBrowser } from "../services/glpi/GlpiBrowser.js";
 import { Repository } from "../repositories/Repository.js"
-import { Validation } from "../model/Validation.js";
+import { Validation } from "../validation/Validation.js";
 
 /**
  * Controlador responsável pela autenticação de usuários locais

@@ -1,7 +1,7 @@
 import Tesseract from "tesseract.js";
 import multer from "multer";
 import { Repository } from "../repositories/Repository.js"
-import { Validation } from "../model/Validation.js"
+import { Validation } from "../validation/Validation.js"
 
 import { uploadImage, uploadXlsx } from "../config/multer.js";
 import { logRegisterAssets } from "../core/log-RegisterAssets.js";

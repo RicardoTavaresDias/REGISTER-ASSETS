@@ -1,6 +1,6 @@
 import { pagination } from "../utils/pagination.js"
 import { Repository } from "../repositories/Repository.js"
-import { Validation } from "../model/Validation.js"
+import { Validation } from "../validation/Validation.js"
 import { AppError } from "../utils/AppError.js"
 
 /**
