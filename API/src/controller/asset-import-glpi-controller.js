@@ -1,11 +1,10 @@
-import fs from "node:fs"
 import { CsvReader } from "../core/Csv-reader.js"
-import { AssetReport } from "../core/AssetReport.js"
+import { AssetReport } from "../core/assetReport.js"
 import { assetProcessor, mapUpdateSectorId, existIdSector } from "../core/activeDataProcessing.js"
 import { Repository } from "../repositories/Repository.js"
 import { GlpiAutomationService } from "../services/glpi/GlpiAutomationService.js"
 import { Validation } from "../validation/Validation.js"
-import { updateImportFile } from "../utils/fileJson.js"
+import { File } from "../utils/File.js"
 
 /**
  * Controller responsável pelas rotas de importação, atualização e criação de ativos no GLPI.
@@ -31,10 +30,10 @@ export class AssetsImportGlpiController {
  */
 
   async index(request, response){
-    const read = await fs.promises.readdir("./tmp")
+    const file = new File(request.user.user)
+    const existFile = (await file.fileReaddir()).includes(`${request.user.user}&register_assets.xlsx`)
     let data = null
 
-    const existFile = read.includes(`${request.user.user}&register_assets.xlsx`)
     if(existFile){
       const csvReader = new CsvReader(request.user.user)
       data = csvReader.csvData()
@@ -57,7 +56,7 @@ export class AssetsImportGlpiController {
       }
     ).then(() => {
       if(existFile){
-        return fs.unlinkSync(`./tmp/${request.user.user}&register_assets.xlsx`)
+        return file.removerFileXlsx()
       }
       return
     })
@@ -83,24 +82,23 @@ export class AssetsImportGlpiController {
    */
 
   async update(request, response){
-    const readerUpdate = await fs.promises.readFile(`./tmp/${request.user.user}&pendentes-para-cadastro.json`).catch(() => {
+    const file = new File(request.user.user)
+    const readerUpdate = await file.fileReader().catch(() => {
       throw new Error("Não foi encontrado a lista atualização dos setores, realizar verificação cadastros no glpi e na planilha." )
     })
 
-    const readerUpdateJson = JSON.parse(readerUpdate)
-    const dataEquipment = assetProcessor(readerUpdateJson.updateAssets)
+    const dataEquipment = assetProcessor(readerUpdate.updateAssets)
     const sectorUpdate = await mapUpdateSectorId(dataEquipment)
-
     const { manual, existId } = existIdSector(sectorUpdate)
 
     const glpiAutomationService = new GlpiAutomationService(request.user)
     await glpiAutomationService.Update(assetProcessor(existId))
 
-    await updateImportFile({ manual, update: existId, user: request.user.user })
+    await file.updateImportFile({ manual, update: existId })
 
     response.status(202).json(
       {
-         message: `Atualização realizado com sucesso ${existId.length} ativos, cadastros que devem ser atualizado manualmente, devido não ter setor no glpi ${manual.length} ativos`, 
+         message: `Atualização realizado com sucesso ${existId.length} ativos, cadastros que devem ser atualizado manualmente ${manual.length} ativos, devido não ter setor no glpi.`, 
          manualSector: manual
       }
     )

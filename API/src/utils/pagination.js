@@ -22,28 +22,28 @@
 
 
 export const pagination = (page, limit, data) => {
-  const dataBase = data[0].name ? data.map(value => ({ name: value.name })) : data
+  const dataBase = data[0]?.name ? data.map(value => ({ name: value.name })) : data
 
-  const startIndex = (page - 1) * limit
-  const endIndex = page * limit
+  const startIndex = (Number(page) - 1) * Number(limit)
+  const endIndex = Number(page) * Number(limit)
 
   const results = {}
 
   if(endIndex < dataBase.length){
     results.next = {
-      page: page + 1,
-      limit: limit
+      page: Number(page) + 1,
+      limit: Number(limit)
     }
   }
 
   if(startIndex > 0){
     results.prev = {
-      page: page - 1,
-      limit: limit
+      page: Number(page) - 1,
+      limit: Number(limit)
     }
   }
   results.result = dataBase.slice(startIndex, endIndex)
-  const totalPage = Math.ceil(dataBase.length / limit)
+  const totalPage = Math.ceil(dataBase.length / Number(limit))
 
   return {
     results,

@@ -1,6 +1,7 @@
 import fs from "node:fs"
 import { AppError } from "../utils/AppError.js"
 import { pagination } from "../utils/pagination.js"
+import { File } from "../utils/File.js"
 
 /**
  * Classe responsável por gerenciar e manipular os relatórios de ativos validados (existentes, inexistentes e atualizações).
@@ -9,6 +10,7 @@ import { pagination } from "../utils/pagination.js"
 export class AssetReport {
   constructor(user){
     this.user = user
+    this.file = new File(user)
   }
 
  /**
@@ -84,12 +86,12 @@ export class AssetReport {
       output += "+--------------------------------+-----------------+--------------------+\n"
     }
 
-    await fs.promises.writeFile(`./tmp/${this.user}&pendentes-para-cadastro.json`, JSON.stringify({
+    await this.file.write({
       existsAssets: dataValidator.existsAssets,
       doesNotExistsAssets: dataValidator.doesNotExistsAssets,
       updateAssets: dataValidator.updateAssets,
       manualRegistration:  manualRegistration
-    }, null, 2))
+    })
 
     await fs.promises.writeFile(`./tmp/${this.user}&pendentes-para-cadastro.txt`, output)
 
@@ -112,22 +114,24 @@ export class AssetReport {
    * @throws {AppError} Se o relatório não tiver sido gerado ou não houver registros.
    */
 
-  async indexPaginationReport({ typeReport, page, limit }){
-    const readFile = await fs.promises.readdir("./tmp")
-    if(!readFile.includes(`${this.user}&pendentes-para-cadastro.json`)){
-      throw new Error("O relatório ainda não foi gerado.")
-    }
-
-    const data = await fs.promises.readFile(`./tmp/${this.user}&pendentes-para-cadastro.json`)
-    const dataJson = JSON.parse(data)
-
-    if(!dataJson[typeReport].length){
+  async indexPaginationReport({ typeReport, page, limit, manualSector }){
+    const data = await this.file.fileReader()
+    if(!data[typeReport].length){
       throw new Error("Nenhum registro encontrado.")
     }
 
-    const paginationDataJson = pagination(page, limit, dataJson[typeReport])
-    
-    return paginationDataJson
+    const paginationData = pagination(page, limit, callbak())
+
+    function callbak(){
+      if(manualSector){
+        return data[typeReport][0].sector
+      }else if(data[typeReport][0].manual){
+        return data[typeReport][0].manual
+      }
+      return data[typeReport]
+    }
+
+    return paginationData
   }
 
   /**
@@ -142,14 +146,13 @@ export class AssetReport {
   async removeReport({ typeReport, id }){
     const data = await this.processingData({ typeReport, id })
    
-    if(!data.dataJson[typeReport].some(value => value.id === id)){
+    if(!data.data[typeReport].some(value => value.id === id)){
       throw new Error("Item não encontrado. Verifique o ID informado.")
     }
 
-    const RemoveItem = data.dataJson[typeReport].filter(value => !(value.id === id))
-
-    await fs.promises.writeFile(`./tmp/${this.user}&pendentes-para-cadastro.json`, 
-      JSON.stringify({ [typeReport]: RemoveItem, ...data.restDataJson }, null, 4))
+    const RemoveItem = data.data[typeReport].filter(value => !(value.id === id))
+  
+    await this.file.write({ [typeReport]: RemoveItem, ...data.restDataJson })
 
     return    
   }
@@ -166,10 +169,9 @@ export class AssetReport {
 
   async updateReport({ typeReport, id, updates }){
     const data = await this.processingData({ typeReport, id })
-
     let found = false
 
-    const updateItem = data.dataJson[typeReport].map(value => {
+    const updateItem = data.data[typeReport].map(value => {
       if(value.id === id){
         found = true
         return {
@@ -184,10 +186,8 @@ export class AssetReport {
       throw new Error("Item não encontrado. Verifique o ID informado.")
     }
 
-    await fs.promises.writeFile(`./tmp/${this.user}&pendentes-para-cadastro.json`, 
-      JSON.stringify({ [typeReport]: updateItem, ...data.restDataJson }, null, 4))
-
-    
+    delete data.data[typeReport]
+    await this.file.write({ [typeReport]: updateItem, ...data.data })
   }
 
   /**
@@ -201,28 +201,21 @@ export class AssetReport {
    */
 
   async processingData(element){
-    const readFile = await fs.promises.readdir("./tmp")
-    if(!readFile.includes(`${this.user}&pendentes-para-cadastro.json`)){
-      throw new Error("O relatório ainda não foi gerado.")
-    }
-    
-    const data = await fs.promises.readFile(`./tmp/${this.user}&pendentes-para-cadastro.json`)
-    const dataJson = JSON.parse(data)
-    
-    let restDataJson = null
+    const data = await this.file.fileReader()
+    let restData = null
 
     if(element.typeReport === "existsAssets"){
-      const { existsAssets, ...rest } = dataJson
-      restDataJson = rest
+      const { existsAssets, ...rest } = data
+      restData = rest
     }else if(element.typeReport === "doesNotExistsAssets"){
-      const { doesNotExistsAssets, ...rest } = dataJson
-      restDataJson = rest
+      const { doesNotExistsAssets, ...rest } = data
+      restData = rest
     }else {
-      const { updateAssets, ...rest } = dataJson
-      restDataJson = rest
+      const { updateAssets, ...rest } = data
+      restData = rest
     }
 
-    return { restDataJson, dataJson } 
+    return { restData, data } 
   }
 
 }
