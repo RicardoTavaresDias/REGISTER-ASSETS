@@ -34,6 +34,17 @@ export class Validation {
     return resultSchema
   }
 
+
+
+
+
+
+  
+
+
+  // PARTE 2 PARA ELABORAR ATUALIZAR GLPI E CADASTRAR GLPI.
+
+
   /**
    * Valida se a unidade informada existe no banco de dados.
    *
@@ -55,6 +66,15 @@ export class Validation {
     const { unit } = bodySchema.parse(requestBody)
     return unit
   }
+
+
+
+
+
+
+
+
+
 
   /**
    * Valida os filtros de relatório.

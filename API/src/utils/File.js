@@ -72,18 +72,40 @@ export class File {
    * @throws {Error} Se o arquivo de relatório não existir.
    */
 
+
+
+    
+
+
+
+
+
+  // PARTE 2 PARA ELABORAR ATUALIZAR GLPI E CADASTRAR GLPI.
+
+
+
   async updateImportFile({ manual, update, create }){
     const reader = await this.fileReader()
     await this.write(
       { 
         ...reader, 
-        updateAssets: update || reader.updateAssets,
-        manualRegistration: [{ manual: reader.manualRegistration, sector: manual || [] }]
+        doesNotExistsAssets: reader.doesNotExistsAssets,
+        updateAssets: reader.updateAssets,
+        manualRegistration: [...(reader.manualRegistration), ...(manual)] //[{ manual: reader.manualRegistration, sector: manual || [] }]
       }
     )
     
     return
   }
+
+
+
+
+
+
+
+
+
 
   /**
    * Remove o arquivo Excel (.xlsx) de ativos registrados, se existir.
@@ -96,20 +118,3 @@ export class File {
     return
   }
 }
-
-
-
-
-
-
-
- 
- 
- 
-
-
- 
-
-  
-
- 

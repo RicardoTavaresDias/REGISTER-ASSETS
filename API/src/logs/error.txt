@@ -1,0 +1,15 @@
+asset-import-glpi-controller.js
+File.js
+GlpiAutomationService.js
+Validation.js
+
+# necessita verificação do link de cadastro sms que vai ter modelo do equipamento
+
+# verificar a validação da unidade request.body antes de criar ativos
+# refaturar o arquivo file para cadastro manual que não esta legal ainda
+
+Falta
+
+- download
+- exclusão de arquivo apos download.
+- exclusão de arquivo inicialização index no asset-import-glpi-controller.js por semana se arquivo json estiver parado no sistema.

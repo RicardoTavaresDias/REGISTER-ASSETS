@@ -108,10 +108,41 @@ export class AssetsImportGlpiController {
 
 
 
+
+
+
+  
+
+
   // PARTE 2 PARA ELABORAR ATUALIZAR GLPI E CADASTRAR GLPI.
 
-  create(request, response){
-    response.status(201).json({ message: "ok" })
-  } 
+  async create(request, response){
+    const file = new File(request.user.user)
+    const readerCreate = await file.fileReader().catch(() => {
+      throw new Error("Não foi encontrado a lista atualização dos setores, realizar verificação cadastros no glpi e na planilha." )
+    })
+    
+    const dataEquipment = assetProcessor(readerCreate.doesNotExistsAssets)
+    const sectorCreate = await mapUpdateSectorId(dataEquipment)
+    const { manual, existId } = existIdSector(sectorCreate)
+
+    const glpiAutomationService = new GlpiAutomationService(request.user)
+    const result = await glpiAutomationService.treeStructureGlpi(request.body.unit)
+
+    if(result){
+      response.status(401).json(result)
+    }
+    
+    await glpiAutomationService.registerAssets(assetProcessor(existId))
+    await file.updateImportFile({ manual, create: existId })
+
+    response.status(202).json(
+      {
+         message: `Cadastrado com sucesso ${existId.length} ativos na unidade ${request.body.unit}, cadastros que devem ser atualizado manualmente ${manual.length} ativos, devido não ter setor no glpi.`, 
+         manualCreate: manual
+      }
+    )
+  }
+  
 }
 
