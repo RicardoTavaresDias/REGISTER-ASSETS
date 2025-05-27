@@ -86,16 +86,18 @@ export async function mapUpdateSectorId(data) {
       if(key.sector.includes("=>")){
         const resultDatabase = await repository.search.searchBySector(normalizeText(key.sector.split("=>")[1].trim()))
         newData.push({
+          id: key.id,
           sector: resultDatabase.length > 0 ? resultDatabase.map(value => value.name)[0] : key.sector.split("=>")[0].trim(),
-          idSector: resultDatabase.length > 0 ? resultDatabase.map(value => value.idglpi)[0] : null,
+          idSector: resultDatabase.length > 0 ? resultDatabase.map(value => value.id_glpi)[0] : null,
           equipment: key.equipment,
           serie: key.serie
         })
       }else {
-        const resultDatabase = await repository.search.searchBySector(normalizeText(key.sector))
+        const resultDatabase = await repository.search.searchBySector(String(key.sector).toUpperCase())
         newData.push({
-            sector: resultDatabase.length > 0 ? resultDatabase.map(value => value.name)[0] : key.sector.split("=>")[0].trim(),
-            idSector: resultDatabase.length > 0 ? resultDatabase.map(value => value.idglpi)[0] : null,
+            id: resultDatabase.map(value => value.id)[0] || key.id,
+            sector: resultDatabase.map(value => value.name)[0] || key.sector,
+            idSector: resultDatabase.map(value => value.id_glpi)[0] || null,
             equipment: key.equipment,
             serie: key.serie
         })

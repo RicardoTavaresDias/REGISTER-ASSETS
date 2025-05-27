@@ -69,13 +69,15 @@ export class RepositorySearch {
  */
 
   async searchBySector(value){
-    return await this.prisma.type_Sector.findMany({
-      where: {
-        name: {
-          startsWith: value
-        }
-      }
-    })
+    // return await this.prisma.type_Sector.findMany({
+    //   where: {
+    //     name: {
+    //       contente: value
+    //     }
+    //   }
+    // })
+    return await this.prisma.$queryRaw
+      `SELECT * FROM type_sector WHERE LOWER(name) LIKE ${'%' + value}`
   }
 
   /**

@@ -126,10 +126,10 @@ export class GlpiAutomationService extends GlpiBrowser {
           }, { sector: item.sector, id: item.idSector })
 
           //Submeter formulário
-          await Promise.all([
-            this.page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
-            //this.page.click(".submit")
-          ]);
+          // await Promise.all([
+          //   this.page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
+          //   //this.page.click(".submit")
+          // ]);
 
           const errorGlpi = await this.page.evaluate(() => {
             const exist = document.querySelector("#message_after_redirect_1")
@@ -198,7 +198,7 @@ export class GlpiAutomationService extends GlpiBrowser {
 
       // retorna somente, se tiver retorno resolve com string
       if(result){
-        this.page.browser().close()
+        this.browserClose()
         return { message: result }
       }
 
@@ -209,7 +209,7 @@ export class GlpiAutomationService extends GlpiBrowser {
       })
       
     }catch(error){
-      this.browser.close()
+      this.browserClose()
       throw new Error(error.message)
     }
   }
@@ -258,10 +258,9 @@ export class GlpiAutomationService extends GlpiBrowser {
       }
       
     }catch(error){
-      this.page.browser().close()
       throw new Error(error.message)
     }finally{
-      this.page.browser().close()
+      this.browserClose()
     }
   }
 }

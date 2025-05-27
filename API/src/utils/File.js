@@ -89,8 +89,8 @@ export class File {
     await this.write(
       { 
         ...reader, 
-        doesNotExistsAssets: reader.doesNotExistsAssets,
-        updateAssets: reader.updateAssets,
+        doesNotExistsAssets: create || reader.doesNotExistsAssets,
+        updateAssets: update || reader.updateAssets,
         manualRegistration: [...(reader.manualRegistration), ...(manual)] //[{ manual: reader.manualRegistration, sector: manual || [] }]
       }
     )
