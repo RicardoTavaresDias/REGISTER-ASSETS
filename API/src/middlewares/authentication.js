@@ -21,10 +21,12 @@ import { jwtConfig } from "../config/token.js"
  */
 
 export function authentication(request, response, next){
-  const token = request.cookies?.accessToken;
-  if (!token) {
+  const authHeader = request.headers.authorization;
+  if (!authHeader) {
     return response.status(401).json({ message: "Realizar autenticação" });
   }
+
+  const token = authHeader.split(" ")[1] 
   
   try {
     const role = jwt.verify(token, jwtConfig.secret)

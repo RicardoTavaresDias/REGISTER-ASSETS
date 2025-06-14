@@ -24,32 +24,44 @@ export class LoginController {
   async create(request, response){
     const validation = new Validation()
     const result = validation.user(request.body)
+
+    if(result.user === "admin"){
+      const repository = new Repository()
+      const dataJson = await repository.search.user(result.user)
+
+      const { user, password, role } = dataJson
+
+      const roleHash = await hash(role, 8)
+      const comparePassword = await compare(result.password, password)
+
+      if(!user.includes(result.user)){
+        return response.status(401).json({ message: "Usuario não cadastrado no sistema." })
+      }
     
-    const repository = new Repository()
-    const dataJson = await repository.search.user(result.user)
+      if(user.includes(result.user) && comparePassword){
+        const token = jwt.sign({ sub: { user: user, role: roleHash }}, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
 
-    const { user, password, role } = dataJson
-
-    const roleHash = await hash(role, 8)
-    const comparePassword = await compare(result.password, password)
-
-    if(!user.includes(result.user)){
-      return response.status(401).json({ message: "Usuario não cadastrado no sistema." })
+        return response.status(200).json({ token, user: { role: role } })
+      }
+      return response.status(401).json({ message: "Usuario e senha incorretos." }) 
     }
-   
-    if(user.includes(result.user) && comparePassword){
-      const token = jwt.sign({ sub: { user: user, role: roleHash }}, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
+    
 
-      response.cookie("accessToken", token, {
-        httpOnly: true, 
-        secure: false,
-        sameSite: "Lax",
-        maxAge: 24 * 60 * 60 * 1000 // 1d
-      })
-
-      return response.status(200).json({ message: "Login realizado com sucesso." })
+    const user = { 
+      user: result.user, 
+      password: encryption(result.password), 
+      role: "member"
     }
-    return response.status(401).json({ message: "Usuario e senha incorretos." })        
+
+    // const glpiBrowser = new GlpiBrowser(user)
+    // await glpiBrowser.browser()
+    // await glpiBrowser.login()
+    // await glpiBrowser.browserClose()
+
+    const tokenGlpi = jwt.sign({ sub: user }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
+
+    response.status(200).json({ token: tokenGlpi, user: { user: user.user, role: user.role } })
+           
   }
 
   /**
@@ -60,6 +72,8 @@ export class LoginController {
    * @returns {Promise<Response>} Retorna um cookie com token JWT e status HTTP.
    */
 
+  /** 
+   
   async createGlpi(request, response){
     const validation = new Validation()
     const userResult = validation.user(request.body)
@@ -67,7 +81,7 @@ export class LoginController {
     const user = { 
       user: userResult.user, 
       password: encryption(userResult.password), 
-      role: await hash("member", 8)
+      role: "member"
     }
 
     const glpiBrowser = new GlpiBrowser(user)
@@ -76,14 +90,9 @@ export class LoginController {
     await glpiBrowser.browserClose()
 
     const tokenGlpi = jwt.sign({ sub: user }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn })
-    
-    response.cookie("accessToken", tokenGlpi, {
-      httpOnly: true, 
-      secure: false,
-      sameSite: "Lax",
-      maxAge: 24 * 60 * 60 * 1000 // 1d
-    })
 
-    response.status(200).json({ message: "Login realizado com sucesso." })
+    response.status(200).json({ token: tokenGlpi, user: { user: user.user, role: user.role } })
   }
+
+  */
 }

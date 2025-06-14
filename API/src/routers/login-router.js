@@ -5,4 +5,4 @@ export const loginRouter = Router()
 const loginController = new LoginController()
 
 loginRouter.post("/", loginController.create)
-loginRouter.post("/glpi", loginController.createGlpi)
+//loginRouter.post("/glpi", loginController.createGlpi)
