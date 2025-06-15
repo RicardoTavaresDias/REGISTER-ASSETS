@@ -8,27 +8,39 @@ import { Repository } from "../repositories/Repository.js"
 
 export class LogsController {
  
-    /**
-   * Retorna os registros de log de acordo com o tipo informado.
-   *
-   * - Se o tipo for `"error"`, lê o conteúdo do arquivo `./src/logs/error.txt`.
-   * - Se o tipo for `"equipment"` ou `"sector"`, busca os registros em tabelas correspondentes no banco de dados.
-   *
-   * @param {Object} request - Objeto da requisição Express.
-   * @param {Object} response - Objeto da resposta Express.
-   * @returns {Promise<Response>} Resposta HTTP com os logs encontrados ou mensagem de ausência de registros.
-   *
-   * @example
-   * GET /logs/error
-   * GET /logs/equipment
-   * GET /logs/sector
-   */
+       /**
+ * Retorna os registros de log de acordo com o tipo informado.
+ *
+ * - Se o tipo for `"error"`:
+ *   - Lê o conteúdo do arquivo `./src/logs/error.json`.
+ *   - Suporta paginação via query params `page` e `limit`.
+ *    - Se o tipo for `"equipment"` ou `"sector"`:
+ *   - Busca os registros nas tabelas `log_Equipment_invalid` ou `log_Sector_invalid` no banco de dados.
+ *
+ * @param {Object} request - Objeto da requisição Express.
+ * @param {Object} response - Objeto da resposta Express.
+ * @returns {Promise<Response>} Resposta HTTP com os logs encontrados ou mensagem de ausência de registros.
+ *
+ * @example
+ * GET /logs/error
+ * GET /logs/error?page=1&limit=10
+ * GET /logs/equipment
+ * GET /logs/sector
+ */
 
   async index(request, response){
+    const { page, limit } = request.query
 
     if (request.params.type === "error"){
       const data = await fs.promises.readFile("./src/logs/error.json")
       if(data.toString() === "") return response.status(400).json({ message: "Sem registros disponíveis no log." })
+
+      const dataPagination = pagination(page, limit, JSON.parse(data))
+
+      if(page && limit){
+        return response.status(200).json(dataPagination)
+      }
+
       return response.status(200).json(JSON.parse(data))
     }
     
@@ -43,6 +55,7 @@ export class LogsController {
     
     response.status(200).json(data)
   }
+  
 
   /**
    * Remove os registros de log de acordo com o tipo informado.

@@ -2,8 +2,8 @@
  * Realiza a paginação de um array de dados e retorna os resultados da página atual,
  * junto com informações sobre a próxima e a página anterior, se aplicável.
  *
- * @param {number} page - Número da página atual (base 1).
- * @param {number} limit - Quantidade de itens por página.
+ * @param {string} page - Número da página atual (base 1).
+ * @param {stringr} limit - Quantidade de itens por página.
  * @param {Array<Object>} data - Array de dados a ser paginado.
  * @returns {{
  *   results: {
