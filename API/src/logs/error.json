@@ -1,0 +1,50 @@
+[
+  {
+    "id": "4c95d332-8cc1-4199-b58c-9c9d0fe60f99",
+    "date": "14-06-2025T22:08:25",
+    "error": {
+      "message": "Informe o unidade.",
+      "stack": "ZodError: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"unit\"\n    ],\n    \"message\": \"Informe o unidade.\"\n  }\n]\n    at get error (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:587:31)\n    at ZodObject.parse (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:663:22)\n    at Validation.assets (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/validation/Validation.js:33:37)\n    at async create (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/controller/register-assets-controller.js:70:30)"
+    }
+  },
+  {
+    "id": "585a2df7-fef3-430f-8098-6d89fc7768a8",
+    "date": "14-06-2025T22:08:30",
+    "error": {
+      "message": "Informe um equipamento.",
+      "stack": "ZodError: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"equipment\"\n    ],\n    \"message\": \"Informe um equipamento.\"\n  }\n]\n    at get error (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:587:31)\n    at ZodObject.parse (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:663:22)\n    at Validation.assets (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/validation/Validation.js:33:37)\n    at async create (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/controller/register-assets-controller.js:70:30)"
+    }
+  },
+  {
+    "id": "27c47d5e-c29d-4e8c-9d7a-e47478784b8a",
+    "date": "14-06-2025T22:08:34",
+    "error": {
+      "message": "Preencher o campo equipamento.",
+      "stack": "ZodError: [\n  {\n    \"code\": \"too_small\",\n    \"minimum\": 1,\n    \"type\": \"string\",\n    \"inclusive\": true,\n    \"exact\": false,\n    \"message\": \"Preencher o campo equipamento.\",\n    \"path\": [\n      \"equipment\"\n    ]\n  }\n]\n    at get error (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:587:31)\n    at ZodObject.parse (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:663:22)\n    at Validation.assets (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/validation/Validation.js:33:37)\n    at async create (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/controller/register-assets-controller.js:70:30)"
+    }
+  },
+  {
+    "id": "a77d7d68-78b8-4ca8-82f2-da3fc1c06091",
+    "date": "14-06-2025T22:08:41",
+    "error": {
+      "message": "Preencher o campo número de série.",
+      "stack": "ZodError: [\n  {\n    \"code\": \"too_small\",\n    \"minimum\": 1,\n    \"type\": \"string\",\n    \"inclusive\": true,\n    \"exact\": false,\n    \"message\": \"Preencher o campo número de série.\",\n    \"path\": [\n      \"serie\"\n    ]\n  }\n]\n    at get error (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:587:31)\n    at ZodObject.parse (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:663:22)\n    at Validation.assets (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/validation/Validation.js:33:37)\n    at async create (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/controller/register-assets-controller.js:70:30)"
+    }
+  },
+  {
+    "id": "a078799e-2db7-4614-8e7f-c7345e4dd5ac",
+    "date": "14-06-2025T22:10:16",
+    "error": {
+      "message": "Unidade inválida",
+      "stack": "ZodError: [\n  {\n    \"code\": \"custom\",\n    \"message\": \"Unidade inválida\",\n    \"path\": [\n      \"unit\"\n    ]\n  }\n]\n    at get error (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:587:31)\n    at ZodObject.parse (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:663:22)\n    at Validation.assets (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/validation/Validation.js:33:37)\n    at async create (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/controller/register-assets-controller.js:70:30)"
+    }
+  },
+  {
+    "id": "d347d8eb-7e19-4e3e-be22-11176c35a1e4",
+    "date": "14-06-2025T22:10:21",
+    "error": {
+      "message": "Informe a unidade.",
+      "stack": "ZodError: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"unit\"\n    ],\n    \"message\": \"Informe a unidade.\"\n  }\n]\n    at get error (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:587:31)\n    at ZodObject.parse (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/node_modules/zod/lib/index.mjs:663:22)\n    at Validation.assets (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/validation/Validation.js:33:37)\n    at async create (file:///C:/Users/Ricardo/Desktop/REGISTER%20ASSETS/API/src/controller/register-assets-controller.js:70:30)"
+    }
+  }
+]

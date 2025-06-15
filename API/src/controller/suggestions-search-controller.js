@@ -45,7 +45,7 @@ export class SuggestionsSearch {
       return response.status(200).json(dataRead)
     }
     
-     return response.status(200).json(readFile.map(value => ({ id: value.id, name: value.name })))
+     return response.status(200).json(readFile)
   }
 
   /**

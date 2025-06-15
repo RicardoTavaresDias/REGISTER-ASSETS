@@ -35,20 +35,24 @@ import { logRegisterAssets } from "../core/log-RegisterAssets.js";
 
 export function ErrorHandling(error, request, response, next) {
   if(error instanceof ZodError){
-    logRegisterAssets( " MESSAGE: " + error.issues[0].message + " STACK: " + error.stack + "\n" )
+    //logRegisterAssets( " MESSAGE: " + error.issues[0].message + " STACK: " + error.stack + "\n" )
+    logRegisterAssets( { message: error.issues[0].message, stack: error.stack })
     return response.status(400).json({ message: error.issues[0].message }) 
   }
 
   if(error instanceof Error){
-    logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
+    //logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
+    logRegisterAssets( { message: error?.message, stack: error?.stack })
     return response.status(400).json({ message: error.message })
   }
 
   if(error instanceof AppError){
-    logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
+    //logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
+    logRegisterAssets( { message: error?.message, stack: error?.stack })
     return response.status(error.statusCode).json({ message: error.message })
   }
 
-  logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
+  //logRegisterAssets( " MESSAGE: " + error?.message + " STACK: " + error?.stack + "\n" )
+  logRegisterAssets( { message: error?.message, stack: error?.stack })
   response.status(500).json({ message: 'Error interno servidor!' })
 }

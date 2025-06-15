@@ -6,6 +6,6 @@ const jwtSchema = z.object({
   expiresIn: z.string()
 })
 
-const { secret, expiresIn } = jwtSchema.parse({ secret: env.JWTSECRET, expiresIn: "15s" })
+const { secret, expiresIn } = jwtSchema.parse({ secret: env.JWTSECRET, expiresIn: "1d" })
 
 export const jwtConfig = { secret, expiresIn }

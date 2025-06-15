@@ -25,7 +25,7 @@ export class Validation {
       serie: z.string({ message: "Informe o número de série." }).min(1, { message: "Preencher o campo número de série." }),
       equipment: z.string({ message: "Informe um equipamento." }).min(1, { message: "Preencher o campo equipamento." }),
       sector: z.string({ message: "Informe o setor." }).min(1, { message: "Preencher o campo setor." }),
-      unit: z.string({ message: "Informe o unidade." }).refine(value => mapUnits.map(element => element.name).includes(value), {
+      unit: z.string({ message: "Informe a unidade." }).refine(value => mapUnits.map(element => element.name).includes(value), {
         message: "Unidade inválida"
       })
     })
@@ -57,7 +57,7 @@ export class Validation {
     const repository = new Repository()
     const mapUnits = await repository.search.searchAll("unit")
     const bodySchema = z.object({
-      unit: z.string({ message: "Informe o unidade." })
+      unit: z.string({ message: "Informe a unidade." })
         .refine(value => mapUnits.map(element => element.name).includes(value), {
           message: "Unidade inválida"
       })

@@ -22,7 +22,7 @@
 
 
 export const pagination = (page, limit, data) => {
-  const dataBase = data[0]?.name ? data.map(value => ({ name: value.name })) : data
+  const dataBase = data
 
   const startIndex = (Number(page) - 1) * Number(limit)
   const endIndex = Number(page) * Number(limit)

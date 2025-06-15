@@ -27,9 +27,9 @@ export class LogsController {
   async index(request, response){
 
     if (request.params.type === "error"){
-      const data = await fs.promises.readFile("./src/logs/error.txt")
+      const data = await fs.promises.readFile("./src/logs/error.json")
       if(data.toString() === "") return response.status(400).json({ message: "Sem registros disponíveis no log." })
-      return response.status(200).json(data.toString().split('\n'))
+      return response.status(200).json(JSON.parse(data))
     }
     
     const repository = new Repository()

@@ -1,4 +1,5 @@
 import { AppError } from '../utils/AppError.js';
+import { Repository } from './Repository.js';
 
 /**
  * Classe responsável por operações de criação no banco de dados.
@@ -52,11 +53,12 @@ export class RepositoryCreate {
    */
 
   async createAssets(value){
+    const repository = new Repository()
 
     const [ unit, type_Equipment, type_Sector ] = await Promise.all([
-      this.searchByName({ tableDb: "unit", value: value.unit }),
-      this.searchByName({ tableDb: "type_Equipment", value: value.equipment }),
-      this.searchByName({ tableDb: "type_Sector", value: value.sector })
+      repository.search.searchByName({ tableDb: "unit", value: value.unit }),
+      repository.search.searchByName({ tableDb: "type_Equipment", value: value.equipment }),
+      repository.search.searchByName({ tableDb: "type_Sector", value: value.sector })
     ])
 
     if(!unit){

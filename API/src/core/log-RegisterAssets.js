@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'path'
 import dayjs from 'dayjs'
 import { env } from "../config/env.js"
+import { randomUUID } from 'node:crypto'
 
 /**
  * Registra mensagens de erro em um arquivo de log.
@@ -26,9 +27,24 @@ import { env } from "../config/env.js"
 export async function logRegisterAssets(err){
   const logPath = path.resolve(env.LOGERROR)
   const date = `${dayjs().format("DD-MM-YYYY")}T${dayjs().format("HH:mm:ss")}`
-  const message = `[${date}] - ${err}\n`
+  const message = {id: randomUUID(), date: date, error: { message: err.message, stack: err?.stack}}
 
-  fs.appendFile(logPath, message, (error) => {
-    if(error) console.error('Erro ao escrever log:', error);
-  })
+  try {
+    let logs = []
+
+    if (fs.existsSync(logPath)) {
+      const fileContent = await fs.promises.readFile(logPath, 'utf-8')
+      logs = fileContent.trim()
+        ? JSON.parse(fileContent)
+        : []
+    }
+
+    logs.push(message)
+
+    await fs.promises.writeFile(logPath, JSON.stringify(logs, null, 2)) // com indentação
+    console.log("Log registrado com sucesso.")
+
+  } catch (error) {
+    console.error('Erro ao registrar log:', error)
+  }
 }
